@@ -1,0 +1,32 @@
+name: GFF_cellpose
+
+channels:
+  - conda-forge
+  - defaults
+  - pytorch
+
+dependencies:
+  - conda-forge::python=3.9
+  - conda-forge::ipykernel
+  - conda-forge::jupyter
+  - conda-forge::nbconvert
+  - conda-forge::nb_conda_kernels
+  - conda-forge::pip
+  - conda-forge::numpy<2.0
+  - conda-forge::matplotlib
+  - conda-forge::pandas
+  - conda-forge::scipy
+  - conda-forge::scikit-learn
+  - conda-forge::scikit-image
+  - pip:
+      - torch
+      - torchvision
+      - tensorflow
+      - git+https://github.com/kevinjohncutler/omnipose.git@bf456e475be4490821f782cb785bbc943bb12abb
+      - cellpose
+      - stardist
+      - tifffile
+      - aicsimageio
+      - torch_optimizer
+      - nvidia-cudnn-cu11==8.6.0.163
+      - tensorflow==2.11
