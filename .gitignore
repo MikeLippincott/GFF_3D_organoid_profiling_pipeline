@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 
 data/*
+1.process_images/test_dir/*
+
