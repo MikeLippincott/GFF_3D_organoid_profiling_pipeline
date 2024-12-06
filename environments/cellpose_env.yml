@@ -18,6 +18,7 @@ dependencies:
   - conda-forge::scipy
   - conda-forge::scikit-learn
   - conda-forge::scikit-image
+  - conda-forge::papermill
   - pip:
       - torch
       - torchvision

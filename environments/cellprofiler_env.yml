@@ -35,5 +35,7 @@ dependencies:
       - torchvision
       - tensorflow
       - omnipose
-      - cellpose
+      - git+https://github.com/MouseLand/cellpose/commit/8bc3f628be732a733e923e93c30c11172e564895
       - stardist
+      - nvidia-cudnn-cu11==8.6.0.163
+      - tensorflow==2.11
