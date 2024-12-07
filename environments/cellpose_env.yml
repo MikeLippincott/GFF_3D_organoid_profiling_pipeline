@@ -31,3 +31,4 @@ dependencies:
       - torch_optimizer
       - nvidia-cudnn-cu11==8.6.0.163
       - tensorflow==2.11
+      - napari[all]

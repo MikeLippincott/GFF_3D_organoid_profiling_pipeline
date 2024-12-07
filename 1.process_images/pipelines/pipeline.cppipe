@@ -2,7 +2,7 @@ CellProfiler Pipeline: http://www.cellprofiler.org
 Version:5
 DateRevision:426
 GitHash:
-ModuleCount:5
+ModuleCount:11
 HasImagePlaneDetails:False
 
 Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
@@ -78,13 +78,28 @@ Groups:[module_num:4|svn_version:'Unknown'|variable_revision_number:2|show_windo
     Metadata category:Well
     Metadata category:FOV
 
-RunCellpose:[module_num:5|svn_version:'Unknown'|variable_revision_number:6|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+Resize:[module_num:5|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
     Select the input image:DNA
+    Name the output image:Resize_DNA
+    Resizing method:Resize by a fraction or multiple of the original size
+    X Resizing factor:0.25
+    Y Resizing factor:0.25
+    Z Resizing factor:1
+    Width (x) of the final image:100
+    Height (y) of the final image:100
+    # of planes (z) in the final image:10
+    Interpolation method:Bicubic
+    Method to specify the dimensions:Manual
+    Select the image with the desired dimensions:None
+    Additional image count:0
+
+RunCellpose:[module_num:6|svn_version:'Unknown'|variable_revision_number:6|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select the input image:Resize_DNA
     Rescale images before running Cellpose:No
     Run CellPose in docker or local python environment:Python
     Select Cellpose docker image:cellprofiler/runcellpose_with_pretrained:2.3.2
-    Expected object diameter:30
-    Detection mode:cyto2
+    Expected object diameter:50
+    Detection mode:tissuenet
     Name the output object:RunCellpose
     Use GPU:Yes
     Use averaging:No
@@ -96,11 +111,57 @@ RunCellpose:[module_num:5|svn_version:'Unknown'|variable_revision_number:6|show_
     Pre-trained model file name:cyto_0
     Flow threshold:0.4
     Cell probability threshold:0.0
-    GPU memory share for each worker:0.1
+    GPU memory share for each worker:0.5
     Stitch Threshold:0.0
     Use 3D:Yes
-    Minimum size:15
+    Minimum size:-1
     Use Omnipose for mask reconstruction:Yes
     Invert images:No
     Remove objects that are touching the edge?:Yes
     Rescale probability map?:Yes
+
+MeasureObjectIntensity:[module_num:7|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select images to measure:DNA
+    Select objects to measure:RunCellpose
+
+MeasureObjectSizeShape:[module_num:8|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select object sets to measure:RunCellpose
+    Calculate the Zernike features?:Yes
+    Calculate the advanced features?:Yes
+
+MeasureTexture:[module_num:9|svn_version:'Unknown'|variable_revision_number:7|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select images to measure:DNA
+    Select objects to measure:RunCellpose
+    Enter how many gray levels to measure the texture at:256
+    Hidden:1
+    Measure whole images or objects?:Objects
+    Texture scale to measure:3
+
+ConvertImageToObjects:[module_num:10|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select the input image:DNA
+    Name the output object:ConvertImageToObjects
+    Convert to boolean image:Yes
+    Preserve original labels:No
+    Background label:0
+    Connectivity:0
+
+Threshold:[module_num:11|svn_version:'Unknown'|variable_revision_number:12|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:DNA
+    Name the output image:Threshold
+    Threshold strategy:Adaptive
+    Thresholding method:Otsu
+    Threshold smoothing scale:0.5
+    Threshold correction factor:0.5
+    Lower and upper bounds on threshold:0.0,1.0
+    Manual threshold:0.0
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Two classes
+    Log transform before thresholding?:No
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:25
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Otsu
