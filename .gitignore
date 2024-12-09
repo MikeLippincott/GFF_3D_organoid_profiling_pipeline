@@ -163,4 +163,5 @@ cython_debug/
 
 data/*
 1.process_images/test_dir/*
+1.process_images/masks/*
 
