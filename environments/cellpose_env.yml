@@ -1,4 +1,4 @@
-name: GFF_cellpose
+name: GFF_segmentation
 
 channels:
   - conda-forge

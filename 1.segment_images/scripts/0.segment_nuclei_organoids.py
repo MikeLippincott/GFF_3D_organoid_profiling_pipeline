@@ -29,8 +29,6 @@ try:
 except NameError:
     in_notebook = False
 
-print(in_notebook)
-
 
 # ## parse args and set paths
 
@@ -38,6 +36,7 @@ print(in_notebook)
 
 
 if not in_notebook:
+    print("Running as script")
     # set up arg parser
     parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
 
@@ -60,12 +59,12 @@ if not in_notebook:
     clip_limit = args.clip_limit
     input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
 else:
+    print("Running in a notebook")
     input_dir = pathlib.Path("../examples/raw_z_input/").resolve(strict=True)
     window_size = 3
     clip_limit = 0.05
 
-mask_path = pathlib.Path("../../data/nuclei_masks/").resolve()
-mask_path = pathlib.Path(mask_path / input_dir.stem).resolve()
+mask_path = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
 
 

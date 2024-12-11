@@ -18,16 +18,11 @@ import numpy as np
 import skimage
 import tifffile
 from cellpose import core, io, models
+
+io.logger_setup()
 from cellpose.io import imread
 from PIL import Image
 from skimage import io
-
-# This checks to see if you have set up your GPU properly.
-# CPU performance is a lot slower, but not a problem if you
-# are only processing a few images.
-
-
-io.logger_setup()
 
 use_GPU = core.use_gpu()
 print(">>> GPU activated? %d" % use_GPU)
@@ -74,8 +69,7 @@ else:
     window_size = 3
     clip_limit = 0.1
 
-mask_path = pathlib.Path("../../data/cell_masks/").resolve()
-mask_path = pathlib.Path(mask_path / input_dir.stem).resolve()
+mask_path = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
 
 
