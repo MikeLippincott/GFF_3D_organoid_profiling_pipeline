@@ -2,7 +2,7 @@ CellProfiler Pipeline: http://www.cellprofiler.org
 Version:5
 DateRevision:426
 GitHash:
-ModuleCount:16
+ModuleCount:19
 HasImagePlaneDetails:False
 
 Images:[module_num:1|svn_version:'Unknown'|variable_revision_number:2|show_window:False|notes:['To begin creating your project, use the Images module to compile a list of files and/or folders that you want to analyze. You can also specify a set of rules to include only the desired files in your selected folders.']|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
@@ -76,16 +76,16 @@ NamesAndTypes:[module_num:3|svn_version:'Unknown'|variable_revision_number:8|sho
     Select the image type:Grayscale image
     Set intensity range from:Image metadata
     Maximum intensity:255.0
-    Select the rule criteria:and (file does contain "TRANS")
-    Name to assign these images:TRANS
-    Name to assign these objects:Cell
-    Select the image type:Grayscale image
+    Select the rule criteria:and (file does contain "nuclei_masks")
+    Name to assign these images:nuclei_mask
+    Name to assign these objects:Nucleus
+    Select the image type:Binary mask
     Set intensity range from:Image metadata
     Maximum intensity:255.0
-    Select the rule criteria:and (file does contain "masks")
-    Name to assign these images:mask
+    Select the rule criteria:and (file does contain "cell_masks")
+    Name to assign these images:cell_mask
     Name to assign these objects:Nucleus
-    Select the image type:Grayscale image
+    Select the image type:Binary mask
     Set intensity range from:Image metadata
     Maximum intensity:255.0
 
@@ -95,58 +95,16 @@ Groups:[module_num:4|svn_version:'Unknown'|variable_revision_number:2|show_windo
     Metadata category:Well
     Metadata category:FOV
 
-Resize:[module_num:5|svn_version:'Unknown'|variable_revision_number:5|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
-    Select the input image:DNA
-    Name the output image:Resize_DNA
-    Resizing method:Resize by a fraction or multiple of the original size
-    X Resizing factor:0.25
-    Y Resizing factor:0.25
-    Z Resizing factor:1
-    Width (x) of the final image:100
-    Height (y) of the final image:100
-    # of planes (z) in the final image:10
-    Interpolation method:Bicubic
-    Method to specify the dimensions:Manual
-    Select the image with the desired dimensions:None
-    Additional image count:0
-
-RunCellpose:[module_num:6|svn_version:'Unknown'|variable_revision_number:6|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
-    Select the input image:Resize_DNA
-    Rescale images before running Cellpose:No
-    Run CellPose in docker or local python environment:Python
-    Select Cellpose docker image:cellprofiler/runcellpose_with_pretrained:2.3.2
-    Expected object diameter:50
-    Detection mode:tissuenet
-    Name the output object:RunCellpose
-    Use GPU:Yes
-    Use averaging:No
-    Supply nuclei image as well?:No
-    Select the nuclei image:None
-    Save probability image?:No
-    Name the probability image:Probabilities
-    Location of the pre-trained model file:Elsewhere...|
-    Pre-trained model file name:cyto_0
-    Flow threshold:0.4
-    Cell probability threshold:0.0
-    GPU memory share for each worker:0.5
-    Stitch Threshold:0.0
-    Use 3D:Yes
-    Minimum size:-1
-    Use Omnipose for mask reconstruction:Yes
-    Invert images:No
-    Remove objects that are touching the edge?:Yes
-    Rescale probability map?:Yes
-
-MeasureObjectIntensity:[module_num:7|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+MeasureObjectIntensity:[module_num:5|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
     Select images to measure:DNA
     Select objects to measure:RunCellpose
 
-MeasureObjectSizeShape:[module_num:8|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+MeasureObjectSizeShape:[module_num:6|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
     Select object sets to measure:RunCellpose
     Calculate the Zernike features?:Yes
     Calculate the advanced features?:Yes
 
-MeasureTexture:[module_num:9|svn_version:'Unknown'|variable_revision_number:7|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+MeasureTexture:[module_num:7|svn_version:'Unknown'|variable_revision_number:7|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
     Select images to measure:DNA
     Select objects to measure:RunCellpose
     Enter how many gray levels to measure the texture at:256
@@ -154,28 +112,82 @@ MeasureTexture:[module_num:9|svn_version:'Unknown'|variable_revision_number:7|sh
     Measure whole images or objects?:Objects
     Texture scale to measure:3
 
-ConvertImageToObjects:[module_num:10|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
-    Select the input image:DNA
+ConvertImageToObjects:[module_num:8|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select the input image:nuclei_mask
     Name the output object:ConvertImageToObjects
     Convert to boolean image:Yes
     Preserve original labels:No
     Background label:0
     Connectivity:0
 
-Threshold:[module_num:11|svn_version:'Unknown'|variable_revision_number:12|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
-    Select the input image:DNA
+MeasureImageOverlap:[module_num:9|svn_version:'Unknown'|variable_revision_number:5|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select the image to be used as the ground truth basis for calculating the amount of overlap:None
+    Select the image to be used to test for overlap:None
+    Calculate earth mover's distance?:No
+    Maximum # of points:250
+    Point selection method:K Means
+    Maximum distance:250
+    Penalize missing pixels:No
+
+ConvertImageToObjects:[module_num:10|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:nuclei_mask
+    Name the output object:Nuclei
+    Convert to boolean image:Yes
+    Preserve original labels:No
+    Background label:0
+    Connectivity:0
+
+ConvertImageToObjects:[module_num:11|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:cell_mask
+    Name the output object:Cells
+    Convert to boolean image:Yes
+    Preserve original labels:No
+    Background label:0
+    Connectivity:0
+
+Watershed:[module_num:12|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select the input image:cell_mask
+    Name the output object:Watershed
+    Use advanced settings?:Yes
+    Generate from:Markers
+    Markers:nuclei_mask
+    Mask:cell_mask
+    Connectivity:1
+    Compactness:0.0
+    Footprint:8
+    Downsample:1
+    Separate watershed labels:Yes
+    Declump method:Shape
+    Reference Image:AGP
+    Segmentation distance transform smoothing factor:1.0
+    Minimum distance between seeds:4
+    Minimum absolute internal distance:0.0
+    Pixels from border to exclude:0
+    Maximum number of seeds:-1
+    Structuring element for seed dilation:ball,4
+
+MaskImage:[module_num:13|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select the input image:cell_mask
+    Name the output image:MaskBlue
+    Use objects or an image as a mask?:Objects
+    Select object for mask:ConvertImageToObjects
+    Select image for mask:None
+    Invert the mask?:No
+
+Threshold:[module_num:14|svn_version:'Unknown'|variable_revision_number:12|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select the input image:nuclei_mask
     Name the output image:Threshold
     Threshold strategy:Adaptive
-    Thresholding method:Otsu
-    Threshold smoothing scale:0.5
-    Threshold correction factor:0.5
+    Thresholding method:Minimum Cross-Entropy
+    Threshold smoothing scale:0.0
+    Threshold correction factor:1.0
     Lower and upper bounds on threshold:0.0,1.0
     Manual threshold:0.0
     Select the measurement to threshold with:None
     Two-class or three-class thresholding?:Two classes
     Log transform before thresholding?:No
     Assign pixels in the middle intensity class to the foreground or the background?:Foreground
-    Size of adaptive window:25
+    Size of adaptive window:50
     Lower outlier fraction:0.05
     Upper outlier fraction:0.05
     Averaging method:Mean
@@ -183,15 +195,36 @@ Threshold:[module_num:11|svn_version:'Unknown'|variable_revision_number:12|show_
     # of deviations:2.0
     Thresholding method:Otsu
 
-ConvertImageToObjects:[module_num:12|svn_version:'Unknown'|variable_revision_number:1|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
-    Select the input image:mask
+Threshold:[module_num:15|svn_version:'Unknown'|variable_revision_number:12|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select the input image:cell_mask
+    Name the output image:Threshold
+    Threshold strategy:Adaptive
+    Thresholding method:Minimum Cross-Entropy
+    Threshold smoothing scale:0.0
+    Threshold correction factor:1.0
+    Lower and upper bounds on threshold:0.0,1.0
+    Manual threshold:0.0
+    Select the measurement to threshold with:None
+    Two-class or three-class thresholding?:Two classes
+    Log transform before thresholding?:No
+    Assign pixels in the middle intensity class to the foreground or the background?:Foreground
+    Size of adaptive window:50
+    Lower outlier fraction:0.05
+    Upper outlier fraction:0.05
+    Averaging method:Mean
+    Variance method:Standard deviation
+    # of deviations:2.0
+    Thresholding method:Otsu
+
+ConvertImageToObjects:[module_num:16|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+    Select the input image:cell_mask
     Name the output object:ConvertImageToObjects
     Convert to boolean image:Yes
     Preserve original labels:No
     Background label:0
     Connectivity:0
 
-Threshold:[module_num:13|svn_version:'Unknown'|variable_revision_number:12|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+Threshold:[module_num:17|svn_version:'Unknown'|variable_revision_number:12|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
     Select the input image:mask
     Name the output image:Threshold
     Threshold strategy:Adaptive
@@ -212,28 +245,7 @@ Threshold:[module_num:13|svn_version:'Unknown'|variable_revision_number:12|show_
     # of deviations:2.0
     Thresholding method:Otsu
 
-Watershed:[module_num:14|svn_version:'Unknown'|variable_revision_number:3|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
-    Select the input image:Threshold
-    Name the output object:Watershed
-    Use advanced settings?:No
-    Generate from:Markers
-    Markers:Threshold
-    Mask:mask
-    Connectivity:1
-    Compactness:0.0
-    Footprint:8
-    Downsample:1
-    Separate watershed labels:Yes
-    Declump method:Shape
-    Reference Image:None
-    Segmentation distance transform smoothing factor:1.0
-    Minimum distance between seeds:1
-    Minimum absolute internal distance:0.0
-    Pixels from border to exclude:0
-    Maximum number of seeds:-1
-    Structuring element for seed dilation:Disk,1
-
-ConvertImageToObjects:[module_num:15|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
+ConvertImageToObjects:[module_num:18|svn_version:'Unknown'|variable_revision_number:1|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
     Select the input image:Threshold
     Name the output object:ConvertImageToObjects
     Convert to boolean image:Yes
@@ -241,6 +253,6 @@ ConvertImageToObjects:[module_num:15|svn_version:'Unknown'|variable_revision_num
     Background label:0
     Connectivity:0
 
-MeasureObjectIntensity:[module_num:16|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+MeasureObjectIntensity:[module_num:19|svn_version:'Unknown'|variable_revision_number:4|show_window:True|notes:[]|batch_state:array([], dtype=uint8)|enabled:False|wants_pause:False]
     Select images to measure:DNA
     Select objects to measure:Watershed
