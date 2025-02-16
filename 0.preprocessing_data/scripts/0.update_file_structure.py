@@ -2,8 +2,8 @@
 # coding: utf-8
 
 # # Copy raw images into one folder to use for CellProfiler processing
-# 
-# Currently, the images are located nest deep within multiple folders. 
+#
+# Currently, the images are located nest deep within multiple folders.
 # For best practices, we will copy the images (preserving metadata) to one folder that can be used for CellProfiler processing.
 # This file is modified from its original version: https://github.com/WayScience/GFF_2D_organoid_prototyping .
 
@@ -19,18 +19,15 @@ import sys
 
 import tqdm
 
-
 # ## Set paths and variables
 
-# In[2]:
+# In[ ]:
 
 
 argparse = argparse.ArgumentParser(
     description="Copy files from one directory to another"
 )
-argparse.add_argument(
-    "--HPC", type=bool, default=False, help="Type of compute to run on (default: False)"
-)
+argparse.add_argument("--HPC", action="store_true", help="Type of compute to run on")
 
 # Parse arguments
 args = argparse.parse_args(args=sys.argv[1:] if "ipykernel" not in sys.argv[0] else [])
@@ -39,7 +36,7 @@ HPC = args.HPC
 print(f"HPC: {HPC}")
 
 
-# In[3]:
+# In[ ]:
 
 
 # Define parent and destination directories in a single dictionary
@@ -108,4 +105,3 @@ for key, paths in dir_mapping.items():
                     shutil.copy2(image, well_dir)
 
     print(f"Completed processing {key}: {parent_dir} -> {dest_dir}")
-
