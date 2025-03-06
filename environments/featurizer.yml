@@ -18,6 +18,7 @@ dependencies:
   - conda-forge::scikit-learn
   - pip:
     - centrosome
+    - tqdm
 
 
 
