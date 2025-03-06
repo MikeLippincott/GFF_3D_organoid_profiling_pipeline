@@ -17,7 +17,7 @@ def calulate_surface_area(label_object, props, spacing):
             props["bbox-5"][0] + 1, label_object.shape[2]
         ),
     ]
-    volume_truths = volume == 1
+    volume_truths = volume > 0
     verts, faces, _normals, _values = skimage.measure.marching_cubes(
         volume_truths,
         method="lewiner",
