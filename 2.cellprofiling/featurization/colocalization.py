@@ -239,7 +239,7 @@ def calculate_3D_colocalization(
     # write the results to the output dictionary
     ################################################################################################
 
-    results["Mean Correlation coeff"] = numpy.mean(corr)
+    results["Mean.Correlation.coeff"] = numpy.mean(corr)
     results["Median Correlation coeff"] = numpy.median(corr)
     results["Min Correlation coeff"] = numpy.min(corr)
     results["Max Correlation coeff"] = numpy.max(corr)

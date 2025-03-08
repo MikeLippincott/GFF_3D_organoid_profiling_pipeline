@@ -16,6 +16,9 @@ dependencies:
   - conda-forge::matplotlib
   - conda-forge::pandas
   - conda-forge::scikit-learn
+  - conda-forge::pyarrow
+  - conda-forge::mahotas
+  - conda-forge::scikit-image
   - pip:
     - centrosome
     - tqdm

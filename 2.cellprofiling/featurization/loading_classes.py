@@ -19,6 +19,7 @@ class ImageSetLoader:
         self, image_set_path: pathlib.Path, spacing: tuple, channel_mapping: dict
     ):
         self.spacing = spacing
+        self.image_set_name = image_set_path.name
         files = sorted(image_set_path.glob("*"))
         files = [f for f in files if f.suffix in [".tif", ".tiff"]]
 
@@ -30,6 +31,8 @@ class ImageSetLoader:
                     self.image_set_dict[key] = skimage.io.imread(f)
 
         self.retrieve_image_attributes()
+        self.get_image_names()
+        self.get_compartments()
         self.get_unique_objects_in_compartments()
 
     def retrieve_image_attributes(self):
@@ -39,21 +42,24 @@ class ImageSetLoader:
                 self.unique_objects[key] = numpy.unique(value)
 
     def get_unique_objects_in_compartments(self):
-        self.unique_objects = {}
-        compartments = self.get_compartments()
-        for compartment in compartments:
-            self.unique_objects[compartment] = numpy.unique(
+        self.unique_compartment_objects = {}
+        for compartment in self.compartments:
+            self.unique_compartment_objects[compartment] = numpy.unique(
                 self.image_set_dict[compartment]
             )
+            # remove the 0 label
+            self.unique_compartment_objects[compartment] = [
+                x for x in self.unique_compartment_objects[compartment] if x != 0
+            ]
 
     def get_image(self, key):
         return self.image_set_dict[key]
 
     def get_image_names(self):
-        return [x for x in self.image_set_dict.keys() if "mask" not in x]
+        self.image_names = [x for x in self.image_set_dict.keys() if "mask" not in x]
 
     def get_compartments(self):
-        return [x for x in self.image_set_dict.keys() if "mask" in x]
+        self.compartments = [x for x in self.image_set_dict.keys() if "mask" in x]
 
     def get_anisotropy(self):
         return self.spacing[0] / self.spacing[1]
@@ -105,7 +111,7 @@ class Featurization:
     def calculate_single_object_features(self):
         self.features = {}
 
-        self.features["area_size_shape"] = measure_3D_area_size_shape(
+        self.features["area.size.shape"] = measure_3D_area_size_shape(
             label_object=self.object_loader.label_object,
             spacing=self.image_set_loader.spacing,
         )
@@ -138,7 +144,7 @@ class Featurization:
         logging.info(
             f"Calculated Neighbors features for {self.object_loader.compartment} {self.object_loader.label_index}"
         )
-        self.features["neighbors_adjacent"] = measure_3D_number_of_neighbors(
+        self.features["neighbors.adjacent"] = measure_3D_number_of_neighbors(
             label_object=self.object_loader.label_object,
             label_object_all=self.object_loader.label_image,
             distance_threshold=1,

@@ -7,20 +7,20 @@ def measure_3D_texture(
 ):
     # Display results
     feature_names = [
-        "Angular Second Moment",
+        "Angular.Second.Moment",
         "Contrast",
         "Correlation",
         "Variance",
-        "Inverse Difference Moment",
-        "Sum Average",
-        "Sum Variance",
-        "Sum Entropy",
+        "Inverse.Difference.Moment",
+        "Sum.Average",
+        "Sum.Variance",
+        "Sum.Entropy",
         "Entropy",
-        "Difference Variance",
-        "Difference Entropy",
-        "Information Measure of Correlation 1",
-        "Information Measure of Correlation 2",
-        "Maximal Correlation Coefficient",
+        "Difference.Variance",
+        "Difference.Entropy",
+        "Information.Measure.of.Correlation.1",
+        "Information.Measure.of.Correlation.2",
+        "Maximal.Correlation.Coefficient",
     ]
     haralick_features = mahotas.features.haralick(
         ignore_zeros=False,

@@ -6,7 +6,7 @@ import skimage
 
 
 def granularity_feature(length, image_name):
-    C_GRANULARITY = "Granularity_%s_%s"
+    C_GRANULARITY = "Granularity.%s.%s"
     return C_GRANULARITY % (length, image_name)
 
 
