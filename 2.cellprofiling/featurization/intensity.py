@@ -10,10 +10,10 @@ def get_outline(mask):
     return outline
 
 
-def measure_3D_intensity(image_object, mask_object):
+def measure_3D_intensity(image_object, label_object):
 
     non_zero_pixels_object = image_object[image_object > 0]
-    mask_outlines = get_outline(mask_object)
+    mask_outlines = get_outline(label_object)
     mesh_z, mesh_y, mesh_x = numpy.mgrid[
         0 : image_object.shape[0],
         0 : image_object.shape[1],
@@ -23,7 +23,7 @@ def measure_3D_intensity(image_object, mask_object):
     # calculate the integrated intensity
     integrated_intensity = numpy.sum(image_object)
     # calculate the volume
-    volume = numpy.sum(mask_object)
+    volume = numpy.sum(label_object)
     # calculate the mean intensity
     mean_intensity = integrated_intensity / volume
     # calculate the standard deviation

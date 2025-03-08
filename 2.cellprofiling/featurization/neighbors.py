@@ -29,7 +29,7 @@ def crop_3D_image(image, bbox):
 def measure_3D_number_of_neighbors(
     label_object,
     label_object_all,
-    distance,
+    distance_threshold,
     anisptropy_factor=10,
 ):
 
@@ -43,8 +43,8 @@ def measure_3D_number_of_neighbors(
 
     props_label = skimage.measure.regionprops_table(label_object, properties=["bbox"])
     # get the number of neighbors for each object
-    distance_x_y = distance
-    distance_z = numpy.ceil(distance / anisptropy_factor).astype(int)
+    distance_x_y = distance_threshold
+    distance_z = numpy.ceil(distance_threshold / anisptropy_factor).astype(int)
     # find how many other indexes are within a specified distance of the object
     # first expand the mask image by a specified distance
     z_min, y_min, x_min, z_max, y_max, x_max = (

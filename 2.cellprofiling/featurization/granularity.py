@@ -80,7 +80,6 @@ def measure_3D_granularity(
         gs = (prevmean - currentmean) * 100 / startmean
         statistics += ["%.2f" % gs]
         feature = granularity_feature(i, image_name=image_name)
-        print(feature, gs)
         # Restore the reconstructed image to the shape of the
         # original image so we can match against object labels
         orig_shape = image_object.shape
