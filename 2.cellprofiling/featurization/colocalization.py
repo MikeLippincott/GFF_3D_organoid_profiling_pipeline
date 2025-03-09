@@ -141,6 +141,126 @@ def bisection_costes(fi, si, scale_max=255):
     return thr_fi_c, thr_si_c
 
 
+def expand_box(min_coor, max_coord, current_min, current_max, expand_by):
+    if max_coord - min_coor - (current_max - current_min) < expand_by:
+        return ValueError("Cannot expand box by the requested amount")
+    while expand_by > 0:
+        if current_min > min_coor:
+            current_min -= 1
+            expand_by -= 1
+        elif current_max < max_coord:
+            current_max += 1
+            expand_by -= 1
+
+    return current_min, current_max
+
+
+def new_crop_border(bbox1, bbox2, image):
+    i1z1, i1y1, i1x1, i1z2, i1y2, i1x2 = bbox1
+    i2z1, i2y1, i2x1, i2z2, i2y2, i2x2 = bbox2
+    z_range1 = i1z2 - i1z1
+    y_range1 = i1y2 - i1y1
+    x_range1 = i1x2 - i1x1
+    z_range2 = i2z2 - i2z1
+    y_range2 = i2y2 - i2y1
+    x_range2 = i2x2 - i2x1
+    z_diff = numpy.abs(z_range1 - z_range2)
+    y_diff = numpy.abs(y_range1 - y_range2)
+    x_diff = numpy.abs(x_range1 - x_range2)
+    min_z_coord = 0
+    max_z_coord = image.shape[0]
+    min_y_coord = 0
+    max_y_coord = image.shape[1]
+    min_x_coord = 0
+    max_x_coord = image.shape[2]
+    if z_range1 < z_range2:
+        i1z1, i1z2 = expand_box(
+            min_coor=min_z_coord,
+            max_coord=max_z_coord,
+            current_min=i1z1,
+            current_max=i1z2,
+            expand_by=z_diff,
+        )
+    elif z_range1 > z_range2:
+        i2z1, i2z2 = expand_box(
+            min_coor=min_z_coord,
+            max_coord=max_z_coord,
+            current_min=i2z1,
+            current_max=i2z2,
+            expand_by=z_diff,
+        )
+    if y_range1 < y_range2:
+        i1y1, i1y2 = expand_box(
+            min_coor=min_y_coord,
+            max_coord=max_y_coord,
+            current_min=i1y1,
+            current_max=i1y2,
+            expand_by=y_diff,
+        )
+    elif y_range1 > y_range2:
+        i2y1, i2y2 = expand_box(
+            min_coor=min_y_coord,
+            max_coord=max_y_coord,
+            current_min=i2y1,
+            current_max=i2y2,
+            expand_by=y_diff,
+        )
+    if x_range1 < x_range2:
+        i1x1, i1x2 = expand_box(
+            min_coor=min_x_coord,
+            max_coord=max_x_coord,
+            current_min=i1x1,
+            current_max=i1x2,
+            expand_by=x_diff,
+        )
+    elif x_range1 > x_range2:
+        i2x1, i2x2 = expand_box(
+            min_coor=min_x_coord,
+            max_coord=max_x_coord,
+            current_min=i2x1,
+            current_max=i2x2,
+            expand_by=x_diff,
+        )
+    return (i1z1, i1y1, i1x1, i1z2, i1y2, i1x2), (i2z1, i2y1, i2x1, i2z2, i2y2, i2x2)
+
+
+# crop the image to the bbox of the mask
+def crop_3D_image(image, bbox):
+    z1, y1, x1, z2, y2, x2 = bbox
+    return image[z1:z2, y1:y2, x1:x2]
+
+
+def prepare_two_images_for_colocalization(
+    label_object1, label_object2, image_object1, image_object2
+):
+    # get the image bbox
+    props_image1 = skimage.measure.regionprops_table(label_object1, properties=["bbox"])
+    bbox_image1 = (
+        props_image1["bbox-0"][0],
+        props_image1["bbox-1"][0],
+        props_image1["bbox-2"][0],
+        props_image1["bbox-3"][0],
+        props_image1["bbox-4"][0],
+        props_image1["bbox-5"][0],
+    )
+
+    props_image2 = skimage.measure.regionprops_table(label_object2, properties=["bbox"])
+    bbox_image2 = (
+        props_image2["bbox-0"][0],
+        props_image2["bbox-1"][0],
+        props_image2["bbox-2"][0],
+        props_image2["bbox-3"][0],
+        props_image2["bbox-4"][0],
+        props_image2["bbox-5"][0],
+    )
+
+    new_bbox1, new_bbox2 = new_crop_border(bbox_image1, bbox_image2, image_object1)
+
+    croppped_image_1 = crop_3D_image(image_object1, new_bbox1)
+    croppped_image_2 = crop_3D_image(image_object2, new_bbox2)
+    return croppped_image_1, croppped_image_2
+
+
 def calculate_3D_colocalization(
     croppped_image_1, croppped_image_2, thr=15, fast_costes="Accurate"
 ):
@@ -240,35 +360,35 @@ def calculate_3D_colocalization(
     ################################################################################################
 
     results["Mean.Correlation.coeff"] = numpy.mean(corr)
-    results["Median Correlation coeff"] = numpy.median(corr)
-    results["Min Correlation coeff"] = numpy.min(corr)
-    results["Max Correlation coeff"] = numpy.max(corr)
-    results["Mean Manders coeff_M1"] = numpy.mean(M1)
-    results["Median Manders coeff_M1"] = numpy.median(M1)
-    results["Min Manders coeff_M1"] = numpy.min(M1)
-    results["Max Manders coeff_M1"] = numpy.max(M1)
-    results["Mean Manders coeff_M2"] = numpy.mean(M2)
-    results["Median Manders coeff_M2"] = numpy.median(M2)
-    results["Min Manders coeff_M2"] = numpy.min(M2)
-    results["Max Manders coeff_M2"] = numpy.max(M2)
-    results["Mean_overlap_coeff"] = numpy.mean(overlap)
-    results["Median_overlap_coeff"] = numpy.median(overlap)
-    results["Min_overlap_coeff"] = numpy.min(overlap)
-    results["Max_overlap_coeff"] = numpy.max(overlap)
-    results["Mean_K1"] = numpy.mean(K1)
-    results["Median_K1"] = numpy.median(K1)
-    results["Min_K1"] = numpy.min(K1)
-    results["Max_K1"] = numpy.max(K1)
-    results["Mean_K2"] = numpy.mean(K2)
-    results["Median_K2"] = numpy.median(K2)
-    results["Min_K2"] = numpy.min(K2)
-    results["Max_K2"] = numpy.max(K2)
-    results["Mean_Manders_Coeff(costes)_M1"] = numpy.mean(C1)
-    results["Median_Manders_Coeff(costes)_M1"] = numpy.median(C1)
-    results["Min_Manders_Coeff(costes)_M1"] = numpy.min(C1)
-    results["Max_Manders_Coeff(costes)_M1"] = numpy.max(C1)
-    results["Mean_Manders_Coeff(costes)_M2"] = numpy.mean(C2)
-    results["Median_Manders_Coeff(costes)_M2"] = numpy.median(C2)
-    results["Min_Manders_Coeff(costes)_M2"] = numpy.min(C2)
-    results["Max_Manders_Coeff(costes)_M2"] = numpy.max(C2)
+    results["Median.Correlation.coeff"] = numpy.median(corr)
+    results["Min.Correlation.coeff"] = numpy.min(corr)
+    results["Max.Correlation.coeff"] = numpy.max(corr)
+    results["Mean.Manders.coeff.M1"] = numpy.mean(M1)
+    results["Median.Manders.coeff.M1"] = numpy.median(M1)
+    results["Min.Manders.coeff.M1"] = numpy.min(M1)
+    results["Max.Manders.coeff.M1"] = numpy.max(M1)
+    results["Mean.Manders.coeff.M2"] = numpy.mean(M2)
+    results["Median.Manders.coeff.M2"] = numpy.median(M2)
+    results["Min.Manders.coeff.M2"] = numpy.min(M2)
+    results["Max.Manders.coeff.M2"] = numpy.max(M2)
+    results["Mean.overlap.coeff"] = numpy.mean(overlap)
+    results["Median.overlap.coeff"] = numpy.median(overlap)
+    results["Min.overlap.coeff"] = numpy.min(overlap)
+    results["Max.overlap.coeff"] = numpy.max(overlap)
+    results["Mean.K1"] = numpy.mean(K1)
+    results["Median.K1"] = numpy.median(K1)
+    results["Min.K1"] = numpy.min(K1)
+    results["Max.K1"] = numpy.max(K1)
+    results["Mean.K2"] = numpy.mean(K2)
+    results["Median.K2"] = numpy.median(K2)
+    results["Min.K2"] = numpy.min(K2)
+    results["Max.K2"] = numpy.max(K2)
+    results["Mean.Manders.Coeff.costes.M1"] = numpy.mean(C1)
+    results["Median.Manders.Coeff.costes.M1"] = numpy.median(C1)
+    results["Min.Manders.Coeff.costes.M1"] = numpy.min(C1)
+    results["Max.Manders.Coeff.costes.M1"] = numpy.max(C1)
+    results["Mean.Manders.Coeff.costes.M2"] = numpy.mean(C2)
+    results["Median.Manders.Coeff.costes.M2"] = numpy.median(C2)
+    results["Min.Manders.Coeff.costes.M2"] = numpy.min(C2)
+    results["Max.Manders.Coeff.costes..M2"] = numpy.max(C2)
     return results
