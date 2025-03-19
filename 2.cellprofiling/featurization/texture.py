@@ -1,11 +1,15 @@
+import gc
+
 import mahotas
+import tqdm
 
 
 def measure_3D_texture(
-    image_object,
+    object_loader,
     distance=1,
 ):
-    # Display results
+    label_object = object_loader.objects
+    labels = object_loader.object_ids
     feature_names = [
         "Angular.Second.Moment",
         "Contrast",
@@ -20,14 +24,30 @@ def measure_3D_texture(
         "Difference.Entropy",
         "Information.Measure.of.Correlation.1",
         "Information.Measure.of.Correlation.2",
-        "Maximal.Correlation.Coefficient",
     ]
-    haralick_features = mahotas.features.haralick(
-        ignore_zeros=False,
-        f=image_object,
-        distance=distance,
-        compute_14th_feature=False,
-    )
-    haralick_mean = haralick_features.mean(axis=0)
-    output_dict = dict(zip(feature_names, haralick_mean))
-    return output_dict
+
+    output_texture_dict = {
+        "object_id": [],
+        "texture_name": [],
+        "texture_value": [],
+    }
+    for index, label in tqdm.tqdm(enumerate(labels)):
+        selected_label_object = label_object.copy()
+        selected_label_object[selected_label_object != label] = 0
+        image_object = object_loader.image.copy()
+        image_object[selected_label_object == 0] = 0
+        haralick_features = mahotas.features.haralick(
+            ignore_zeros=False,
+            f=image_object,
+            distance=distance,
+            compute_14th_feature=False,
+        )
+        haralick_mean = haralick_features.mean(axis=0)
+        for i, feature_name in enumerate(feature_names):
+            output_texture_dict["object_id"].append(label)
+            output_texture_dict["texture_name"].append(feature_name)
+            output_texture_dict["texture_value"].append(haralick_mean[i])
+        del haralick_mean
+        del haralick_features
+        gc.collect()
+    return output_texture_dict
