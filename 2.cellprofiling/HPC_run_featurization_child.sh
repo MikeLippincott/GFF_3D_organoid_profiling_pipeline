@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --ntasks=4
-#SBATCH --partition=amilan
+#SBATCH --mem=260G
+#SBATCH --partition=amem
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
 #SBATCH --time=4:00:00
@@ -9,14 +9,18 @@
 
 conda activate GFF_featurization
 
-jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
+# jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
-cd scripts/ || exit
+cd notebooks/ || exit
 
-dir=$1
+# dir=$1
 
-python run_featurization.py --input_dir $dir
+# python run_featurization.py --input_dir $dir
+
+papermill run_featurization.ipynb run_featurization.ipynb
 
 cd ../ || exit
+
+conda deactivate
 
 echo "Featurization done"
