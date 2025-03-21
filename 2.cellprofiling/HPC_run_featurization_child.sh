@@ -2,10 +2,10 @@
 #SBATCH --nodes=1
 #SBATCH --mem=500G
 #SBATCH --partition=amem
-#SBATCH --qos=normal
+#SBATCH --qos=mem
 #SBATCH --account=amc-general
 #SBATCH --time=48:00:00
-#SBATCH --output=featurize-%j.out
+#SBATCH --output=child_featurize-%j.out
 
 module load miniforge
 conda init bash
