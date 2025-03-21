@@ -38,6 +38,7 @@ import itertools
 
 import pandas as pd
 
+
 # In[2]:
 
 
@@ -45,7 +46,7 @@ import pandas as pd
 start_whole_featurize = time.time()
 
 
-# ### Set the path to the images
+# ### Set the path to the images 
 
 # In[3]:
 
@@ -184,16 +185,16 @@ for compartment in tqdm(
             for col in size_shape_df.columns
             if col != "object_id"
         ]
-        granularity_df = pd.DataFrame(object_measurements)
-        # pivot wide
-        granularity_df = granularity_df.pivot(
-            index="object_id", columns="feature", values="value"
-        )
-        granularity_df.reset_index(inplace=True)
-        # prepend the feature_type to the column names
-        granularity_df.columns = ["object_id"] + [
-            "Granularity_" + col for col in granularity_df.columns if col != "object_id"
-        ]
+        # granularity_df = pd.DataFrame(object_measurements)
+        # # pivot wide
+        # granularity_df = granularity_df.pivot(
+        #     index="object_id", columns="feature", values="value"
+        # )
+        # granularity_df.reset_index(inplace=True)
+        # # prepend the feature_type to the column names
+        # granularity_df.columns = ["object_id"] + [
+        #     "Granularity_" + col for col in granularity_df.columns if col != "object_id"
+        # ]
         intensity_df = pd.DataFrame(output_dict)
         # pivot wide
         intensity_df = intensity_df.pivot(
@@ -209,12 +210,15 @@ for compartment in tqdm(
         neighbors_df.columns = ["object_id"] + [
             "Neighbors_" + col for col in neighbors_df.columns if col != "object_id"
         ]
+        # final_df = pd.merge(
+        #     size_shape_df, granularity_df, left_on="object_id", right_on="object_id"
+        # )
         final_df = pd.merge(
-            size_shape_df, granularity_df, left_on="object_id", right_on="object_id"
+            size_shape_df, intensity_df, left_on="object_id", right_on="object_id"
         )
-        final_df = pd.merge(
-            final_df, intensity_df, left_on="object_id", right_on="object_id"
-        )
+        # final_df = pd.merge(
+        #     final_df, intensity_df, left_on="object_id", right_on="object_id"
+        # )
         final_df = pd.merge(
             final_df, neighbors_df, left_on="object_id", right_on="object_id"
         )
@@ -318,3 +322,4 @@ print(
     f"Time taken for {image_set_loader.image_set_name} featurization:",
     end - start_whole_featurize,
 )
+

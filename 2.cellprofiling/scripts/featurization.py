@@ -2,9 +2,9 @@
 # coding: utf-8
 
 # # Early development work for:
-#
+# 
 # ## <ins>3</ins>D <ins>P</ins>rofiling of <ins>I</ins>mage-based or<ins>G</ins>anoid<ins>S</ins> (3PIGS)
-#
+# 
 
 # ## Imports
 
@@ -34,6 +34,7 @@ from granularity import measure_3D_granularity
 from intensity import measure_3D_intensity
 from neighbors import measure_3D_number_of_neighbors
 from texture import measure_3D_texture
+
 
 # ## Load images
 
@@ -160,8 +161,8 @@ plt.show()
 
 # ## Notes
 
-# But also convert masks to point clouds.
-#
+# But also convert masks to point clouds. 
+# 
 
 # Modules to make: (from https://cellprofiler-manual.s3.amazonaws.com/CellProfiler-4.2.8/modules/measurement.html)
 # - Colocalization
@@ -169,7 +170,7 @@ plt.show()
 #     - Slope
 #     - Overlap coefficient
 #     - Manders' coefficient
-#     - Manders coefficient (Costes Automated Threshold):
+#     - Manders coefficient (Costes Automated Threshold): 
 #     - Rank Weighted Colocalization coefficient
 # - Ganularity
 # - Intensity
@@ -190,7 +191,7 @@ plt.show()
 #     - UpperQuartileIntensity
 #     - LocationCenterMassIntensity
 #     - LocationMaxIntensity
-#
+# 
 # - Neighbors
 #     - NumberOfNeighbors
 #     - PercentTouching
@@ -226,7 +227,7 @@ plt.show()
 #     - DifferenceEntropy
 #     - InfoMeas1
 #     - InfoMeas2
-#
+#     
 
 # ## Area Size Shape
 
@@ -364,6 +365,9 @@ def prepare_two_images_for_colocalization(label_object1, label_object2, image_ob
 # In[ ]:
 
 
+
+
+
 # In[13]:
 
 
@@ -385,6 +389,9 @@ colocalization_features
 
 
 # In[ ]:
+
+
+
 
 
 # ## Granularity
@@ -448,3 +455,4 @@ toy_3d_data = np.int8(toy_3d_data)
 
 
 measure_3D_texture(toy_3d_data, distance=1)
+

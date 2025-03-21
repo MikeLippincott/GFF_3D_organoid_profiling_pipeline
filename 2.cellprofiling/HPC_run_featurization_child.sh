@@ -11,7 +11,7 @@ module load miniforge
 conda init bash
 conda activate GFF_featurization
 
-# jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
+jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
 cd notebooks/ || exit
 
