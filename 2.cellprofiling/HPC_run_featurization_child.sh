@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --mem=260G
+#SBATCH --mem=500G
 #SBATCH --partition=amem
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
-#SBATCH --time=4:00:00
+#SBATCH --time=48:00:00
 #SBATCH --output=featurize-%j.out
 
 conda activate GFF_featurization
