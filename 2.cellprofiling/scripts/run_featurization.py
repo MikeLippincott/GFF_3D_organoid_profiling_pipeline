@@ -14,7 +14,7 @@ from colocalization import (
     measure_3D_colocalization,
     prepare_two_images_for_colocalization,
 )
-from granularity import measure_3D_granularity
+from granularity import measure_3D_granularity, measure_3D_granularity_gpu
 from intensity import measure_3D_intensity
 from loading_classes import ImageSetLoader, ObjectLoader, TwoObjectLoader
 from neighbors import measure_3D_number_of_neighbors
@@ -42,7 +42,7 @@ import pandas as pd
 
 
 # begin profiling timer
-start = time.time()
+start_whole_featurize = time.time()
 
 
 # ### Set the path to the images
@@ -88,13 +88,19 @@ image_set_loader.image_set_dict.keys()
 
 # Run the rest in a script as it takes a long time to run
 
-# In[ ]:
+# In[6]:
 
 
 texture = False
 
 
-# In[ ]:
+# In[7]:
+
+
+gpu = False
+
+
+# In[8]:
 
 
 for compartment in tqdm(
@@ -115,24 +121,42 @@ for compartment in tqdm(
             channel,
             compartment,
         )
+        print(f"Compartment: {compartment}, Channel: {channel}")
         print("area size shape")
+        start_time = time.time()
         # area, size, shape
         size_shape_dict = measure_3D_area_size_shape(
             image_set_loader=image_set_loader,
             object_loader=object_loader,
         )
-        print("granularity")
-        # granularity
-        object_measurements = measure_3D_granularity(
-            object_loader,
-            radius=10,
-            granular_spectrum_length=16,
-            subsample_size=0.25,
-            image_name=channel,
-        )
+        print(f"area size shape took {time.time() - start_time} seconds")
+        start_time = time.time()
+        # print("granularity")
+        # # granularity
+        # if gpu:
+        #     object_measurements = measure_3D_granularity_gpu(
+        #         object_loader,
+        #         image_set_loader,
+        #         radius=10,
+        #         granular_spectrum_length=16,
+        #         subsample_size=0.25,
+        #         image_name=channel,
+        #     )
+        # else:
+        #     object_measurements = measure_3D_granularity(
+        #         object_loader,
+        #         radius=10,
+        #         granular_spectrum_length=16,
+        #         subsample_size=0.25,
+        #         image_name=channel,
+        #     )
+        # print(f"granularity took {time.time() - start_time} seconds")
+        start_time = time.time()
         print("intensity")
         # intensity
         output_dict = measure_3D_intensity(object_loader)
+        print(f"intensity took {time.time() - start_time} seconds")
+        start_time = time.time()
         print("neighbors")
         # neighbors
         neighbors_out_dict = measure_3D_number_of_neighbors(
@@ -140,12 +164,18 @@ for compartment in tqdm(
             distance_threshold=10,
             anisotropy_factor=image_set_loader.anisotropy_factor,
         )
+        print(f"neighbors took {time.time() - start_time} seconds")
         if texture:
+            start_time = time.time()
+
             output_texture_dict = measure_3D_texture(
                 object_loader=object_loader,
                 distance=1,
             )
+            print(f"texture took {time.time() - start_time} seconds")
         print("merging")
+        start_time = time.time()
+
         # merge the dataframes together
         size_shape_df = pd.DataFrame(size_shape_dict)
         # prepend the feature_type to the column names
@@ -199,6 +229,7 @@ for compartment in tqdm(
         )
         output_file.parent.mkdir(parents=True, exist_ok=True)
         final_df.to_parquet(output_file)
+        print("Merging took", time.time() - start_time)
 
         # remove the objects initialized in the beginning of the loop
         del object_loader
@@ -271,15 +302,19 @@ for compartment in tqdm(
         coloc_df = pd.concat(output_list_of_dfs)
         coloc_df["image_set"] = image_set_loader.image_set_name
         print(coloc_df.shape)
-        output_file = pathlib.Path(
-            f"../results/{image_set_loader.image_set_name}_{compartment}_coloc_features.parquet"
-        )
-        output_file.parent.mkdir(parents=True, exist_ok=True)
-        final_df.to_parquet(output_file)
+output_file = pathlib.Path(
+    f"../results/{image_set_loader.image_set_name}_{compartment}_coloc_features.parquet"
+)
+output_file.parent.mkdir(parents=True, exist_ok=True)
+final_df = pd.concat(output_list_of_dfs)
+final_df.to_parquet(output_file)
 
 
 # In[ ]:
 
 
 end = time.time()
-print(f"Time taken for {image_set_loader.image_set_name} featurization:", end - start)
+print(
+    f"Time taken for {image_set_loader.image_set_name} featurization:",
+    end - start_whole_featurize,
+)
