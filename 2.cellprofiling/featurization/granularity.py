@@ -1,9 +1,16 @@
 from typing import Dict
 
+import cucim
+import cucim.skimage.morphology
+import cupy
+import cupyx
+import cupyx.scipy.ndimage
 import numpy
+import pandas
 import scipy
 import skimage
-from loading_classes import ObjectLoader
+import tqdm
+from loading_classes import ImageSetLoader, ObjectLoader
 
 
 def granularity_feature(length):
@@ -142,4 +149,149 @@ def measure_3D_granularity(
             object_measurements["object_id"].append(object_record.object_index)
             object_measurements["feature"].append(feature)
             object_measurements["value"].append(gss)
+    return object_measurements
+
+
+def measure_3D_granularity_gpu(
+    object_loader: ObjectLoader,
+    image_set_loader: ImageSetLoader,
+    radius: int = 20,
+    granular_spectrum_length: int = 16,
+    subsample_size: float = 0.25,
+    image_name: str = "nuclei",
+) -> dict:
+
+    pixels = cupy.asarray(object_loader.image)
+    mask = cupy.asarray(object_loader.label_image)
+    new_shape = cupy.asarray(pixels.shape) * subsample_size
+    k, i, j = (
+        cupy.mgrid[0 : new_shape[0], 0 : new_shape[1], 0 : new_shape[2]].astype(
+            cupy.float32
+        )
+        / subsample_size
+    )
+    pixels = cupyx.scipy.ndimage.map_coordinates(pixels, cupy.stack((k, i, j)), order=1)
+    mask = (
+        cupyx.scipy.ndimage.map_coordinates(
+            mask,
+            cupy.stack((k, i, j)),
+        )
+        > 0.9
+    )
+    back_shape = new_shape * subsample_size
+
+    back_shape = new_shape * subsample_size
+    k, i, j = (
+        cupy.mgrid[0 : new_shape[0], 0 : new_shape[1], 0 : new_shape[2]].astype(
+            cupy.float32
+        )
+        / subsample_size
+    )
+    back_pixels = cupyx.scipy.ndimage.map_coordinates(
+        pixels, cupy.stack((k, i, j)), order=1
+    )
+    back_mask = (
+        cupyx.scipy.ndimage.map_coordinates(
+            mask.astype(cupy.float32), cupy.stack((k, i, j))
+        )
+        > 0.9
+    )
+    footprint = cucim.skimage.morphology.ball(radius, dtype=bool)
+    # conver the footprint bool to float32
+    # footprint = footprint.astype(cupy.int32)
+
+    back_pixels_mask = cupy.zeros_like(back_pixels)
+    back_pixels_mask[back_mask == True] = back_pixels[back_mask == True]
+    back_pixels_mask = cupy.asarray(back_pixels_mask)
+
+    back_pixels = cucim.skimage.morphology.isotropic_erosion(
+        back_pixels_mask,
+        radius=3,
+        spacing=image_set_loader.spacing,
+    )
+
+    back_pixels_mask = cupy.zeros_like(back_pixels)
+    back_pixels_mask[back_mask == True] = back_pixels[back_mask == True]
+
+    back_pixels = cucim.skimage.morphology.isotropic_dilation(
+        back_pixels_mask,
+        radius=3,
+        spacing=image_set_loader.spacing,
+    )
+    k, i, j = cupy.mgrid[0 : new_shape[0], 0 : new_shape[1], 0 : new_shape[2]].astype(
+        cupy.float32
+    )
+
+    k *= (back_shape[0] - 1) / (new_shape[0] - 1)
+    i *= (back_shape[1] - 1) / (new_shape[1] - 1)
+    j *= (back_shape[2] - 1) / (new_shape[2] - 1)
+
+    back_pixels = cupyx.scipy.ndimage.map_coordinates(
+        back_pixels, cupy.stack((k, i, j)), order=1
+    )
+    pixels -= back_pixels
+    pixels[pixels < 0] = 0
+
+    startmean = cupy.mean(pixels[mask])
+    ero = pixels.copy()
+
+    # Mask the test image so that masked pixels will have no effect
+    # during reconstruction
+    ero[~mask] = 0
+    currentmean = startmean
+    startmean = max(startmean, cupy.finfo(float).eps)
+    footprint = cucim.skimage.morphology.ball(1, dtype=bool)
+    statistics = [image_name]
+    feature_measurments = {}
+    objects_records = [
+        ObjectRecord(object_loader=object_loader, object_index=object_id)
+        for object_id in object_loader.object_ids
+    ]
+    object_measurements = {"object_id": [], "feature": [], "value": []}
+    for i in tqdm.tqdm(range(1, granular_spectrum_length + 1)):
+        prevmean = currentmean
+        ero_mask = cupy.zeros_like(ero)
+        ero_mask[mask == True] = ero[mask == True]
+        ero = cucim.skimage.morphology.isotropic_erosion(
+            ero_mask,
+            radius=3,
+            spacing=image_set_loader.spacing,
+        )
+        rec = cucim.skimage.morphology.reconstruction(
+            ero,
+            pixels,
+            footprint=footprint,
+        )
+        currentmean = cupy.mean(rec[mask])
+        gs = (prevmean - currentmean) * 100 / startmean
+        statistics += ["%.2f" % gs]
+        feature = granularity_feature(i)
+        feature_measurments[feature] = gs
+        # Restore the reconstructed image to the shape of the
+        # original image so we can match against object labels
+        orig_shape = object_loader.image.shape
+        k, i, j = cupy.mgrid[
+            0 : orig_shape[0], 0 : orig_shape[1], 0 : orig_shape[2]
+        ].astype(cupy.float32)
+        k *= (new_shape[0] - 1) / (orig_shape[0] - 1)
+        i *= (new_shape[1] - 1) / (orig_shape[1] - 1)
+        j *= (new_shape[2] - 1) / (orig_shape[2] - 1)
+
+        rec = cupyx.scipy.ndimage.map_coordinates(rec, cupy.stack((k, i, j)), order=1)
+        for object_record in objects_records:
+            if object_record.nobjects > 0:
+                labels = cupy.asarray(object_record.labels)
+                new_mean = cupy.mean(rec - labels)
+                gss = (
+                    (object_record.current_mean - new_mean)
+                    * 100
+                    / object_record.start_mean
+                )
+                object_record.current_mean = new_mean
+
+            else:
+                gss = cupy.zeros((0,))
+            object_measurements["object_id"].append(object_record.object_index)
+            object_measurements["feature"].append(feature)
+            object_measurements["value"].append(gss.get())
     return object_measurements

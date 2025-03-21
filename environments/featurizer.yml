@@ -19,9 +19,12 @@ dependencies:
   - conda-forge::pyarrow
   - conda-forge::mahotas
   - conda-forge::scikit-image
+  - conda-forge::cupy
   - pip:
     - centrosome
     - tqdm
+    - cucim
+
 
 
 
