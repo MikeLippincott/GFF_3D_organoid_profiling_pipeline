@@ -11,13 +11,17 @@ import time
 sys.path.append("../featurization")
 import itertools
 
+import cucim.skimage.measure
+import cupy
+import cupyx
+import cupyx.scipy.ndimage
 import numpy as np
 import pandas as pd
 import scipy
 import skimage
-from colocalization import (
-    measure_3D_colocalization,
-    prepare_two_images_for_colocalization,
+from colocalization_gpu import (
+    measure_3D_colocalization_gpu,
+    prepare_two_images_for_colocalization_gpu,
 )
 from data_writer import organize_featurization_data
 from loading_classes import ImageSetLoader, ObjectLoader, TwoObjectLoader
@@ -85,7 +89,6 @@ start_time = time.time()
 # In[7]:
 
 
-output_list_of_dfs = []
 for compartments in tqdm(
     image_set_loader.compartments, desc="Processing compartments", position=0
 ):
@@ -107,7 +110,7 @@ for compartments in tqdm(
             leave=False,
             position=2,
         ):
-            cropped_image1, cropped_image2 = prepare_two_images_for_colocalization(
+            cropped_image1, cropped_image2 = prepare_two_images_for_colocalization_gpu(
                 label_object1=coloc_loader.label_image,
                 label_object2=coloc_loader.label_image,
                 image_object1=coloc_loader.image1,
@@ -115,7 +118,7 @@ for compartments in tqdm(
                 object_id1=object_id,
                 object_id2=object_id,
             )
-            colocalization_features = measure_3D_colocalization(
+            colocalization_features = measure_3D_colocalization_gpu(
                 cropped_image_1=cropped_image1,
                 cropped_image_2=cropped_image2,
                 thr=15,
