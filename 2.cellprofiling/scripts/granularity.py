@@ -17,8 +17,7 @@ import numpy as np
 import pandas as pd
 import scipy
 import skimage
-from data_writer import organize_featurization_data
-from granularity import measure_3D_granularity
+from granularity_utils import measure_3D_granularity
 
 # from granularity import measure_3D_granularity
 from loading_classes import ImageSetLoader, ObjectLoader

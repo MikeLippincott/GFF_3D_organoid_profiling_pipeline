@@ -19,11 +19,10 @@ import numpy as np
 import pandas as pd
 import scipy
 import skimage
-from colocalization_gpu import (
+from colocalization_utils_gpu import (
     measure_3D_colocalization_gpu,
     prepare_two_images_for_colocalization_gpu,
 )
-from data_writer import organize_featurization_data
 from loading_classes import ImageSetLoader, ObjectLoader, TwoObjectLoader
 
 try:

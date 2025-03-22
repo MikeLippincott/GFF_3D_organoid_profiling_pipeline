@@ -13,9 +13,8 @@ import numpy as np
 import pandas as pd
 import scipy
 import skimage
-from data_writer import organize_featurization_data
 from loading_classes import ImageSetLoader, ObjectLoader
-from neighbors import measure_3D_number_of_neighbors
+from neighbors_utils import measure_3D_number_of_neighbors
 
 try:
     cfg = get_ipython().config
