@@ -20,8 +20,7 @@ import pandas as pd
 import scipy
 import skimage
 import tqdm
-from data_writer import organize_featurization_data
-from granularity import measure_3D_granularity_gpu
+from granularity_utils import measure_3D_granularity_gpu
 from loading_classes import ImageSetLoader, ObjectLoader
 
 try:

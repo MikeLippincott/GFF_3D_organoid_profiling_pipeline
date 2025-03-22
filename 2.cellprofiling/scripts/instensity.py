@@ -13,8 +13,7 @@ import numpy as np
 import pandas as pd
 import scipy
 import skimage
-from data_writer import organize_featurization_data
-from intensity import measure_3D_intensity
+from intensity_utils import measure_3D_intensity
 from loading_classes import ImageSetLoader, ObjectLoader
 
 try:

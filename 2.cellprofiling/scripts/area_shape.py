@@ -12,8 +12,7 @@ sys.path.append("../featurization")
 import numpy as np
 import pandas as pd
 import skimage
-from area_size_shape import measure_3D_area_size_shape
-from data_writer import organize_featurization_data
+from area_size_shape_utils import measure_3D_area_size_shape
 from loading_classes import ImageSetLoader, ObjectLoader
 
 try:

@@ -18,7 +18,9 @@ cd scripts/ || exit
 GPU=False
 
 # start the timer
-start=$(timestamp)
+start_timestamp=$(date +%s)
+
+
 # parent_dir="../../data/NF0014/cellprofiler"
 # # get the list of all dirs in the parent_dir
 # dirs=$(ls -d $parent_dir/*)
@@ -31,24 +33,24 @@ start=$(timestamp)
 
 if [ "$GPU" = True ]; then
     echo "Running GPU version"
-    python area_shape_gpu.py
-    python colocalization_gpu.py
-    python granularity_gpu.py
-    python instensity_gpu.py
-    python neighbors.py
-    python texture.py
+    time python area_shape_gpu.py
+    time python colocalization_gpu.py
+    time python granularity_gpu.py
+    time python instensity_gpu.py
+    time python neighbors.py
+    time python texture.py
 else
     echo "Running CPU version"
-    python area_shape.py
-    python colocalization.py
-    python granularity.py
-    python instensity.py
-    python neighbors.py
-    python texture.py
+    time python area_shape.py
+    time python colocalization.py
+    time python granularity.py
+    time python instensity.py
+    time python neighbors.py
+    time python texture.py
 fi
 
-end=$(timestamp)
-echo "Time taken to run the featurization: $(get_duration $start $end)"
+end=$(date +%s)
+echo "Time taken to run the featurization: $(($end-$start_timestamp))"
 
 cd ../ || exit
 

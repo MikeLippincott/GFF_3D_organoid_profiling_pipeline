@@ -17,9 +17,19 @@ import pandas as pd
 import scipy
 import skimage
 import tqdm
-from data_writer import organize_featurization_data
 from loading_classes import ImageSetLoader, ObjectLoader
-from texture import measure_3D_texture
+from texture_utils import measure_3D_texture
+
+try:
+    cfg = get_ipython().config
+    in_notebook = True
+except NameError:
+    in_notebook = False
+if in_notebook:
+    from tqdm.notebook import tqdm
+else:
+    from tqdm import tqdm
+
 
 # In[2]:
 

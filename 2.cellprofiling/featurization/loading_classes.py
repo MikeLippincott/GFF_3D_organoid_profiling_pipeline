@@ -5,13 +5,6 @@ import numpy
 import skimage.io
 import skimage.measure
 
-# from area_size_shape import measure_3D_area_size_shape
-# from colocalization import calculate_3D_colocalization
-# from granularity import measure_3D_granularity
-# from intensity import measure_3D_intensity
-# from neighbors import measure_3D_number_of_neighbors
-# from texture import measure_3D_texture
-
 logging.basicConfig(level=logging.INFO)
 
 

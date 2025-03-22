@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import pathlib
@@ -11,16 +11,12 @@ import time
 sys.path.append("../featurization")
 import itertools
 
-import numpy as np
 import pandas as pd
-import scipy
-import skimage
-from colocalization import (
+from colocalization_utils import (
     measure_3D_colocalization,
     prepare_two_images_for_colocalization,
 )
-from data_writer import organize_featurization_data
-from loading_classes import ImageSetLoader, ObjectLoader, TwoObjectLoader
+from loading_classes import ImageSetLoader, TwoObjectLoader
 
 try:
     cfg = get_ipython().config
