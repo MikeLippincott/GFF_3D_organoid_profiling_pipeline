@@ -178,3 +178,4 @@ data/*
 1.segment_images/scripts/output.zarr
 1.segment_images/animations/*
 2.cellprofiling/profiles_features/*
+2.cellprofiling/results/*

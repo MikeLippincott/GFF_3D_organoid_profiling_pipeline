@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# <span style="color:red; font-family:Helvetica Neue, Helvetica, Arial, sans-serif; font-size:2em;">An Exception was encountered at '<a href="#papermill-error-cell">In [8]</a>'.</span>
+
 # In[1]:
 
 
@@ -38,7 +40,6 @@ import itertools
 
 import pandas as pd
 
-
 # In[2]:
 
 
@@ -46,7 +47,7 @@ import pandas as pd
 start_whole_featurize = time.time()
 
 
-# ### Set the path to the images 
+# ### Set the path to the images
 
 # In[3]:
 
@@ -74,7 +75,7 @@ channel_mapping = {
 
 # ### Initialize the image set loader
 
-# In[5]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
@@ -101,7 +102,7 @@ texture = False
 gpu = False
 
 
-# In[8]:
+# In[ ]:
 
 
 for compartment in tqdm(
@@ -238,7 +239,7 @@ for compartment in tqdm(
         # remove the objects initialized in the beginning of the loop
         del object_loader
         del size_shape_dict
-        del object_measurements
+        # del object_measurements
         del output_dict
         del neighbors_out_dict
         if texture:
@@ -322,4 +323,3 @@ print(
     f"Time taken for {image_set_loader.image_set_name} featurization:",
     end - start_whole_featurize,
 )
-

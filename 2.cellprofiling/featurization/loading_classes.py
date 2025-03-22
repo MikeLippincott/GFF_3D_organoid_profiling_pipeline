@@ -33,8 +33,8 @@ class ImageSetLoader:
                     self.image_set_dict[key] = skimage.io.imread(f)
 
         self.retrieve_image_attributes()
-        self.get_image_names()
         self.get_compartments()
+        self.get_image_names()
         self.get_unique_objects_in_compartments()
 
     def retrieve_image_attributes(self):
@@ -58,7 +58,9 @@ class ImageSetLoader:
         return self.image_set_dict[key]
 
     def get_image_names(self):
-        self.image_names = [x for x in self.image_set_dict.keys() if "mask" not in x]
+        self.image_names = [
+            x for x in self.image_set_dict.keys() if x not in self.compartments
+        ]
 
     def get_compartments(self):
         self.compartments = [

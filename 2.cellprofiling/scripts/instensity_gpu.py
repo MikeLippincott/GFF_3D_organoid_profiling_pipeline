@@ -9,18 +9,16 @@ import sys
 import time
 
 sys.path.append("../featurization")
-
-import cucim
-import cupy as cp
-import numpy
+import cucim.skimage.measure
+import cucim.skimage.segmentation
+import cupy
+import cupyx.scipy.ndimage
 import numpy as np
 import pandas as pd
 import scipy
 import skimage
 from data_writer import organize_featurization_data
-from granularity import measure_3D_granularity
-
-# from granularity import measure_3D_granularity
+from intensity import measure_3D_intensity_gpu
 from loading_classes import ImageSetLoader, ObjectLoader
 
 try:
@@ -69,18 +67,10 @@ image_set_loader = ImageSetLoader(
 # In[5]:
 
 
-def granularity_feature(length):
-    C_GRANULARITY = "GRANULARITY.%s"
-    return C_GRANULARITY % (length)
-
-
-# In[6]:
-
-
 start_time = time.time()
 
 
-# In[ ]:
+# In[6]:
 
 
 for compartment in tqdm(
@@ -98,21 +88,9 @@ for compartment in tqdm(
             channel,
             compartment,
         )
-        object_measurements = measure_3D_granularity(
-            object_loader,
-            radius=10,
-            granular_spectrum_length=2,
-            subsample_size=0.25,
-            image_name=channel,
-        )
-        final_df = pd.DataFrame(object_measurements)
-        # get the mean of each value in the array
-        # melt the dataframe to wide format
-        final_df = final_df.pivot_table(
-            index=["object_id"], columns=["feature"], values=["value"]
-        )
-        final_df.columns = final_df.columns.droplevel()
-        final_df = final_df.reset_index()
+
+        output_dict = measure_3D_intensity_gpu(object_loader)
+        final_df = pd.DataFrame(output_dict)
         # prepend compartment and channel to column names
         final_df.columns = [
             f"{compartment}_{channel}_{col}" for col in final_df.columns
@@ -120,7 +98,7 @@ for compartment in tqdm(
         final_df["image_set"] = image_set_loader.image_set_name
 
         output_file = pathlib.Path(
-            f"../results/{image_set_loader.image_set_name}/Granularity_{compartment}_{channel}_features.parquet"
+            f"../results/{image_set_loader.image_set_name}/Intensity_{compartment}_{channel}_features.parquet"
         )
         output_file.parent.mkdir(parents=True, exist_ok=True)
         final_df.to_parquet(output_file)
@@ -129,6 +107,11 @@ for compartment in tqdm(
 # In[ ]:
 
 
-print("--- %s seconds ---" % (time.time() - start_time))
-print("--- %s minutes ---" % ((time.time() - start_time) / 60))
-print("--- %s hours ---" % ((time.time() - start_time) / 3600))
+print(f"Intensity time: {time.time() - start_time}")
+
+
+# In[ ]:
+
+
+df = pd.DataFrame(output_dict)
+df.head()

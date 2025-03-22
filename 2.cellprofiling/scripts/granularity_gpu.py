@@ -11,16 +11,17 @@ import time
 sys.path.append("../featurization")
 
 import cucim
+import cucim.skimage.morphology
 import cupy as cp
+import cupyx.scipy.ndimage
 import numpy
 import numpy as np
 import pandas as pd
 import scipy
 import skimage
+import tqdm
 from data_writer import organize_featurization_data
-from granularity import measure_3D_granularity
-
-# from granularity import measure_3D_granularity
+from granularity import measure_3D_granularity_gpu
 from loading_classes import ImageSetLoader, ObjectLoader
 
 try:
@@ -74,6 +75,25 @@ def granularity_feature(length):
     return C_GRANULARITY % (length)
 
 
+class ObjectRecord:
+    def __init__(self, object_loader, object_index):
+        self.object_index = object_index
+        self.labels = object_loader.objects.copy()
+        # select the object
+        self.labels[self.labels != object_index] = 0
+        self.image = object_loader.image.copy()
+        self.image[self.labels != object_index] = 0
+
+        # self.labels[self.labels == object_index] = 1
+        # self.labels[~object_index] = 0
+
+        self.nobjects = len(numpy.unique(self.labels))
+        if self.nobjects != 0:
+            self.range = numpy.arange(1, numpy.max(self.labels) + 1)
+            self.current_mean = scipy.ndimage.mean(self.image, self.labels)
+            self.start_mean = numpy.maximum(self.current_mean, numpy.finfo(float).eps)
+
+
 # In[6]:
 
 
@@ -98,21 +118,15 @@ for compartment in tqdm(
             channel,
             compartment,
         )
-        object_measurements = measure_3D_granularity(
-            object_loader,
-            radius=10,
-            granular_spectrum_length=2,
+        object_measurements = measure_3D_granularity_gpu(
+            object_loader=object_loader,
+            image_set_loader=image_set_loader,
+            radius=20,
+            granular_spectrum_length=16,
             subsample_size=0.25,
-            image_name=channel,
+            image_name=object_loader.channel,
         )
         final_df = pd.DataFrame(object_measurements)
-        # get the mean of each value in the array
-        # melt the dataframe to wide format
-        final_df = final_df.pivot_table(
-            index=["object_id"], columns=["feature"], values=["value"]
-        )
-        final_df.columns = final_df.columns.droplevel()
-        final_df = final_df.reset_index()
         # prepend compartment and channel to column names
         final_df.columns = [
             f"{compartment}_{channel}_{col}" for col in final_df.columns
