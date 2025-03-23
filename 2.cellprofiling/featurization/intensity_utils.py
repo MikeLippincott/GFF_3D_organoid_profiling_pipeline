@@ -130,7 +130,8 @@ def measure_3D_intensity(object_loader):
         }
 
         for feature_name, value in measurements_dict.items():
-
+            if value.dtype != numpy.int64:
+                value = value.item()
             output_dict["object_id"].append(label)
             output_dict["feature_name"].append(feature_name)
             output_dict["channel"].append(object_loader.channel)
@@ -237,9 +238,9 @@ def measure_3D_intensity_gpu(object_loader):
             "LOWER.QUARTILE.INTENSITY": lower_quartile_intensity.get(),
             "UPPER.QUARTILE.INTENSITY": upper_quartile_intensity.get(),
             "MEDIAN.INTENSITY": median_intensity.get(),
-            "MAX.Z": max_z,
-            "MAX.Y": max_y,
-            "MAX.X": max_x,
+            "MAX.Z": max_z.item(),
+            "MAX.Y": max_y.item(),
+            "MAX.X": max_x.item(),
             "CM.X": cm_x.get(),
             "CM.Y": cm_y.get(),
             "CM.Z": cm_z.get(),
@@ -263,10 +264,9 @@ def measure_3D_intensity_gpu(object_loader):
         }
 
         for feature_name, value in measurements_dict.items():
-
-            output_dict["object_id"].append(label.get())
+            output_dict["object_id"].append(label.get().item())
             output_dict["feature_name"].append(feature_name)
             output_dict["channel"].append(object_loader.channel)
             output_dict["compartment"].append(object_loader.compartment)
-            output_dict["value"].append(value)
+            output_dict["value"].append(numpy.int64(value))
     return output_dict
