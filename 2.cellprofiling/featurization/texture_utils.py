@@ -38,7 +38,7 @@ def measure_3D_texture(
         image_object = object_loader.image.copy()
         image_object[selected_label_object == 0] = 0
         if gpu:
-            haralick_features = haralick(
+            haralick_features = mahotas.features.haralick(
                 ignore_zeros=False,
                 f=image_object,
                 distance=distance,
