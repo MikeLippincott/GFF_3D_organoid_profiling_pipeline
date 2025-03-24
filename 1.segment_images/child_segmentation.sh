@@ -10,6 +10,8 @@
 
 
 # activate  cellprofiler environment
+module load miniforge
+conda init bash
 conda activate GFF_segmentation
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
