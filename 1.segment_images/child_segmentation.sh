@@ -19,7 +19,8 @@ cd scripts/ || exit
 
 dir=$1
 compartments=( "nuclei" "cell" "organoid" )
-
+echo "reslicing each channel"
+python 00.reslice_images.py
 echo "Segmenting Nuclei"
 python 0.segment_nuclei_organoids.py --input_dir "$dir" --window_size 2 --clip_limit 0.05 >> segmentation.log
 echo "Completed Nuclei Segmentation"
