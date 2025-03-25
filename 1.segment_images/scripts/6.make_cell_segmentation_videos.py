@@ -48,7 +48,7 @@ if not in_notebook:
     )
 else:
     print("Running in a notebook")
-    input_dir = pathlib.Path("../../data/z-stack_images/raw_z_input/").resolve(
+    input_dir = pathlib.Path("../../data/NF0014/resliced_images/raw_z_input/").resolve(
         strict=True
     )
     compartment = "nuclei"
@@ -66,7 +66,7 @@ mask_files = sorted(mask_input_dir.glob("*"))
 
 # ## Load images
 
-# In[3]:
+# In[ ]:
 
 
 for f in img_files:
@@ -101,6 +101,13 @@ for f in mask_files:
             )
             output_mask_file_path = pathlib.Path(
                 output_path / "cytoplasm_mask_output.gif"
+            )
+    elif compartment == "organoid":
+        if "organoid" in str(f.stem) and "mask" in str(f.stem):
+            mask_input_dir = f
+            output_img_file_path = pathlib.Path(output_path / "organoid_img_output.gif")
+            output_mask_file_path = pathlib.Path(
+                output_path / "organoid_mask_output.gif"
             )
     else:
         raise ValueError("Invalid compartment, please choose either 'nuclei' or 'cell'")

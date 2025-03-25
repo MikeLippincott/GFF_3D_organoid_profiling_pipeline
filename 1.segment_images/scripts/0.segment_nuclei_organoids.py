@@ -33,7 +33,7 @@ except NameError:
 
 # ## parse args and set paths
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -61,7 +61,9 @@ if not in_notebook:
     input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
 else:
     print("Running in a notebook")
-    input_dir = pathlib.Path("../../data/z-stack_images/C4-2/").resolve(strict=True)
+    input_dir = pathlib.Path("../../data/NF0014/resliced_images/C4-2/").resolve(
+        strict=True
+    )
     window_size = 3
     clip_limit = 0.05
 
@@ -129,8 +131,6 @@ labels, details, _ = model.eval(
     imgs, diameter=75, channels=[0, 0], z_axis=0, stitch_threshold=0.8
 )
 
-
-# <img src="../notebook_imgs/Sliding_window_unaggregate.jpg" alt="image" width="300"/>
 
 # ## Reverse the sliding window max projection
 

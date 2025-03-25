@@ -7,7 +7,7 @@
 
 # ## import libraries
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
@@ -32,7 +32,7 @@ except NameError:
 
 # ## parse args and set paths
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -57,8 +57,10 @@ if not in_notebook:
     compartment = args.compartment
 else:
     print("Running in a notebook")
-    input_dir = pathlib.Path("../../data/normalized_z/C4-1/").resolve(strict=True)
-    compartment = "cell"
+    input_dir = pathlib.Path("../../data/NF0014/resliced_images/C4-2/").resolve(
+        strict=True
+    )
+    compartment = "nuclei"
 
 mask_path = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
@@ -73,6 +75,11 @@ elif compartment == "cell":
     reconstruction_dict_path = pathlib.Path(
         mask_path / "cell_reconstruction_dict.npy"
     ).resolve(strict=True)
+elif compartment == "organoid":
+    mask_file_path = pathlib.Path(mask_path / "organoid_masks.tiff").resolve()
+    reconstruction_dict_path = pathlib.Path(
+        mask_path / "organoid_reconstruction_dict.npy"
+    ).resolve(strict=True)
 else:
     raise ValueError(
         "Invalid compartment, please choose 'nuclei', 'cell', or 'organoid'"
@@ -81,7 +88,7 @@ else:
 
 # ## Set up images, paths and functions
 
-# In[3]:
+# In[ ]:
 
 
 class DecoupleSlidingWindowMasks:
@@ -169,7 +176,7 @@ class DecoupleSlidingWindowMasks:
         return self.reconstruct_image()
 
 
-# In[4]:
+# In[ ]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -189,7 +196,7 @@ original_z_slice_count = len(imgs)
 print("number of z slices in the original image:", original_z_slice_count)
 
 
-# In[5]:
+# In[ ]:
 
 
 reconstruction_dict = np.load(reconstruction_dict_path, allow_pickle=True).item()
@@ -197,7 +204,7 @@ reconstruction_dict = np.load(reconstruction_dict_path, allow_pickle=True).item(
 
 # ## Reverse the sliding window max projection
 
-# In[6]:
+# In[ ]:
 
 
 # parallel processing for the cell above
@@ -221,7 +228,7 @@ with Pool(num_cores) as p:
 
 # reconstruct the masks into a single image (z-stack)
 reconstructed_masks = np.zeros(
-    (original_z_slice_count, original_imgs.shape[1], original_imgs.shape[2])
+    (original_z_slice_count * 10, original_imgs.shape[1], original_imgs.shape[2])
 )
 for index, new_image in results:
     reconstructed_masks[index] = new_image
@@ -229,7 +236,7 @@ for index, new_image in results:
 reconstructed_masks = reconstructed_masks.astype(np.uint8)
 
 
-# In[7]:
+# In[ ]:
 
 
 # # save the masks
@@ -242,7 +249,7 @@ print(np.unique(reconstructed_masks))
 tifffile.imwrite(mask_file_path, reconstructed_masks)
 
 
-# In[8]:
+# In[ ]:
 
 
 if in_notebook:

@@ -43,7 +43,7 @@ except NameError:
 print(in_notebook)
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -70,7 +70,9 @@ if not in_notebook:
     input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
 
 else:
-    input_dir = pathlib.Path("../../data/z-stack_images/C4-2/").resolve(strict=True)
+    input_dir = pathlib.Path("../../data/NF0014/resliced_images/C4-2/").resolve(
+        strict=True
+    )
     window_size = 3
     clip_limit = 0.1
 
@@ -116,7 +118,7 @@ original_cyto_image = cyto.copy()
 original_cyto_z_count = cyto.shape[0]
 
 
-# In[5]:
+# In[ ]:
 
 
 # make a 2.5 D max projection image stack with a sliding window of 3 slices
@@ -125,9 +127,9 @@ for image_index in range(cyto.shape[0]):
     image_stack_window = cyto[image_index : image_index + window_size]
     if not image_stack_window.shape[0] == window_size:
         break
-    # guassian blur the image stack
+    # guassian blur the image stack to smooth the global intensity
     image_stack_window = skimage.filters.gaussian(image_stack_window, sigma=1)
-    # max project the image stack
+    # max project the image stack for the sliding window
     image_stack_2_5D = np.append(
         image_stack_2_5D, np.max(image_stack_window, axis=0)[np.newaxis, :, :], axis=0
     )
@@ -159,24 +161,7 @@ if in_notebook:
     plt.show()
 
 
-# In[6]:
-
-
-# if in_notebook:
-#     # plot the nuclei and the cyto channels
-#     plt.figure(figsize=(10, 10))
-#     plt.subplot(121)
-#     plt.imshow(cyto[9, :, :], cmap="gray")
-#     plt.title("Raw cyto")
-#     plt.axis("off")
-#     plt.subplot(122)
-#     plt.imshow(imgs[9, :, :], cmap="gray")
-#     plt.title(f"Gaussian blur: sigma {sigma}")
-#     plt.axis("off")
-#     plt.show()
-
-
-# In[7]:
+# In[ ]:
 
 
 use_GPU = torch.cuda.is_available()
@@ -184,7 +169,7 @@ use_GPU = torch.cuda.is_available()
 model_name = "cyto3"
 model = models.CellposeModel(gpu=use_GPU, model_type=model_name)
 
-# Perform segmentation
+# Perform segmentation of whole organoids
 labels, details, _ = model.eval(
     imgs,
     channels=[0, 0],
@@ -194,7 +179,7 @@ labels, details, _ = model.eval(
 )
 
 
-# In[8]:
+# In[ ]:
 
 
 # reverse sliding window max projection
@@ -223,7 +208,7 @@ for z_stack_index in range(original_cyto_z_count):
 full_mask_z_stack = np.array(full_mask_z_stack)
 
 # save the reconstructed image stack to a tiff file
-tifffile.imsave(mask_path / "organoid_mask.tiff", full_mask_z_stack)
+tifffile.imwrite(mask_path / "organoid_mask.tiff", full_mask_z_stack)
 
 
 # In[9]:

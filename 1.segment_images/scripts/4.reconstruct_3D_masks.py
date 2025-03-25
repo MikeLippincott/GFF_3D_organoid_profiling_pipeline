@@ -77,9 +77,9 @@ if not in_notebook:
     compartment = args.compartment
 else:
     print("Running in a notebook")
-    input_dir = pathlib.Path("../processed_data/C6-1/").resolve(strict=True)
+    input_dir = pathlib.Path("../processed_data/C4-2/").resolve(strict=True)
     x_y_vector_radius_max_constaint = 10  # pixels
-    compartment = "nucleui"
+    compartment = "nuclei"
 
 mask_path = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
@@ -90,6 +90,11 @@ if compartment == "nuclei":
 elif compartment == "cell":
     input_image_dir = pathlib.Path(mask_path / "cell_masks.tiff").resolve(strict=True)
     output_image_dir = pathlib.Path(mask_path / "cell_masks.tiff").resolve()
+elif compartment == "organoid":
+    input_image_dir = pathlib.Path(mask_path / "organoid_masks.tiff").resolve(
+        strict=True
+    )
+    output_image_dir = pathlib.Path(mask_path / "organoid_masks.tiff").resolve()
 else:
     raise ValueError("Invalid compartment, please choose either 'nuclei' or 'cell'")
 
