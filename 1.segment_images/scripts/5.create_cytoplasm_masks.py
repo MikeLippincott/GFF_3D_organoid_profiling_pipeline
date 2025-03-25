@@ -42,7 +42,7 @@ if not in_notebook:
     )
 else:
     print("Running in a notebook")
-    input_dir = pathlib.Path("../../data/z-stack_images/raw_z_input/").resolve(
+    input_dir = pathlib.Path("../../data/NF0014/resliced_images/raw_z_input/").resolve(
         strict=True
     )
     mask_input_dir = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve(
