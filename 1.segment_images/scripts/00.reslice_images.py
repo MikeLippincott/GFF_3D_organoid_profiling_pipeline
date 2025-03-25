@@ -26,7 +26,7 @@ except NameError:
     in_notebook = False
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -39,26 +39,14 @@ if not in_notebook:
         type=str,
         help="Path to the input directory containing the tiff images",
     )
-    parser.add_argument(
-        "--window_size", type=int, help="Size of the window to use for the segmentation"
-    )
-    parser.add_argument(
-        "--clip_limit",
-        type=float,
-        help="Clip limit for the adaptive histogram equalization",
-    )
 
     args = parser.parse_args()
-    window_size = args.window_size
-    clip_limit = args.clip_limit
     input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
 else:
     print("Running in a notebook")
     input_dir = pathlib.Path("../../data/NF0014/zstack_images/C4-2/").resolve(
         strict=True
     )
-    window_size = 3
-    clip_limit = 0.05
 
 
 output_dir = pathlib.Path(
