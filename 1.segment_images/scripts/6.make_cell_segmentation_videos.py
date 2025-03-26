@@ -54,7 +54,9 @@ else:
 base_input_dir = "../../data/NF0014/processed_data/"
 input_dir = pathlib.Path(f"{base_input_dir}/{well_fov}").resolve(strict=True)
 
-output_path = pathlib.Path(f"../processed_data/{input_dir.stem}/gifs/").resolve()
+output_path = pathlib.Path(
+    f"../../data/NF0014/processed_data/{well_fov}/gifs/"
+).resolve()
 output_path.mkdir(parents=True, exist_ok=True)
 
 img_files = sorted(input_dir.glob("*"))
