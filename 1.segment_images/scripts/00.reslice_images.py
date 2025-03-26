@@ -26,7 +26,7 @@ except NameError:
     in_notebook = False
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -46,7 +46,7 @@ else:
     print("Running in a notebook")
     well_fov = "C4-2"
 
-base_input_dir = "../../data/NF0014/resliced_images/"
+base_input_dir = "../../data/NF0014/zstack_images/"
 input_dir = pathlib.Path(f"{base_input_dir}/{well_fov}").resolve(strict=True)
 output_dir = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}").resolve()
 output_dir.mkdir(exist_ok=True, parents=True)
@@ -62,7 +62,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[ ]:
+# In[4]:
 
 
 # reslice the image such that the z-distance between slices is the same as the pixel size
