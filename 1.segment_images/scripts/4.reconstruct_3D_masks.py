@@ -54,7 +54,7 @@ if not in_notebook:
     parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
 
     parser.add_argument(
-        "--input_dir",
+        "--well_fov",
         type=str,
         help="Path to the input directory containing the tiff images",
     )
@@ -72,15 +72,18 @@ if not in_notebook:
     )
 
     args = parser.parse_args()
-    input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
+    well_fov = args.well_fov
     x_y_vector_radius_max_constaint = args.radius_constraint
     compartment = args.compartment
 else:
     print("Running in a notebook")
-    input_dir = pathlib.Path("../processed_data/C4-2/").resolve(strict=True)
+    well_fov = "C4-2"
     x_y_vector_radius_max_constaint = 10  # pixels
     compartment = "nuclei"
 
+
+base_input_dir = "../../data/NF0014/processed_data/"
+input_dir = pathlib.Path(f"{base_input_dir}/{well_fov}").resolve(strict=True)
 mask_path = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
 

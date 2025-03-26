@@ -29,7 +29,7 @@ if not in_notebook:
     parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
 
     parser.add_argument(
-        "--input_dir",
+        "--well_fov",
         type=str,
         help="Path to the input directory containing the tiff images",
     )
@@ -41,21 +41,18 @@ if not in_notebook:
     )
 
     args = parser.parse_args()
-    input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
+    well_fov = args.input_dir
     compartment = args.compartment
-    mask_input_dir = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve(
-        strict=True
-    )
+    mask_input_dir = pathlib.Path(f"../processed_data/{well_fov}").resolve(strict=True)
 else:
     print("Running in a notebook")
-    input_dir = pathlib.Path("../../data/NF0014/resliced_images/raw_z_input/").resolve(
-        strict=True
-    )
+    well_fov = "C4-2"
     compartment = "nuclei"
-    mask_input_dir = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve(
-        strict=True
-    )
+    mask_input_dir = pathlib.Path(f"../processed_data/{well_fov}").resolve(strict=True)
 
+
+base_input_dir = "../../data/NF0014/processed_data/"
+input_dir = pathlib.Path(f"{base_input_dir}/{well_fov}").resolve(strict=True)
 
 output_path = pathlib.Path(f"../processed_data/{input_dir.stem}/gifs/").resolve()
 output_path.mkdir(parents=True, exist_ok=True)

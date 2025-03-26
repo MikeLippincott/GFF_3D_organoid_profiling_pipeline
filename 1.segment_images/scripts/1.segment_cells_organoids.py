@@ -51,7 +51,7 @@ if not in_notebook:
     parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
 
     parser.add_argument(
-        "--input_dir",
+        "--well_fov",
         type=str,
         help="Path to the input directory containing the tiff images",
     )
@@ -67,15 +67,16 @@ if not in_notebook:
     args = parser.parse_args()
     window_size = args.window_size
     clip_limit = args.clip_limit
-    input_dir = pathlib.Path(args.input_dir).resolve(strict=True)
+    well_fov = args.well_fov
 
 else:
-    input_dir = pathlib.Path("../../data/NF0014/resliced_images/C4-2/").resolve(
-        strict=True
-    )
+    well_fov = "C4-2"
     window_size = 3
     clip_limit = 0.1
 
+
+base_input_dir = "../../data/NF0014/resliced_images/"
+input_dir = pathlib.Path(f"{base_input_dir}/{well_fov}").resolve(strict=True)
 mask_path = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
 
