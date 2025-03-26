@@ -45,9 +45,9 @@ else:
 
 base_input_dir = "../../data/NF0014/processed_data/"
 input_dir = pathlib.Path(f"{base_input_dir}/{well_fov}").resolve(strict=True)
-output_path = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve()
-output_path.mkdir(parents=True, exist_ok=True)
-output_file_path = pathlib.Path(output_path / "cytoplasm_mask.tiff").resolve()
+mask_path = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}").resolve()
+mask_path.mkdir(parents=True, exist_ok=True)
+output_file_path = pathlib.Path(mask_path / "cytoplasm_mask.tiff").resolve()
 
 
 # In[3]:

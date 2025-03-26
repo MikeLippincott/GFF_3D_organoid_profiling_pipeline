@@ -33,7 +33,7 @@ except NameError:
 
 # ## parse args and set paths
 
-# In[4]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -67,7 +67,7 @@ else:
 
 base_input_dir = "../../data/NF0014/resliced_images/"
 input_dir = pathlib.Path(f"{base_input_dir}/{well_fov}").resolve(strict=True)
-mask_path = pathlib.Path(f"../processed_data/{input_dir.stem}").resolve()
+mask_path = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}").resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
 
 
