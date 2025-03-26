@@ -7,7 +7,7 @@
 
 # ## import libraries
 
-# In[2]:
+# In[5]:
 
 
 import argparse
@@ -33,7 +33,7 @@ except NameError:
 
 # ## parse args and set paths
 
-# In[ ]:
+# In[6]:
 
 
 if not in_notebook:
@@ -73,7 +73,7 @@ mask_path.mkdir(exist_ok=True, parents=True)
 
 # ## Set up images, paths and functions
 
-# In[3]:
+# In[7]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -81,7 +81,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[4]:
+# In[ ]:
 
 
 # get the nuclei image
