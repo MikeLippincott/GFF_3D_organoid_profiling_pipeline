@@ -24,6 +24,8 @@ for well_fov in "${well_fovs[@]}"; do
     well_fov=$(basename "$well_fov")
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
+    echo "Reslicing images"
+    python 00.reslice_images.py --well_fov "$well_fov"
     echo "Segmenting Nuclei"
     python 0.segment_nuclei_organoids.py --well_fov "$well_fov" --window_size 2 --clip_limit 0.05 >> segmentation.log
     echo "Completed Nuclei Segmentation"
