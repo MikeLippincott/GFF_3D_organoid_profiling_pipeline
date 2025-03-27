@@ -248,7 +248,7 @@ for layer_name in layer_names:
         save_name = layer_name.split(".tif")[0]
     else:
         save_name = layer_name
-    save_path = pathlib.Path(f"{mp4_file_dir}/{save_name}_animation.mp4")
+    save_path = pathlib.Path(f"{mp4_file_dir}/well_fov_{save_name}_animation.mp4")
     if "640" in layer_name:
         # increase contrast for the mitochondria
         viewer.layers[layer_name].contrast_limits = (0, 20000)
