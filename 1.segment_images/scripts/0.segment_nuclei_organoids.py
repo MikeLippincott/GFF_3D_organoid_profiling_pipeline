@@ -7,7 +7,7 @@
 
 # ## import libraries
 
-# In[5]:
+# In[1]:
 
 
 import argparse
@@ -33,7 +33,7 @@ except NameError:
 
 # ## parse args and set paths
 
-# In[6]:
+# In[2]:
 
 
 if not in_notebook:
@@ -73,7 +73,7 @@ mask_path.mkdir(exist_ok=True, parents=True)
 
 # ## Set up images, paths and functions
 
-# In[7]:
+# In[3]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -81,7 +81,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[ ]:
+# In[4]:
 
 
 # get the nuclei image
@@ -134,7 +134,7 @@ labels, details, _ = model.eval(
 
 # ## Reverse the sliding window max projection
 
-# In[ ]:
+# In[7]:
 
 
 # reverse sliding window max projection
