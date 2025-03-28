@@ -9,9 +9,70 @@ logging.basicConfig(level=logging.INFO)
 
 
 class ImageSetLoader:
+    """
+    A class to load an image set consisting of raw images and segmentation masks.
+    The images are loaded into a dictionary, and various attributes and compartments
+    are extracted from the images. The class also provides methods to retrieve images
+    and their attributes.
+    Parameters
+    ----------
+    image_set_path : pathlib.Path
+        Path to the image set directory.
+    spacing : tuple
+        The anisotropy spacing of the images. In the format (z_spacing, y_spacing, x_spacing).
+    channel_mapping : dict
+        A dictionary mapping channel names to their corresponding image file names.
+        Example: {'nuclei': 'nuclei_', 'cell': 'cell_', 'cytoplasm': 'cytoplasm_'}
+    Attributes
+    ----------
+    image_set_name : str
+        The name of the image set.
+    spacing : tuple
+        The anisotropy spacing of the images.
+    anisotropy_factor : float
+        The anisotropy factor calculated from the spacing.
+    image_set_dict : dict
+        A dictionary containing the loaded images, with keys as channel names.
+    unique_objects : dict
+        A dictionary containing unique object IDs for each mask in the image set.
+    unique_compartment_objects : dict
+        A dictionary containing unique object IDs for each compartment in the image set.
+    image_names : list
+        A list of image names in the image set.
+    compartments : list
+        A list of compartment names in the image set.
+    Methods
+    -------
+    retrieve_image_attributes()
+        Retrieves unique object IDs for each mask in the image set.
+    get_unique_objects_in_compartments()
+        Retrieves unique object IDs for each compartment in the image set.
+    get_image(key)
+        Retrieves the image corresponding to the specified key from the image set dictionary.
+    get_image_names()
+        Retrieves the names of images in the image set.
+    get_compartments()
+        Retrieves the names of compartments in the image set.
+    get_anisotropy()
+        Retrieves the anisotropy factor.
+    """
+
     def __init__(
         self, image_set_path: pathlib.Path, spacing: tuple, channel_mapping: dict
     ):
+        """
+        Initialize the ImageSetLoader with the path to the image set, spacing, and channel mapping.
+
+        Parameters
+        ----------
+        image_set_path : pathlib.Path
+            Path to the image set directory.
+        spacing : tuple
+            The anisotropy spacing of the images. In the format (z_spacing, y_spacing, x_spacing).
+        channel_mapping : dict
+            A dictionary mapping channel names to their corresponding image file names.
+            Example: {'nuclei': 'nuclei_', 'cell': 'cell_', 'cytoplasm': 'cytoplasm_'}
+        """
         self.spacing = spacing
         self.anisotropy_factor = self.spacing[0] / self.spacing[1]
         self.image_set_name = image_set_path.name
@@ -67,6 +128,41 @@ class ImageSetLoader:
 
 
 class ObjectLoader:
+    """
+    A class to load objects from a labeled image and extract their properties.
+    Where an object is defined as a segmented region in the image.
+    This could be a cell, a nucleus, or any other compartment segmented.
+    Parameters
+    ----------
+    image : numpy.ndarray
+        The image from which to extract objects.
+    label_image : numpy.ndarray
+        The labeled image containing the segmented objects.
+    channel_name : str
+        The name of the channel from which the objects are extracted.
+    compartment_name : str
+        The name of the compartment from which the objects are extracted.
+    Attributes
+    ----------
+    image : numpy.ndarray
+        The image from which the objects are extracted.
+    label_image : numpy.ndarray
+        The labeled image containing the segmented objects.
+    channel : str
+        The name of the channel from which the objects are extracted.
+    compartment : str
+        The name of the compartment from which the objects are extracted.
+    objects : numpy.ndarray
+        The labeled image containing the segmented objects.
+    object_ids : numpy.ndarray
+        The unique object IDs for the segmented objects.
+    Methods
+    -------
+    __init__(image, label_image, channel_name, compartment_name)
+        Initializes the ObjectLoader with the image, label image, channel name, and compartment name.
+
+    """
+
     def __init__(self, image, label_image, channel_name, compartment_name):
         self.image = image
         self.label_image = label_image
@@ -79,8 +175,45 @@ class ObjectLoader:
 
 
 class TwoObjectLoader:
+    """
+    A class to load two images and a label image for a specific compartment.
+    This class is primarily used for loading images for two-channel analysis like co-localization.
+    Parameters
+    ----------
+    image_set_loader : ImageSetLoader
+        An instance of the ImageSetLoader class containing the image set.
+    compartment : str
+        The name of the compartment for which the label image is loaded.
+    channel1 : str
+        The name of the first channel to be loaded.
+    channel2 : str
+        The name of the second channel to be loaded.
+    Attributes
+    ----------
+    image_set_loader : ImageSetLoader
+        An instance of the ImageSetLoader class containing the image set.
+    compartment : str
+        The name of the compartment for which the label image is loaded.
+    label_image : numpy.ndarray
+        The labeled image containing the segmented objects for the specified compartment.
+    image1 : numpy.ndarray
+        The image corresponding to the first channel.
+    image2 : numpy.ndarray
+        The image corresponding to the second channel.
+    object_ids : numpy.ndarray
+        The unique object IDs for the segmented objects in the specified compartment.
+    Methods
+    -------
+    __init__(image_set_loader, compartment, channel1, channel2)
+        Initializes the TwoObjectLoader with the image set loader, compartment, and channel names.
+    """
+
     def __init__(
-        self, image_set_loader: ImageSetLoader, compartment, channel1, channel2
+        self,
+        image_set_loader: ImageSetLoader,
+        compartment: str,
+        channel1: str,
+        channel2: str,
     ):
         self.image_set_loader = image_set_loader
         self.compartment = compartment

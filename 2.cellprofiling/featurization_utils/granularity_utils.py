@@ -19,6 +19,37 @@ def granularity_feature(length):
 
 
 class ObjectRecord:
+    """
+    This class is used to store the information about the object.
+
+    Parameters
+    ----------
+    object_loader : ObjectLoader
+        The object loader that contains the image and label image.
+    object_index : int
+        The index of the object to be measured.
+    Attributes
+    ----------
+    object_index : int
+        The index of the object to be measured.
+    labels : numpy.ndarray
+        The labels of the object in the image.
+    image : numpy.ndarray
+        The image of the object.
+    nobjects : int
+        The number of objects in the image.
+    range : numpy.ndarray
+        The range of the object labels.
+    current_mean : float
+        The current mean intensity of the object.
+    start_mean : float
+        The starting mean intensity of the object.
+    Methods
+    -------
+    __init__(object_loader, object_index)
+        Initializes the ObjectRecord with the object loader and object index.
+    """
+
     def __init__(self, object_loader, object_index):
         self.object_index = object_index
         self.labels = object_loader.objects.copy()
@@ -45,6 +76,28 @@ def measure_3D_granularity(
     subsample_size: float = 0.25,
     image_name: str = "image",
 ) -> Dict[str, float]:
+    """
+    This function calculates the granularity of an image using the
+    granularity feature. It uses the skimage library to perform the calculations.
+
+    Parameters
+    ----------
+    object_loader : ObjectLoader
+        The object loader that contains the image and label image.
+    radius : int, optional
+        The radius of the ball used for morphological operations, by default 10
+    granular_spectrum_length : int, optional
+        The length of the granular spectrum, by default 16
+    subsample_size : float, optional
+        The size of the image subsample, by default 0.25
+    image_name : str, optional
+        The name of the image, by default "image"
+
+    Returns
+    -------
+    Dict[str, float]
+        A dictionary containing the granularity feature measurements per object ID.
+    """
 
     image_object = object_loader.image
     label_object = object_loader.label_image
@@ -155,11 +208,36 @@ def measure_3D_granularity(
 def measure_3D_granularity_gpu(
     object_loader: ObjectLoader,
     image_set_loader: ImageSetLoader,
-    radius: int = 20,
+    radius: int = 10,
     granular_spectrum_length: int = 16,
     subsample_size: float = 0.25,
-    image_name: str = "nuclei",
+    image_name: str = "image",
 ) -> dict:
+    """
+    This function calculates the granularity of an image using the
+    granularity feature. It uses the cupy library to perform the calculations
+    on the GPU.
+
+    Parameters
+    ----------
+    object_loader : ObjectLoader
+        The object loader that contains the image and label image.
+    image_set_loader : ImageSetLoader
+        The image set loader object that contains the image and label image.
+    radius : int, optional
+        The radius of the ball used for morphological operations, by default 10
+    granular_spectrum_length : int, optional
+        The length of the granular spectrum, by default 16
+    subsample_size : float, optional
+        The size of the image subsample, by default 0.25
+    image_name : str, optional
+        The name of the image, by default "image"
+
+    Returns
+    -------
+    dict
+        A dictionary containing the granularity feature measurements per object ID.
+    """
 
     pixels = cupy.asarray(object_loader.image)
     mask = cupy.asarray(object_loader.label_image)
