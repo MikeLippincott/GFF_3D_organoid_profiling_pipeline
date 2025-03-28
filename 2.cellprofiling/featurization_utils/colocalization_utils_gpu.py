@@ -1,3 +1,5 @@
+from typing import Tuple, Union
+
 import cucim.skimage.measure
 import cupy
 import cupyx
@@ -162,13 +164,61 @@ def bisection_costes_gpu(fi, si, scale_max=255):
     return thr_fi_c, thr_si_c
 
 
-def select_objects_from_label_gpu(label_image, object_ids):
+def select_objects_from_label_gpu(
+    label_image: cupy.ndarray, object_ids: list[int]
+) -> cupy.ndarray:
+    """
+    Selects objects from a label image based on the provided object IDs.
+
+    Parameters
+    ----------
+    label_image : cupy.ndarray
+        The label image from which to select objects.
+    object_ids : list[int]
+        The object IDs to select from the label image.
+
+    Returns
+    -------
+    cupy.ndarray
+        The label image with the selected objects.
+    """
     label_image = label_image.copy()
     label_image[label_image != object_ids] = 0
     return label_image
 
 
-def expand_box_gpu(min_coor, max_coord, current_min, current_max, expand_by):
+def expand_box_gpu(
+    min_coor: Union[int, float],
+    max_coord: Union[int, float],
+    current_min: Union[int, float],
+    current_max: Union[int, float],
+    expand_by: Union[int, float],
+) -> Tuple[Union[int, float], Union[int, float]]:
+    """
+    Expand the bounding box of an object in 3D space.
+
+    Parameters
+    ----------
+    min_coor : Union[int, float]
+        The global minimum coordinate of the image.
+    max_coord : Union[int, float]
+        The global maximum coordinate of the image.
+    current_min : Union[int, float]
+        The current minimum coordinate of the object.
+    current_max : Union[int, float]
+        The current maximum coordinate of the object.
+    expand_by : Union[int, float]
+        The amount to expand the bounding box by.
+
+    Returns
+    -------
+    Tuple[Union[int, float], Union[int, float]]
+        The new minimum and maximum coordinates of the bounding box.
+    Raises
+    ------
+    ValueError
+        If the bounding box cannot be expanded by the requested amount.
+    """
     if max_coord - min_coor - (current_max - current_min) < expand_by:
         return ValueError("Cannot expand box by the requested amount")
     while expand_by > 0:
@@ -182,7 +232,59 @@ def expand_box_gpu(min_coor, max_coord, current_min, current_max, expand_by):
     return current_min, current_max
 
 
-def new_crop_border_gpu(bbox1, bbox2, image):
+def new_crop_border_gpu(
+    bbox1: Tuple[
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+    ],
+    bbox2: Tuple[
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+    ],
+    image: cupy.ndarray,
+) -> Tuple[
+    Tuple[
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+    ],
+    Tuple[
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+    ],
+]:
+    """
+    Expand the bounding boxes of two objects to match their sizes.
+
+    Parameters
+    ----------
+    bbox1 : Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]]
+        The bounding box of the first object.
+    bbox2 : Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]]
+        The bounding box of the second object.
+    image : cupy.ndarray
+        The image from which the bounding boxes are derived.
+
+    Returns
+    -------
+    Tuple[ Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]], Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]] ]
+        The new bounding boxes of the two objects.
+    """
     i1z1, i1y1, i1x1, i1z2, i1y2, i1x2 = bbox1
     i2z1, i2y1, i2x1, i2z2, i2y2, i2x2 = bbox2
     z_range1 = i1z2 - i1z1
@@ -252,14 +354,29 @@ def new_crop_border_gpu(bbox1, bbox2, image):
 
 
 # crop the image to the bbox of the mask
-def crop_3D_image_gpu(image, bbox):
+def crop_3D_image_gpu(
+    image: cupy.ndarray,
+    bbox: Tuple[
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+        Union[int, float],
+    ],
+) -> cupy.ndarray:
     z1, y1, x1, z2, y2, x2 = bbox
     return image[z1:z2, y1:y2, x1:x2]
 
 
 def prepare_two_images_for_colocalization_gpu(
-    label_object1, label_object2, image_object1, image_object2, object_id1, object_id2
-):
+    label_object1: cupy.ndarray,
+    label_object2: cupy.ndarray,
+    image_object1: cupy.ndarray,
+    image_object2: cupy.ndarray,
+    object_id1: int,
+    object_id2: int,
+) -> Tuple[cupy.ndarray, cupy.ndarray]:
     label_object1 = cupy.array(label_object1)
     label_object2 = cupy.array(label_object2)
     object_id1 = cupy.array(object_id1)
@@ -299,8 +416,30 @@ def prepare_two_images_for_colocalization_gpu(
 
 
 def measure_3D_colocalization_gpu(
-    cropped_image_1, cropped_image_2, thr=15, fast_costes="Accurate"
-):
+    cropped_image_1: cupy.ndarray,
+    cropped_image_2: cupy.ndarray,
+    thr: int = 15,
+    fast_costes: str = "Accurate",
+) -> dict:
+    """
+    Calculate the colocalization features between two images and two objects.
+
+    Parameters
+    ----------
+    cropped_image_1 : cupy.ndarray
+        The first cropped image of the object in question.
+    cropped_image_2 : cupy.ndarray
+        The second cropped image of the object in question.
+    thr : int, optional
+        The threshold to set for colocalization metrics, by default 15
+    fast_costes : str, optional
+        The type of costes mode to use, by default "Accurate"
+
+    Returns
+    -------
+    dict
+        A dictionary containing the colocalization features per object per image pair.
+    """
     results = {}
     thr = 15
     ################################################################################################

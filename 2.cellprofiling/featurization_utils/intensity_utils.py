@@ -5,16 +5,46 @@ import cupyx.scipy.ndimage
 import numpy
 import scipy.ndimage
 import skimage.segmentation
+from loading_classes import ObjectLoader
 
 
-def get_outline(mask):
+def get_outline(mask: numpy.ndarray) -> numpy.ndarray:
+    """
+    Get the outline of a 3D mask.
+
+    Parameters
+    ----------
+    mask : numpy.ndarray
+        The input mask.
+
+    Returns
+    -------
+    numpy.ndarray
+        The outline of the mask.
+    """
     outline = numpy.zeros_like(mask)
     for z in range(mask.shape[0]):
         outline[z] = skimage.segmentation.find_boundaries(mask[z])
     return outline
 
 
-def measure_3D_intensity(object_loader):
+def measure_3D_intensity(
+    object_loader: ObjectLoader,
+) -> dict:
+    """
+    Measure the intensity of objects in a 3D image.
+
+    Parameters
+    ----------
+    object_loader : ObjectLoader
+        The object loader containing the image and label image.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the measurements for each object.
+        The keys are the measurement names and the values are the corresponding values.
+    """
     image_object = object_loader.image
     label_object = object_loader.objects
     labels = object_loader.object_ids
@@ -140,7 +170,22 @@ def measure_3D_intensity(object_loader):
     return output_dict
 
 
-def measure_3D_intensity_gpu(object_loader):
+def measure_3D_intensity_gpu(
+    object_loader: ObjectLoader,
+) -> dict:
+    """
+    Measure the intensity of objects in a 3D image using GPU acceleration.
+
+    Parameters
+    ----------
+    object_loader : ObjectLoader
+        The object loader containing the image and label image.
+
+    Returns
+    -------
+    dict
+        A dictionary containing the measurements for each object.
+    """
     image_object = object_loader.image
     label_object = object_loader.objects
     labels = object_loader.object_ids

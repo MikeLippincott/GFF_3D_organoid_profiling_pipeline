@@ -2,13 +2,29 @@ import gc
 
 import mahotas
 import tqdm
+from loading_classes import ObjectLoader
 
 
 def measure_3D_texture(
-    object_loader,
-    distance=1,
-    gpu=False,
-):
+    object_loader: ObjectLoader,
+    distance: int = 1,
+) -> dict:
+    """
+    Calculate texture features for each object in the image using Haralick features.
+    The features are calculated for each object separately and the mean value is returned.
+
+    Parameters
+    ----------
+    object_loader : ObjectLoader
+        The object loader containing the image and object information.
+    distance : int, optional
+        The distance parameter for Haralick features, by default 1
+
+    Returns
+    -------
+    dict
+        A dictionary containing the object ID, texture name, and texture value.
+    """
     label_object = object_loader.objects
     labels = object_loader.object_ids
     feature_names = [
@@ -37,21 +53,12 @@ def measure_3D_texture(
         selected_label_object[selected_label_object != label] = 0
         image_object = object_loader.image.copy()
         image_object[selected_label_object == 0] = 0
-        if gpu:
-            haralick_features = mahotas.features.haralick(
-                ignore_zeros=False,
-                f=image_object,
-                distance=distance,
-                compute_14th_feature=False,
-            )
-            haralick_features = haralick_features.get()
-        else:
-            haralick_features = mahotas.features.haralick(
-                ignore_zeros=False,
-                f=image_object,
-                distance=distance,
-                compute_14th_feature=False,
-            )
+        haralick_features = mahotas.features.haralick(
+            ignore_zeros=False,
+            f=image_object,
+            distance=distance,
+            compute_14th_feature=False,
+        )
         haralick_mean = haralick_features.mean(axis=0)
         for i, feature_name in enumerate(feature_names):
             output_texture_dict["object_id"].append(label)
