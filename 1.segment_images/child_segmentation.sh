@@ -10,10 +10,9 @@
 
 
 # activate  cellprofiler environment
+module load anaconda
+conda init bash
 conda activate GFF_segmentation
-
-jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
-
 
 cd scripts/ || exit
 
