@@ -35,7 +35,6 @@ def calulate_surface_area(label_object, props, spacing):
             level=0,
         )
         surface_areas.append(cucim.skimage.measure.mesh_surface_area(verts, faces))
-
     return surface_areas
 
 
@@ -51,7 +50,6 @@ def measure_3D_area_size_shape_gpu(image_set_loader, object_loader):
         "extent",
         "euler_number",
         "equivalent_diameter",
-        "solidity",
     ]
 
     props = cucim.skimage.measure.regionprops_table(
@@ -60,20 +58,20 @@ def measure_3D_area_size_shape_gpu(image_set_loader, object_loader):
     props["label"] = unique_objects
     features_to_record = {
         "object_id": props["label"],
-        "VOLUME": props["area"],
-        "CENTER.X": props["centroid-2"],
-        "CENTER.Y": props["centroid-1"],
-        "CENTER.Z": props["centroid-0"],
-        "BBOX.VOLUME": props["bbox_area"],
-        "MIN.X": props["bbox-2"],
-        "MAX.X": props["bbox-5"],
-        "MIN.Y": props["bbox-1"],
-        "MAX.Y": props["bbox-4"],
-        "MIN.Z": props["bbox-0"],
-        "MAX.Z": props["bbox-3"],
-        "EXTENT": props["extent"],
-        "EULER.NUMBER": props["euler_number"],
-        "EQUIVALENT.DIAMETER": props["equivalent_diameter"],
+        "VOLUME": props["area"].get(),
+        "CENTER.X": props["centroid-2"].get(),
+        "CENTER.Y": props["centroid-1"].get(),
+        "CENTER.Z": props["centroid-0"].get(),
+        "BBOX.VOLUME": props["bbox_area"].get(),
+        "MIN.X": props["bbox-2"].get(),
+        "MAX.X": props["bbox-5"].get(),
+        "MIN.Y": props["bbox-1"].get(),
+        "MAX.Y": props["bbox-4"].get(),
+        "MIN.Z": props["bbox-0"].get(),
+        "MAX.Z": props["bbox-3"].get(),
+        "EXTENT": props["extent"].get(),
+        "EULER.NUMBER": props["euler_number"].get(),
+        "EQUIVALENT.DIAMETER": props["equivalent_diameter"].get(),
     }
     try:
         features_to_record["SURFACE.AREA"] = calulate_surface_area(
@@ -81,6 +79,11 @@ def measure_3D_area_size_shape_gpu(image_set_loader, object_loader):
             props=props,
             spacing=spacing,
         )
+        features_to_record["SURFACE.AREA"] = features_to_record["SURFACE.AREA"].get()
     except:
-        features_to_record["SURFACE.AREA"] = cupy.nan
+        features_to_record["SURFACE.AREA"] = numpy.array([numpy.nan])
+        # extend the array to match the number of objects in numpy
+        features_to_record["SURFACE.AREA"] = numpy.repeat(
+            features_to_record["SURFACE.AREA"], len(props["label"])
+        )
     return features_to_record
