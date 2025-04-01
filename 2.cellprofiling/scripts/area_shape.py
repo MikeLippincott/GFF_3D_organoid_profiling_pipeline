@@ -33,10 +33,10 @@ import gc
 image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
 
 
-# In[3]:
+# In[ ]:
 
 
-channel_mapping = {
+channel_n_compartment_mapping = {
     "DNA": "405",
     "AGP": "488",
     "ER": "555",
@@ -49,13 +49,13 @@ channel_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
     spacing=(1, 0.1, 0.1),
-    channel_mapping=channel_mapping,
+    channel_mapping=channel_n_compartment_mapping,
 )
 
 
