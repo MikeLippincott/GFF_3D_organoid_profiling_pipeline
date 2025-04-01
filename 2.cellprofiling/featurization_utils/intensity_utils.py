@@ -28,7 +28,7 @@ def get_outline(mask: numpy.ndarray) -> numpy.ndarray:
     return outline
 
 
-def measure_3D_intensity(
+def measure_3D_intensity_CPU(
     object_loader: ObjectLoader,
 ) -> dict:
     """
