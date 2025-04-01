@@ -31,16 +31,16 @@ else:
     from tqdm import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
 image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
 
 
-# In[3]:
+# In[ ]:
 
 
-channel_mapping = {
+channel_n_compartment_mapping = {
     "DNA": "405",
     "AGP": "488",
     "ER": "555",
@@ -53,23 +53,23 @@ channel_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
     spacing=(1, 0.1, 0.1),
-    channel_mapping=channel_mapping,
+    channel_mapping=channel_n_compartment_mapping,
 )
 
 
-# In[5]:
+# In[ ]:
 
 
 start_time = time.time()
 
 
-# In[6]:
+# In[ ]:
 
 
 for compartment in tqdm(
@@ -103,7 +103,7 @@ for compartment in tqdm(
         final_df.to_parquet(output_file)
 
 
-# In[7]:
+# In[ ]:
 
 
 print("Intensity time:")
@@ -112,7 +112,7 @@ print("--- %s minutes ---" % ((time.time() - start_time) / 60))
 print("--- %s hours ---" % ((time.time() - start_time) / 3600))
 
 
-# In[8]:
+# In[ ]:
 
 
 df = pd.DataFrame(output_dict)
