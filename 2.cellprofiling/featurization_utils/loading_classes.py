@@ -10,7 +10,8 @@ logging.basicConfig(level=logging.INFO)
 
 class ImageSetLoader:
     """
-    A class to load an image set consisting of raw images and segmentation masks.
+    A class to load an image set consisting of raw z stack images from multiple spectral
+    channels and segmentation masks.
     The images are loaded into a dictionary, and various attributes and compartments
     are extracted from the images. The class also provides methods to retrieve images
     and their attributes.
@@ -18,7 +19,7 @@ class ImageSetLoader:
     ----------
     image_set_path : pathlib.Path
         Path to the image set directory.
-    spacing : tuple
+    anisotropy_spacing : tuple
         The anisotropy spacing of the images. In the format (z_spacing, y_spacing, x_spacing).
     channel_mapping : dict
         A dictionary mapping channel names to their corresponding image file names.
@@ -27,16 +28,19 @@ class ImageSetLoader:
     ----------
     image_set_name : str
         The name of the image set.
-    spacing : tuple
+    anisotropy_spacing : tuple
         The anisotropy spacing of the images.
     anisotropy_factor : float
         The anisotropy factor calculated from the spacing.
     image_set_dict : dict
         A dictionary containing the loaded images, with keys as channel names.
-    unique_objects : dict
+    unique_mask_objects : dict
         A dictionary containing unique object IDs for each mask in the image set.
     unique_compartment_objects : dict
         A dictionary containing unique object IDs for each compartment in the image set.
+        Where a compartment is defined as a segmented region in the image.
+        For example typically the Cell, Cytoplasm, Nuclei, and in this case also Organoid.
+        The compartments are bounds for measurements.
     image_names : list
         A list of image names in the image set.
     compartments : list
@@ -58,7 +62,10 @@ class ImageSetLoader:
     """
 
     def __init__(
-        self, image_set_path: pathlib.Path, spacing: tuple, channel_mapping: dict
+        self,
+        image_set_path: pathlib.Path,
+        anisotropy_spacing: tuple,
+        channel_mapping: dict,
     ):
         """
         Initialize the ImageSetLoader with the path to the image set, spacing, and channel mapping.
@@ -73,8 +80,8 @@ class ImageSetLoader:
             A dictionary mapping channel names to their corresponding image file names.
             Example: {'nuclei': 'nuclei_', 'cell': 'cell_', 'cytoplasm': 'cytoplasm_'}
         """
-        self.spacing = spacing
-        self.anisotropy_factor = self.spacing[0] / self.spacing[1]
+        self.anisotropy_spacing = anisotropy_spacing
+        self.anisotropy_factor = self.anisotropy_spacing[0] / self.anisotropy_spacing[1]
         self.image_set_name = image_set_path.name
         files = sorted(image_set_path.glob("*"))
         files = [f for f in files if f.suffix in [".tif", ".tiff"]]
@@ -92,10 +99,22 @@ class ImageSetLoader:
         self.get_unique_objects_in_compartments()
 
     def retrieve_image_attributes(self):
-        self.unique_objects = {}
+        """
+        This is also a quick and dirty way of loading two types of images:
+            1. masks (multi-indexed segmentation masks)
+            2. The spectral images to extract morphology features from
+
+        My naming convention puts the work "mask" in the segmentation images this
+        this is a way to differentiate each mask of each compartment
+        apart from the spectral images.
+
+        Future work should be to load the images in a more structured way
+        that does not depend on the file naming convention.
+        """
+        self.unique_mask_objects = {}
         for key, value in self.image_set_dict.items():
             if "mask" in key:
-                self.unique_objects[key] = numpy.unique(value)
+                self.unique_mask_objects[key] = numpy.unique(value)
 
     def get_unique_objects_in_compartments(self):
         self.unique_compartment_objects = {}
@@ -124,7 +143,7 @@ class ImageSetLoader:
         ]
 
     def get_anisotropy(self):
-        return self.spacing[0] / self.spacing[1]
+        return self.anisotropy_spacing[0] / self.anisotropy_spacing[1]
 
 
 class ObjectLoader:
@@ -135,7 +154,7 @@ class ObjectLoader:
     Parameters
     ----------
     image : numpy.ndarray
-        The image from which to extract objects.
+        The image from which to extract objects. Preferably a 3D image -> z, y, x
     label_image : numpy.ndarray
         The labeled image containing the segmented objects.
     channel_name : str
