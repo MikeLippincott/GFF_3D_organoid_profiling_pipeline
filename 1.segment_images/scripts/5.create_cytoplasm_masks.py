@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[9]:
+# In[1]:
 
 
 import argparse
@@ -21,7 +21,7 @@ except NameError:
     in_notebook = False
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -54,7 +54,7 @@ output_path.mkdir(parents=True, exist_ok=True)
 output_file_path = pathlib.Path(output_path / "cytoplasm_mask.tiff").resolve()
 
 
-# In[11]:
+# In[3]:
 
 
 # get all the masks
@@ -69,7 +69,7 @@ nuclei_masks = io.imread(nuclei_masks_path)
 cell_masks = io.imread(cell_masks_path)
 
 
-# In[12]:
+# In[4]:
 
 
 cytoplasm_masks = np.zeros_like(cell_masks)
@@ -82,13 +82,13 @@ for z_slice_index in range(nuclei_masks.shape[0]):
     cytoplasm_masks[z_slice_index] = cytoplasm_mask
 
 
-# In[13]:
+# In[5]:
 
 
 tifffile.imwrite(output_file_path, cytoplasm_masks)
 
 
-# In[14]:
+# In[6]:
 
 
 if in_notebook:
