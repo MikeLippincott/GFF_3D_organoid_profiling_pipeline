@@ -84,12 +84,13 @@ else:
     print("Running in a notebook")
     print("Running in a notebook")
     well_fov = "C4-2"
-    compartment = "cell"
-    window_size = 3
+    compartment = "nuclei"
+    window_size = 2
 
-input_dir = pathlib.Path(f"../../data/NF0014/zstack_images/{well_fov}/").resolve(
+input_dir = pathlib.Path(f"../../data/NF0014/resliced_images/{well_fov}").resolve(
     strict=True
 )
+
 mask_path = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}").resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
 

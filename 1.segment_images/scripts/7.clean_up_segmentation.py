@@ -54,7 +54,7 @@ print(
       """
 )
 for file in processed_data_dir_directories:
-    check_number_of_files(file, 6)
+    check_number_of_files(file, 10)
 
 
 print(
@@ -122,7 +122,7 @@ if jobs_to_rerun_path.exists():
 dirs_in_cellprofiler_dir = [x for x in cellprofiler_dir.iterdir() if x.is_dir()]
 dirs_in_cellprofiler_dir = sorted(dirs_in_cellprofiler_dir)
 for dir in tqdm.tqdm(dirs_in_cellprofiler_dir):
-    if not check_number_of_files(dir, 9):
+    if not check_number_of_files(dir, 12):
         with open(jobs_to_rerun_path, "a") as f:
             f.write(f"{dir.name}\n")
 
@@ -131,7 +131,7 @@ for dir in tqdm.tqdm(dirs_in_cellprofiler_dir):
 
 
 # move an example to the example dir
-example_dir = pathlib.Path("../processed_data/C4-2/gifs/").resolve(strict=True)
+example_dir = pathlib.Path("../animations/gif/C4-2").resolve(strict=True)
 final_example_dir = pathlib.Path("../examples/segmentation_output/C4-2/gifs").resolve()
 if final_example_dir.exists():
     shutil.rmtree(final_example_dir)

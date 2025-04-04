@@ -51,7 +51,7 @@ except NameError:
     in_notebook = False
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -84,7 +84,7 @@ if not in_notebook:
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
-    compartment = "cell"
+    compartment = "nuclei"
 
 input_dir = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}").resolve()
 mask_dir = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}").resolve()
