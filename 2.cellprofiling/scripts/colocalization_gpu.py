@@ -85,10 +85,10 @@ channel_combinations = list(itertools.combinations(image_set_loader.image_names,
 start_time = time.time()
 
 
-# In[7]:
+# In[ ]:
 
 
-for compartments in tqdm(
+for compartment in tqdm(
     image_set_loader.compartments, desc="Processing compartments", position=0
 ):
     for channel1, channel2 in tqdm(
@@ -99,7 +99,7 @@ for compartments in tqdm(
     ):
         coloc_loader = TwoObjectLoader(
             image_set_loader=image_set_loader,
-            compartment=compartments,
+            compartment=compartment,
             channel1=channel1,
             channel2=channel2,
         )
@@ -125,16 +125,15 @@ for compartments in tqdm(
             )
             coloc_df = pd.DataFrame(colocalization_features, index=[0])
             coloc_df.columns = [
-                f"{compartments}_{channel1}.{channel2}_{col}"
-                for col in coloc_df.columns
+                f"{compartment}_{channel1}.{channel2}_{col}" for col in coloc_df.columns
             ]
             coloc_df["object_id"] = object_id
             coloc_df["channel1"] = channel1
             coloc_df["channel2"] = channel2
-            coloc_df["compartment"] = compartments
+            coloc_df["compartment"] = compartment
             coloc_df["image_set"] = image_set_loader.image_set_name
         output_file = pathlib.Path(
-            f"../results/{image_set_loader.image_set_name}/Colocalization_{compartments}_{channel1}.{channel2}_features.parquet"
+            f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features.parquet"
         )
         output_file.parent.mkdir(parents=True, exist_ok=True)
         coloc_df.to_parquet(output_file)
