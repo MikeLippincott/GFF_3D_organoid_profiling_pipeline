@@ -466,13 +466,22 @@ def measure_3D_colocalization(
     thr = 15
     ################################################################################################
     # Calculate the correlation coefficient between the two images
+    # This is the Pearson correlation coefficient
+    # Pearson correlation coeffecient = cov(X, Y) / (std(X) * std(Y))
+    # where cov(X, Y) is the covariance of X and Y
+    # where X and Y are the two images
+    # std(X) is the standard deviation of X
+    # std(Y) is the standard deviation of Y
+    # cov(X, Y) = sum((X - mean(X)) * (Y - mean(Y))) / (N - 1)
+    # std(X) = sqrt(sum((X - mean(X)) ** 2) / (N - 1))
+    # thus N -1 cancels out in the calculation below
     ################################################################################################
     mean1 = scipy.ndimage.mean(cropped_image_1, 1)
     mean2 = scipy.ndimage.mean(cropped_image_2, 1)
     std1 = numpy.sqrt(scipy.ndimage.sum((cropped_image_1 - mean1) ** 2))
     std2 = numpy.sqrt(scipy.ndimage.sum((cropped_image_2 - mean2) ** 2))
-    x = cropped_image_1 - mean1
-    y = cropped_image_2 - mean2
+    x = cropped_image_1 - mean1  # x is not the same as the x dimension here
+    y = cropped_image_2 - mean2  # y is not the same as the y dimension here
     corr = scipy.ndimage.sum(x * y / (std1 * std2))
 
     ################################################################################################
