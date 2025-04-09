@@ -8,7 +8,12 @@ import scipy
 import skimage
 
 
-def linear_costes_gpu(fi, si, scale_max=255, fast_costes="Accurate"):
+def linear_costes_gpu(
+    first_image: cupy.ndarray,
+    second_image: cupy.ndarray,
+    scale_max: int = 255,
+    fast_costes: str = "Accurate",
+) -> Tuple[float, float]:
     """
     Finds the Costes Automatic Threshold for colocalization using a linear algorithm.
     Candiate thresholds are gradually decreased until Pearson R falls below 0.
@@ -16,14 +21,14 @@ def linear_costes_gpu(fi, si, scale_max=255, fast_costes="Accurate"):
     when Pearson R is much greater than 0.
     """
     i_step = 1 / scale_max
-    non_zero = (fi > 0) | (si > 0)
-    xvar = cupy.var(fi[non_zero], axis=0, ddof=1)
-    yvar = cupy.var(si[non_zero], axis=0, ddof=1)
+    non_zero = (first_image > 0) | (second_image > 0)
+    xvar = cupy.var(first_image[non_zero], axis=0, ddof=1)
+    yvar = cupy.var(second_image[non_zero], axis=0, ddof=1)
 
-    xmean = cupy.mean(fi[non_zero], axis=0)
-    ymean = cupy.mean(si[non_zero], axis=0)
+    xmean = cupy.mean(first_image[non_zero], axis=0)
+    ymean = cupy.mean(second_image[non_zero], axis=0)
 
-    z = fi[non_zero] + si[non_zero]
+    z = first_image[non_zero] + second_image[non_zero]
     zvar = cupy.var(z, axis=0, ddof=1)
 
     covar = 0.5 * (zvar - (xvar + yvar))
@@ -34,39 +39,41 @@ def linear_costes_gpu(fi, si, scale_max=255, fast_costes="Accurate"):
     b = ymean - a * xmean
 
     # Start at 1 step above the maximum value
-    img_max = max(fi.max(), si.max())
+    img_max = max(first_image.max(), second_image.max())
     i = i_step * ((img_max // i_step) + 1)
 
     num_true = None
-    fi_max = fi.max()
-    si_max = si.max()
+    first_image_max = first_image.max()
+    second_image_max = second_image.max()
 
     # Initialise without a threshold
-    fi = fi.get()
-    si = si.get()
-    costReg, _ = scipy.stats.pearsonr(fi, si)
-    fi = cupy.array(fi)
-    si = cupy.array(si)
+    first_image = first_image.get()
+    second_image = second_image.get()
+    costReg, _ = scipy.stats.pearsonr(first_image, second_image)
+    first_image = cupy.array(first_image)
+    second_image = cupy.array(second_image)
     costReg = cupy.array(costReg)
-    thr_fi_c = i
-    thr_si_c = (a * i) + b
-    while i > fi_max and (a * i) + b > si_max:
+    thr_first_image_c = i
+    thr_second_image_c = (a * i) + b
+    while i > first_image_max and (a * i) + b > second_image_max:
         i -= i_step
     while i > i_step:
-        thr_fi_c = i
-        thr_si_c = (a * i) + b
-        combt = (fi < thr_fi_c) | (si < thr_si_c)
+        thr_first_image_c = i
+        thr_second_image_c = (a * i) + b
+        combt = (first_image < thr_first_image_c) | (second_image < thr_second_image_c)
         try:
             # Only run pearsonr if the input has changed.
             if (positives := cupy.count_nonzero(combt)) != num_true:
                 # convert to numpy array since this module does not exist in cupy
-                fi = fi.get()
-                si = si.get()
+                first_image = first_image.get()
+                second_image = second_image.get()
                 combt = combt.get()
-                costReg, _ = scipy.stats.pearsonr(fi[combt], si[combt])
+                costReg, _ = scipy.stats.pearsonr(
+                    first_image[combt], second_image[combt]
+                )
                 # convert back to a cupy array
-                fi = cupy.array(fi)
-                si = cupy.array(si)
+                first_image = cupy.array(first_image)
+                second_image = cupy.array(second_image)
                 combt = cupy.array(combt)
 
                 num_true = positives
@@ -88,10 +95,12 @@ def linear_costes_gpu(fi, si, scale_max=255, fast_costes="Accurate"):
                 i -= i_step
         except ValueError:
             break
-    return thr_fi_c, thr_si_c
+    return thr_first_image_c, thr_second_image_c
 
 
-def bisection_costes_gpu(fi, si, scale_max=255):
+def bisection_costes_gpu(
+    first_image: cupy.ndarray, second_image: cupy.ndarray, scale_max: int = 255
+) -> Tuple[float, float]:
     """
     Finds the Costes Automatic Threshold for colocalization using a bisection algorithm.
     Candidate thresholds are selected from within a window of possible intensities,
@@ -101,14 +110,14 @@ def bisection_costes_gpu(fi, si, scale_max=255):
     loop is 1/6th of the window size below the maximum value (as opposed to the midpoint).
     """
 
-    non_zero = (fi > 0) | (si > 0)
-    xvar = cupy.var(fi[non_zero], axis=0, ddof=1)
-    yvar = cupy.var(si[non_zero], axis=0, ddof=1)
+    non_zero = (first_image > 0) | (second_image > 0)
+    xvar = cupy.var(first_image[non_zero], axis=0, ddof=1)
+    yvar = cupy.var(second_image[non_zero], axis=0, ddof=1)
 
-    xmean = cupy.mean(fi[non_zero], axis=0)
-    ymean = cupy.mean(si[non_zero], axis=0)
+    xmean = cupy.mean(first_image[non_zero], axis=0)
+    ymean = cupy.mean(second_image[non_zero], axis=0)
 
-    z = fi[non_zero] + si[non_zero]
+    z = first_image[non_zero] + second_image[non_zero]
     zvar = cupy.var(z, axis=0, ddof=1)
 
     covar = 0.5 * (zvar - (xvar + yvar))
@@ -127,21 +136,23 @@ def bisection_costes_gpu(fi, si, scale_max=255):
     valid = 1
 
     while lastmid != mid:
-        thr_fi_c = mid / scale_max
-        thr_si_c = (a * thr_fi_c) + b
-        combt = (fi < thr_fi_c) | (si < thr_si_c)
+        thr_first_image_c = mid / scale_max
+        thr_second_image_c = (a * thr_first_image_c) + b
+        combt = (first_image < thr_first_image_c) | (second_image < thr_second_image_c)
         if cupy.count_nonzero(combt) <= 2:
             # Can't run pearson with only 2 values.
             left = mid - 1
         else:
             try:
-                fi = fi.get()
-                si = si.get()
+                first_image = first_image.get()
+                second_image = second_image.get()
                 combt = combt.get()
-                costReg, _ = scipy.stats.pearsonr(fi[combt], si[combt])
+                costReg, _ = scipy.stats.pearsonr(
+                    first_image[combt], second_image[combt]
+                )
                 # convert back to a cupy array
-                fi = cupy.array(fi)
-                si = cupy.array(si)
+                first_image = cupy.array(first_image)
+                second_image = cupy.array(second_image)
                 combt = cupy.array(combt)
                 costReg = cupy.array(costReg)
                 if costReg < 0:
@@ -158,10 +169,10 @@ def bisection_costes_gpu(fi, si, scale_max=255):
         else:
             mid = ((right - left) // 2) + left
 
-    thr_fi_c = (valid - 1) / scale_max
-    thr_si_c = (a * thr_fi_c) + b
+    thr_first_image_c = (valid - 1) / scale_max
+    thr_second_image_c = (a * thr_first_image_c) + b
 
-    return thr_fi_c, thr_si_c
+    return thr_first_image_c, thr_second_image_c
 
 
 def select_objects_from_label_gpu(
@@ -172,15 +183,15 @@ def select_objects_from_label_gpu(
 
     Parameters
     ----------
-    label_image : cupy.ndarray
-        The label image from which to select objects.
-    object_ids : list[int]
-        The object IDs to select from the label image.
+    label_image : numpy.ndarray
+        The segmented label image.
+    object_ids : list
+        The object IDs to select.
 
     Returns
     -------
-    cupy.ndarray
-        The label image with the selected objects.
+    numpy.ndarray
+        The label image with only the selected objects.
     """
     label_image = label_image.copy()
     label_image[label_image != object_ids] = 0
@@ -269,7 +280,7 @@ def new_crop_border_gpu(
     ],
 ]:
     """
-    Expand the bounding boxes of two objects to match their sizes.
+    Expand the bounding boxes of two objects in a 3D image to match their sizes.
 
     Parameters
     ----------
@@ -277,13 +288,16 @@ def new_crop_border_gpu(
         The bounding box of the first object.
     bbox2 : Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]]
         The bounding box of the second object.
-    image : cupy.ndarray
-        The image from which the bounding boxes are derived.
+    image : numpy.ndarray
+        The image to crop for each of the bounding boxes.
 
     Returns
     -------
-    Tuple[ Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]], Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]] ]
+    Tuple[Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]], Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]]]
         The new bounding boxes of the two objects.
+    Raises
+    ValueError
+        If the expansion is not possible.
     """
     i1z1, i1y1, i1x1, i1z2, i1y2, i1x2 = bbox1
     i2z1, i2y1, i2x1, i2z2, i2y2, i2x2 = bbox2
@@ -365,6 +379,21 @@ def crop_3D_image_gpu(
         Union[int, float],
     ],
 ) -> cupy.ndarray:
+    """
+    Crop a 3D image to the bounding box of a mask.
+
+    Parameters
+    ----------
+    image : numpy.ndarray
+        The image to crop.
+    bbox : Tuple[Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float], Union[int, float]]
+        The bounding box of the mask.
+
+    Returns
+    -------
+    numpy.ndarray
+        The cropped image.
+    """
     z1, y1, x1, z2, y2, x2 = bbox
     return image[z1:z2, y1:y2, x1:x2]
 
@@ -377,6 +406,30 @@ def prepare_two_images_for_colocalization_gpu(
     object_id1: int,
     object_id2: int,
 ) -> Tuple[cupy.ndarray, cupy.ndarray]:
+    """
+    This function prepares two images for colocalization analysis by cropping them to the bounding boxes of the specified objects.
+    It selects the objects from the label images, calculates their bounding boxes, and crops the images accordingly.
+
+    Parameters
+    ----------
+    label_object1 : numpy.ndarray
+        The segmented label image for the first object.
+    label_object2 : numpy.ndarray
+        The segmented label image for the second object.
+    image_object1 : numpy.ndarray
+        The spectral image to crop for the first object.
+    image_object2 : numpy.ndarray
+        The spectral image to crop for the second object.
+    object_id1 : int
+        The object index to select from the label image for the first object.
+    object_id2 : int
+        The object index to select from the label image for the second object.
+
+    Returns
+    -------
+    Tuple[numpy.ndarray, numpy.ndarray]
+        The two cropped images for colocalization analysis.
+    """
     label_object1 = cupy.array(label_object1)
     label_object2 = cupy.array(label_object2)
     object_id1 = cupy.array(object_id1)
@@ -444,6 +497,15 @@ def measure_3D_colocalization_gpu(
     thr = 15
     ################################################################################################
     # Calculate the correlation coefficient between the two images
+    # This is the Pearson correlation coefficient
+    # Pearson correlation coeffecient = cov(X, Y) / (std(X) * std(Y))
+    # where cov(X, Y) is the covariance of X and Y
+    # where X and Y are the two images
+    # std(X) is the standard deviation of X
+    # std(Y) is the standard deviation of Y
+    # cov(X, Y) = sum((X - mean(X)) * (Y - mean(Y))) / (N - 1)
+    # std(X) = sqrt(sum((X - mean(X)) ** 2) / (N - 1))
+    # thus N -1 cancels out in the calculation below
     ################################################################################################
     mean1 = cupyx.scipy.ndimage.mean(cropped_image_1)
     mean2 = cupyx.scipy.ndimage.mean(cropped_image_2)
