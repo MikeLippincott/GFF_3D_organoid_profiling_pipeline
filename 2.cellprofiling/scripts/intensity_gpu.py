@@ -58,7 +58,7 @@ channel_n_compartment_mapping = {
 
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
-    spacing=(1, 0.1, 0.1),
+    anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_n_compartment_mapping,
 )
 
@@ -95,6 +95,30 @@ for compartment in tqdm(
             f"{compartment}_{channel}_{col}" for col in final_df.columns
         ]
         final_df["image_set"] = image_set_loader.image_set_name
+        final_df["feature"] = (
+            "Intensity_"
+            + final_df["Nuclei_DNA_compartment"]
+            + "_"
+            + final_df["Nuclei_DNA_channel"]
+            + "_"
+            + final_df["Nuclei_DNA_feature_name"]
+        )
+        final_df.rename(columns={"Nuclei_DNA_object_id": "objectID"}, inplace=True)
+        final_df.drop(
+            columns=[
+                "Nuclei_DNA_compartment",
+                "Nuclei_DNA_channel",
+                "Nuclei_DNA_feature_name",
+            ],
+            inplace=True,
+        )
+        # pivot wide
+        final_df = final_df.pivot(
+            index=["objectID", "image_set"],
+            columns="feature",
+            values="Nuclei_DNA_value",
+        )
+        final_df.reset_index(inplace=True)
 
         output_file = pathlib.Path(
             f"../results/{image_set_loader.image_set_name}/Intensity_{compartment}_{channel}_features.parquet"
