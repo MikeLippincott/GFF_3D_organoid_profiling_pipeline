@@ -66,33 +66,6 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[5]:
-
-
-def granularity_feature(length):
-    C_GRANULARITY = "GRANULARITY.%s"
-    return C_GRANULARITY % (length)
-
-
-class ObjectRecord:
-    def __init__(self, object_loader, object_index):
-        self.object_index = object_index
-        self.labels = object_loader.objects.copy()
-        # select the object
-        self.labels[self.labels != object_index] = 0
-        self.image = object_loader.image.copy()
-        self.image[self.labels != object_index] = 0
-
-        # self.labels[self.labels == object_index] = 1
-        # self.labels[~object_index] = 0
-
-        self.nobjects = len(numpy.unique(self.labels))
-        if self.nobjects != 0:
-            self.range = numpy.arange(1, numpy.max(self.labels) + 1)
-            self.current_mean = scipy.ndimage.mean(self.image, self.labels)
-            self.start_mean = numpy.maximum(self.current_mean, numpy.finfo(float).eps)
-
-
 # In[6]:
 
 

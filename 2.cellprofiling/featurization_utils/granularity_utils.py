@@ -18,7 +18,7 @@ def granularity_feature(length):
     return C_GRANULARITY % (length)
 
 
-class ObjectRecord:
+class ObjectGranularityRecord:
     """
     This class is used to store the information about the object.
 
@@ -58,15 +58,15 @@ class ObjectRecord:
         self.image = object_loader.image.copy()
         self.image[self.labels != object_index] = 0
 
-        # self.labels[self.labels == object_index] = 1
-        # self.labels[~object_index] = 0
-
         self.nobjects = len(numpy.unique(self.labels))
         if self.nobjects != 0:
-            self.range = numpy.arange(1, numpy.max(self.labels) + 1)
             self.current_mean = scipy.ndimage.mean(self.image, self.labels)
 
             self.start_mean = numpy.maximum(self.current_mean, numpy.finfo(float).eps)
+        else:
+            raise ValueError(
+                f"No objects found in the image for object index {object_index}"
+            )
 
 
 def measure_3D_granularity(
@@ -101,9 +101,7 @@ def measure_3D_granularity(
 
     image_object = object_loader.image
     label_object = object_loader.label_image
-    # radius=10
     radius = 10
-    # granular_spectrum_length=16
     granular_spectrum_length = 16
     subsample_size = 0.25
     image_name = "nuclei"
@@ -113,15 +111,19 @@ def measure_3D_granularity(
 
     # begin by downsampling the image
     new_shape = numpy.array(pixels.shape)
-    new_shape = new_shape * subsample_size
+    new_shape = (
+        new_shape * subsample_size
+    )  # downsample the image for computational speed
     k, i, j = (
         numpy.mgrid[0 : new_shape[0], 0 : new_shape[1], 0 : new_shape[2]].astype(float)
         / subsample_size
     )
     pixels = scipy.ndimage.map_coordinates(pixels, (k, i, j), order=1)
-    mask = scipy.ndimage.map_coordinates(mask.astype(float), (k, i, j)) > 0.9
+    mask = (
+        scipy.ndimage.map_coordinates(mask.astype(float), (k, i, j)) > 0.9
+    )  # 0.9 is a threshold to determine if the pixel is part of the object
 
-    back_shape = new_shape * subsample_size
+    back_shape = new_shape
     k, i, j = (
         numpy.mgrid[0 : new_shape[0], 0 : new_shape[1], 0 : new_shape[2]].astype(float)
         / subsample_size
@@ -150,7 +152,7 @@ def measure_3D_granularity(
     pixels[pixels < 0] = 0
 
     object_records = [
-        ObjectRecord(object_loader, object_index)
+        ObjectGranularityRecord(object_loader, object_index)
         for _, object_index in enumerate(object_loader.object_ids)
     ]
 
@@ -163,7 +165,6 @@ def measure_3D_granularity(
     currentmean = startmean
     startmean = max(startmean, numpy.finfo(float).eps)
     footprint = skimage.morphology.ball(1, dtype=bool)
-    statistics = [image_name]
     feature_measurments = {}
     object_measurements = {"object_id": [], "feature": [], "value": []}
     for i in range(1, granular_spectrum_length + 1):
@@ -174,7 +175,6 @@ def measure_3D_granularity(
         rec = skimage.morphology.reconstruction(ero, pixels, footprint=footprint)
         currentmean = numpy.mean(rec[mask])
         gs = (prevmean - currentmean) * 100 / startmean
-        statistics += ["%.2f" % gs]
         feature = granularity_feature(i)
         feature_measurments[feature] = gs
         # Restore the reconstructed image to the shape of the
@@ -188,7 +188,7 @@ def measure_3D_granularity(
         j *= float(new_shape[2] - 1) / float(orig_shape[2] - 1)
         rec = scipy.ndimage.map_coordinates(rec, (k, i, j), order=1)
         for object_record in object_records:
-            assert isinstance(object_record, ObjectRecord)
+            assert isinstance(object_record, ObjectGranularityRecord)
             if object_record.nobjects > 0:
                 new_mean = scipy.ndimage.mean(rec, object_record.labels)
                 gss = (
@@ -256,9 +256,10 @@ def measure_3D_granularity_gpu(
         )
         > 0.9
     )
-    back_shape = new_shape * subsample_size
+    back_shape = (
+        new_shape * subsample_size
+    )  # downsample the image for computational speed
 
-    back_shape = new_shape * subsample_size
     k, i, j = (
         cupy.mgrid[0 : new_shape[0], 0 : new_shape[1], 0 : new_shape[2]].astype(
             cupy.float32
@@ -275,26 +276,20 @@ def measure_3D_granularity_gpu(
         > 0.9
     )
     footprint = cucim.skimage.morphology.ball(radius, dtype=bool)
-    # conver the footprint bool to float32
-    # footprint = footprint.astype(cupy.int32)
 
     back_pixels_mask = cupy.zeros_like(back_pixels)
     back_pixels_mask[back_mask == True] = back_pixels[back_mask == True]
     back_pixels_mask = cupy.asarray(back_pixels_mask)
 
-    back_pixels = cucim.skimage.morphology.isotropic_erosion(
-        back_pixels_mask,
-        radius=3,
-        spacing=image_set_loader.spacing,
+    back_pixels = cucim.skimage.morphology.erosion(
+        back_pixels_mask, footprint=footprint
     )
 
     back_pixels_mask = cupy.zeros_like(back_pixels)
     back_pixels_mask[back_mask == True] = back_pixels[back_mask == True]
 
-    back_pixels = cucim.skimage.morphology.isotropic_dilation(
-        back_pixels_mask,
-        radius=3,
-        spacing=image_set_loader.spacing,
+    back_pixels = cucim.skimage.morphology.dilation(
+        back_pixels_mask, footprint=footprint
     )
     k, i, j = cupy.mgrid[0 : new_shape[0], 0 : new_shape[1], 0 : new_shape[2]].astype(
         cupy.float32
@@ -319,10 +314,9 @@ def measure_3D_granularity_gpu(
     currentmean = startmean
     startmean = max(startmean, cupy.finfo(float).eps)
     footprint = cucim.skimage.morphology.ball(1, dtype=bool)
-    statistics = [image_name]
     feature_measurments = {}
     objects_records = [
-        ObjectRecord(object_loader=object_loader, object_index=object_id)
+        ObjectGranularityRecord(object_loader=object_loader, object_index=object_id)
         for object_id in object_loader.object_ids
     ]
     object_measurements = {"object_id": [], "feature": [], "value": []}
@@ -330,11 +324,7 @@ def measure_3D_granularity_gpu(
         prevmean = currentmean
         ero_mask = cupy.zeros_like(ero)
         ero_mask[mask == True] = ero[mask == True]
-        ero = cucim.skimage.morphology.isotropic_erosion(
-            ero_mask,
-            radius=3,
-            spacing=image_set_loader.spacing,
-        )
+        ero = cucim.skimage.morphology.erosion(ero_mask, footprint=footprint)
         rec = cucim.skimage.morphology.reconstruction(
             ero,
             pixels,
@@ -342,7 +332,6 @@ def measure_3D_granularity_gpu(
         )
         currentmean = cupy.mean(rec[mask])
         gs = (prevmean - currentmean) * 100 / startmean
-        statistics += ["%.2f" % gs]
         feature = granularity_feature(i)
         feature_measurments[feature] = gs
         # Restore the reconstructed image to the shape of the
