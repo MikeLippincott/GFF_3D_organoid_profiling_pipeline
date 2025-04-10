@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -32,7 +32,7 @@ else:
 image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
 
 
-# In[ ]:
+# In[3]:
 
 
 channel_n_compartment_mapping = {
@@ -48,12 +48,12 @@ channel_n_compartment_mapping = {
 }
 
 
-# In[ ]:
+# In[4]:
 
 
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
-    spacing=(1, 0.1, 0.1),
+    anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_n_compartment_mapping,
 )
 image_set_loader.image_set_dict.keys()
