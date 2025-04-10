@@ -55,22 +55,14 @@ channel_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
-    spacing=(1, 0.1, 0.1),
+    anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_mapping,
 )
-
-
-# In[5]:
-
-
-def granularity_feature(length):
-    C_GRANULARITY = "GRANULARITY.%s"
-    return C_GRANULARITY % (length)
 
 
 # In[6]:
@@ -92,16 +84,16 @@ for compartment in tqdm(
         position=1,
     ):
         object_loader = ObjectLoader(
-            image_set_loader.image_set_dict[channel],
-            image_set_loader.image_set_dict[compartment],
-            channel,
-            compartment,
+            image=image_set_loader.image_set_dict[channel],
+            label_image=image_set_loader.image_set_dict[compartment],
+            channel_name=channel,
+            compartment_name=compartment,
         )
         object_measurements = measure_3D_granularity(
-            object_loader,
-            radius=10,
-            granular_spectrum_length=2,
-            subsample_size=0.25,
+            object_loader=object_loader,
+            radius=10,  # radius of the sphere to use for granularity measurement
+            granular_spectrum_length=2,  # usually 16 but 2 is used for testing for now
+            subsample_size=0.25,  # subsample to 25% of the image to reduce computation time
             image_name=channel,
         )
         final_df = pd.DataFrame(object_measurements)
