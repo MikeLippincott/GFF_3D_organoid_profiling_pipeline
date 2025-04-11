@@ -8,7 +8,7 @@ conda activate GFF_featurization
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
-cd scripts/ || exit
+cd ../scripts/ || exit
 
 # start the timer
 start_timestamp=$(date +%s)

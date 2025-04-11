@@ -47,6 +47,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
+        --output=area_shape_child-%j.out \
         run_area_shape_child.sh $use_GPU
 
     sbatch \
@@ -57,6 +58,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
+        --output=colocalization_child-%j.out \
         run_colocalization_child.sh $use_GPU
 
     sbatch \
@@ -67,6 +69,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
+        --output=granularity_child-%j.out \
         run_granularity_child.sh $use_GPU
 
     sbatch \
@@ -77,7 +80,8 @@ if [ "$use_GPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
-        run_instensity_child.sh $use_GPU
+        --output=intensity_child-%j.out \
+        run_intensity_child.sh $use_GPU
 
 else
     echo "Running CPU version"
@@ -88,7 +92,9 @@ else
         --partition=amem \
         --qos=mem \
         --account=amc-general \
-        --time=30:00 run_area_shape_child.sh
+        --time=30:00 \
+        --output=area_shape_child-%j.out \
+        run_area_shape_child.sh
 
     sbatch \
         --nodes=1 \
@@ -96,7 +102,9 @@ else
         --partition=amem \
         --qos=mem \
         --account=amc-general \
-        --time=30:00 run_colocalization_child.sh
+        --time=30:00 \
+        --output=colocalization_child-%j.out \
+        run_colocalization_child.sh
 
     sbatch \
         --nodes=1 \
@@ -104,7 +112,9 @@ else
         --partition=amem \
         --qos=mem \
         --account=amc-general \
-        --time=30:00 run_granularity_child.sh
+        --time=30:00 \
+        --output=granularity_child-%j.out \
+        run_granularity_child.sh
 
     sbatch \
         --nodes=1 \
@@ -112,7 +122,9 @@ else
         --partition=amem \
         --qos=mem \
         --account=amc-general \
-        --time=30:00 run_instensity_child.sh
+        --time=30:00 \
+        --output=intensity_child-%j.out \
+        run_instensity_child.sh
 
 fi
 
@@ -122,7 +134,9 @@ sbatch \
     --partition=amem \
     --qos=mem \
     --account=amc-general \
-    --time=30:00 run_neighbors_child.sh
+    --time=30:00 \
+    --output=neighbors_child-%j.out \
+    run_neighbors_child.sh
 
 
 
@@ -132,7 +146,9 @@ sbatch \
     --partition=amem \
     --qos=mem \
     --account=amc-general \
-    --time=30:00 run_texture_child.sh
+    --time=30:00 \
+    --output=texture_child-%j.out \
+    run_texture_child.sh
 
 
 cd ../ || exit
