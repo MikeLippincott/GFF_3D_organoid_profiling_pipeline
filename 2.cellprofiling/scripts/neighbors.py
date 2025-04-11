@@ -54,7 +54,7 @@ channel_n_compartment_mapping = {
 
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
-    spacing=(1, 0.1, 0.1),
+    anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_n_compartment_mapping,
 )
 
