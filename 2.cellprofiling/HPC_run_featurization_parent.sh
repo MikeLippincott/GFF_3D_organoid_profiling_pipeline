@@ -5,8 +5,11 @@
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
 #SBATCH --time=24:00:00
-#SBATCH --output=annotate_sc_parent-%j.out
+#SBATCH --output=featurization_sc_parent-%j.out
 
+
+module load anaconda
+conda init bash
 conda activate GFF_featurization
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
