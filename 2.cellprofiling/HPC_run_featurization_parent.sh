@@ -16,9 +16,9 @@ jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*
 
 cd scripts/ || exit
 
-parent_dir="../../data/NF0014/cellprofiler"
-# get the list of all dirs in the parent_dir
-dirs=$(ls -d $parent_dir/*)
+# parent_dir="../../data/NF0014/cellprofiler"
+# # get the list of all dirs in the parent_dir
+# dirs=$(ls -d $parent_dir/*)
 
 # for dir in $dirs; do
 #     dir_name=$(basename $dir)
@@ -30,6 +30,8 @@ dirs=$(ls -d $parent_dir/*)
 #     done
 #     sbatch HPC_run_featurization_child.sh $dir
 # done
+
+cd ../ || exit
 
 use_GPU="TRUE"
 cd slurm_scripts || exit
