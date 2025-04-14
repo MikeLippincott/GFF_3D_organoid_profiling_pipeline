@@ -97,18 +97,20 @@ for compartment in tqdm(
         final_df["image_set"] = image_set_loader.image_set_name
         final_df["feature"] = (
             "Intensity_"
-            + final_df["Nuclei_DNA_compartment"]
+            + final_df[f"{compartment}_{channel}_compartment"]
             + "_"
-            + final_df["Nuclei_DNA_channel"]
+            + final_df[f"{compartment}_{channel}_channel"]
             + "_"
-            + final_df["Nuclei_DNA_feature_name"]
+            + final_df[f"{compartment}_{channel}_feature_name"]
         )
-        final_df.rename(columns={"Nuclei_DNA_object_id": "objectID"}, inplace=True)
+        final_df.rename(
+            columns={f"{compartment}_{channel}_object_id": "objectID"}, inplace=True
+        )
         final_df.drop(
             columns=[
-                "Nuclei_DNA_compartment",
-                "Nuclei_DNA_channel",
-                "Nuclei_DNA_feature_name",
+                f"{compartment}_{channel}_compartment",
+                f"{compartment}_{channel}_channel",
+                f"{compartment}_{channel}_feature_name",
             ],
             inplace=True,
         )
@@ -116,7 +118,7 @@ for compartment in tqdm(
         final_df = final_df.pivot(
             index=["objectID", "image_set"],
             columns="feature",
-            values="Nuclei_DNA_value",
+            values=f"{compartment}_{channel}_value",
         )
         final_df.reset_index(inplace=True)
 
