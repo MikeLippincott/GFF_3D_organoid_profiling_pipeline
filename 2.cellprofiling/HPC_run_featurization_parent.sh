@@ -47,7 +47,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
-        --output=area_shape_child-%j.out \
+        --output=area_shape_gpu_child-%j.out \
         run_area_shape_child.sh $use_GPU
 
     sbatch \
@@ -58,7 +58,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
-        --output=colocalization_child-%j.out \
+        --output=colocalization_gpu_child-%j.out \
         run_colocalization_child.sh $use_GPU
 
     sbatch \
@@ -69,7 +69,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
-        --output=granularity_child-%j.out \
+        --output=granularity_gpu_child-%j.out \
         run_granularity_child.sh $use_GPU
 
     sbatch \
@@ -80,7 +80,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
-        --output=intensity_child-%j.out \
+        --output=intensity_gpu_child-%j.out \
         run_intensity_child.sh $use_GPU
 
 else
@@ -88,32 +88,32 @@ else
 
     sbatch \
         --nodes=1 \
-        --mem=300G \
-        --partition=amem \
-        --qos=mem \
+        --nstasks=2 \
+        --partition=amilan \
+        --qos=normal \
         --account=amc-general \
-        --time=30:00 \
-        --output=area_shape_child-%j.out \
+        --time=15:00 \
+        --output=area_shape_cpu_child-%j.out \
         run_area_shape_child.sh
 
     sbatch \
         --nodes=1 \
-        --mem=300G \
-        --partition=amem \
-        --qos=mem \
+        --ntasks=4 \
+        --partition=amilan \
+        --qos=normal \
         --account=amc-general \
         --time=30:00 \
-        --output=colocalization_child-%j.out \
+        --output=colocalization_cpu_child-%j.out \
         run_colocalization_child.sh
 
     sbatch \
         --nodes=1 \
-        --mem=300G \
-        --partition=amem \
-        --qos=mem \
+        --ntasks=8 \
+        --partition=amilan \
+        --qos=normal \
         --account=amc-general \
         --time=30:00 \
-        --output=granularity_child-%j.out \
+        --output=granularity_cpu_child-%j.out \
         run_granularity_child.sh
 
     sbatch \
@@ -123,7 +123,7 @@ else
         --qos=mem \
         --account=amc-general \
         --time=30:00 \
-        --output=intensity_child-%j.out \
+        --output=intensity_cpu_child-%j.out \
         run_instensity_child.sh
 
 fi
