@@ -79,7 +79,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --qos=normal \
         --gres=gpu:1 \
         --account=amc-general \
-        --time=30:00 \
+        --time=3:00:00 \
         --output=intensity_gpu_child-%j.out \
         run_intensity_child.sh $use_GPU
 
@@ -112,7 +112,7 @@ else
         --partition=amem \
         --qos=mem \
         --account=amc-general \
-        --time=2:00:00 \
+        --time=12:00:00 \
         --output=granularity_cpu_child-%j.out \
         run_granularity_child.sh
 
@@ -146,7 +146,7 @@ sbatch \
     --partition=amem \
     --qos=mem \
     --account=amc-general \
-    --time=24:00:00 \
+    --time=48:00:00 \
     --output=texture_child-%j.out \
     run_texture_child.sh
 
