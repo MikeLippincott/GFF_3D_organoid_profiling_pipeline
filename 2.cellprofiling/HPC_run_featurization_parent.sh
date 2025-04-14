@@ -108,33 +108,33 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=8 \
-        --partition=amilan \
-        --qos=normal \
+        --mem=400G \
+        --partition=amem \
+        --qos=mem \
         --account=amc-general \
-        --time=30:00 \
+        --time=2:00:00 \
         --output=granularity_cpu_child-%j.out \
         run_granularity_child.sh
 
     sbatch \
         --nodes=1 \
-        --mem=300G \
-        --partition=amem \
-        --qos=mem \
+        --ntasks=4 \
+        --partition=amilan \
+        --qos=normal \
         --account=amc-general \
-        --time=30:00 \
+        --time=24:00:00 \
         --output=intensity_cpu_child-%j.out \
-        run_instensity_child.sh
+        run_intensity_child.sh
 
 fi
 
 sbatch \
     --nodes=1 \
-    --mem=300G \
-    --partition=amem \
-    --qos=mem \
+    --ntasks=1 \
+    --partition=amilan \
+    --qos=normal \
     --account=amc-general \
-    --time=30:00 \
+    --time=10:00 \
     --output=neighbors_child-%j.out \
     run_neighbors_child.sh
 
@@ -146,7 +146,7 @@ sbatch \
     --partition=amem \
     --qos=mem \
     --account=amc-general \
-    --time=30:00 \
+    --time=24:00:00 \
     --output=texture_child-%j.out \
     run_texture_child.sh
 
