@@ -107,7 +107,7 @@ def animate_view(
     animation.animate(output_path_name, canvas_only=True)
 
 
-# In[5]:
+# In[ ]:
 
 
 channel_map = {
@@ -239,13 +239,27 @@ for layer_name in layer_names:
     viewer.layers[layer_name].visible = False
 
 
-# In[12]:
+# In[ ]:
 
 
 for layer_name in layer_names:
     viewer.layers[layer_name].visible = True
     if ".tif" in layer_name:
         save_name = layer_name.split(".tif")[0]
+    else:
+        save_name = layer_name
+
+    # map the layer name to the channel name
+    if "Nuclei" in layer_name:
+        save_name = "DNA"
+    elif "Endoplasmic" in layer_name:
+        save_name = "ER"
+    elif "AGP" in layer_name:
+        save_name = "AGP"
+    elif "Mitochondria" in layer_name:
+        save_name = "mitochondria"
+    elif "Brightfield" in layer_name:
+        save_name = "brightfield"
     else:
         save_name = layer_name
 
