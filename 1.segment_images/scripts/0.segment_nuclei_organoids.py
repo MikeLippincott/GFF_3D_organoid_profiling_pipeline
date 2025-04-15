@@ -34,6 +34,9 @@ except NameError:
 
 # ## parse args and set paths
 
+# If if a notebook run the hardcoded paths.
+# However, if this is run as a script, the paths are set by the parsed arguments.
+
 # In[ ]:
 
 
