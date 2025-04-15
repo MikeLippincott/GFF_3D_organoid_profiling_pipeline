@@ -142,11 +142,11 @@ sbatch \
 
 sbatch \
     --nodes=1 \
-    --mem=300G \
-    --partition=amem \
-    --qos=mem \
+    --mem=150G \
+    --partition=amilan \
+    --qos=normal \
     --account=amc-general \
-    --time=48:00:00 \
+    --time=16:00:00 \
     --output=texture_child-%j.out \
     run_texture_child.sh
 
