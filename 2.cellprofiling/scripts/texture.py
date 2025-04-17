@@ -118,10 +118,10 @@ for compartment in tqdm(
         )
         output_file.parent.mkdir(parents=True, exist_ok=True)
         final_df.to_parquet(output_file)
-final_df.head()
+        final_df.head()
 
 
-# In[ ]:
+# In[7]:
 
 
 print(f"Time elapsed: {time.time() - start_time}")
