@@ -31,6 +31,7 @@ def scale_image(image: numpy.ndarray, num_gray_levels=256) -> numpy.ndarray:
 def measure_3D_texture(
     object_loader: ObjectLoader,
     distance: int = 1,
+    grayscale: int = 256,
 ) -> dict:
     """
     Calculate texture features for each object in the image using Haralick features.
@@ -86,7 +87,9 @@ def measure_3D_texture(
         haralick_mean = haralick_features.mean(axis=0)
         for i, feature_name in enumerate(feature_names):
             output_texture_dict["object_id"].append(label)
-            output_texture_dict["texture_name"].append(feature_name)
+            output_texture_dict["texture_name"].append(
+                f"Texture_{feature_name}_{grayscale}.{distance}"
+            )
             output_texture_dict["texture_value"].append(haralick_mean[i])
         del haralick_mean
         del haralick_features
