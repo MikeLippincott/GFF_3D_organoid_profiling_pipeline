@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -53,7 +53,7 @@ channel_mapping = {
 }
 
 
-# In[ ]:
+# In[4]:
 
 
 image_set_loader = ImageSetLoader(
@@ -63,15 +63,13 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[6]:
+# In[5]:
 
 
 start_time = time.time()
 
 
-# Takes forever to run - so not running in notebok:
-
-# In[5]:
+# In[ ]:
 
 
 for compartment in tqdm(
@@ -93,19 +91,34 @@ for compartment in tqdm(
             object_loader=object_loader,
             distance=1,
         )
-        output_dict = output_texture_dict(object_loader)
-        final_df = pd.DataFrame(output_dict)
+        final_df = pd.DataFrame(output_texture_dict)
         # prepend compartment and channel to column names
         final_df.columns = [
             f"{compartment}_{channel}_{col}" for col in final_df.columns
         ]
         final_df["image_set"] = image_set_loader.image_set_name
+        # pivot wide
+        final_df.rename(
+            columns={
+                f"{compartment}_{channel}_object_id": "object_id",
+            },
+            inplace=True,
+        )
+        final_df = final_df.pivot(
+            index=["object_id", "image_set"],
+            columns=f"{compartment}_{channel}_texture_name",
+            values=f"{compartment}_{channel}_texture_value",
+        )
+        final_df.reset_index(inplace=True)
+        # rename the index columns
+        final_df.columns.name = None
 
         output_file = pathlib.Path(
             f"../results/{image_set_loader.image_set_name}/Texture_{compartment}_{channel}_features.parquet"
         )
         output_file.parent.mkdir(parents=True, exist_ok=True)
         final_df.to_parquet(output_file)
+final_df.head()
 
 
 # In[ ]:
