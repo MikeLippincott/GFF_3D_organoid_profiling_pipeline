@@ -142,7 +142,7 @@ sbatch \
 
 sbatch \
     --nodes=1 \
-    --mem=150G \
+    --nstasks=2 \
     --partition=amilan \
     --qos=normal \
     --account=amc-general \

@@ -1,8 +1,31 @@
 import gc
 
 import mahotas
+import numpy
 import tqdm
 from loading_classes import ObjectLoader
+
+
+def scale_image(image: numpy.ndarray, num_gray_levels=256) -> numpy.ndarray:
+    """
+    Scale the image to a specified number of gray levels.
+
+    Parameters
+    ----------
+    image : numpy.ndarray
+        The input image to be scaled. Can be a ndarray of any shape.
+    num_gray_levels : int, optional
+        The number of gray levels to scale the image to, by default 256
+
+    Returns
+    -------
+    numpy.ndarray
+        The gray level scaled image of any shape.
+    """
+    # scale the image to 256 gray levels
+    image = (image - image.min()) / (image.max() - image.min())
+    image = (image * (num_gray_levels - 1)).astype(numpy.uint8)
+    return image
 
 
 def measure_3D_texture(
@@ -53,6 +76,7 @@ def measure_3D_texture(
         selected_label_object[selected_label_object != label] = 0
         image_object = object_loader.image.copy()
         image_object[selected_label_object == 0] = 0
+        image_object = scale_image(image_object)
         haralick_features = mahotas.features.haralick(
             ignore_zeros=False,
             f=image_object,

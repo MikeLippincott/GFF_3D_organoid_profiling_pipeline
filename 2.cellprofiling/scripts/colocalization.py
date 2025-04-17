@@ -122,9 +122,6 @@ for compartment in tqdm(
                 f"{compartment}_{channel1}.{channel2}_{col}" for col in coloc_df.columns
             ]
             coloc_df["object_id"] = object_id
-            coloc_df["channel1"] = channel1
-            coloc_df["channel2"] = channel2
-            coloc_df["compartment"] = compartment
             coloc_df["image_set"] = image_set_loader.image_set_name
         output_file = pathlib.Path(
             f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features.parquet"
