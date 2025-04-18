@@ -86,36 +86,21 @@ for compartment in tqdm(
         output_dict = measure_3D_intensity_CPU(object_loader)
         final_df = pd.DataFrame(output_dict)
         # prepend compartment and channel to column names
-        final_df.columns = [
-            f"{compartment}_{channel}_{col}" for col in final_df.columns
-        ]
-        final_df["image_set"] = image_set_loader.image_set_name
-        final_df["feature"] = (
-            "Intensity_"
-            + final_df[f"{compartment}_{channel}_compartment"]
-            + "_"
-            + final_df[f"{compartment}_{channel}_channel"]
-            + "_"
-            + final_df[f"{compartment}_{channel}_feature_name"]
-        )
-        final_df.rename(
-            columns={f"{compartment}_{channel}_object_id": "objectID"}, inplace=True
-        )
-        final_df.drop(
-            columns=[
-                f"{compartment}_{channel}_compartment",
-                f"{compartment}_{channel}_channel",
-                f"{compartment}_{channel}_feature_name",
-            ],
-            inplace=True,
-        )
-        # pivot wide
         final_df = final_df.pivot(
-            index=["objectID", "image_set"],
-            columns="feature",
-            values=f"{compartment}_{channel}_value",
-        )
-        final_df.reset_index(inplace=True)
+            index=["object_id"],
+            columns="feature_name",
+            values="value",
+        ).reset_index()
+        for col in final_df.columns:
+            if col == "object_id":
+                continue
+            else:
+                final_df.rename(
+                    columns={col: f"Intensity_{compartment}_{channel}_{col}"},
+                    inplace=True,
+                )
+
+        final_df.insert(0, "image_set", image_set_loader.image_set_name)
 
         output_file = pathlib.Path(
             f"../results/{image_set_loader.image_set_name}/Intensity_{compartment}_{channel}_features.parquet"

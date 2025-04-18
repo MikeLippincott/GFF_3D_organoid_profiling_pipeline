@@ -48,7 +48,7 @@ channel_n_compartment_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
@@ -56,7 +56,6 @@ image_set_loader = ImageSetLoader(
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_n_compartment_mapping,
 )
-image_set_loader.image_set_dict.keys()
 
 
 # In[5]:
@@ -65,7 +64,7 @@ image_set_loader.image_set_dict.keys()
 start_time = time.time()
 
 
-# In[6]:
+# In[ ]:
 
 
 for compartment in tqdm(
@@ -92,10 +91,13 @@ for compartment in tqdm(
         final_df = pd.DataFrame(size_shape_dict)
 
         # prepend compartment and channel to column names
-        final_df.columns = [
-            f"{compartment}_{channel}_{col}" for col in final_df.columns
-        ]
-        final_df["image_set"] = image_set_loader.image_set_name
+        for col in final_df.columns:
+            if col not in ["object_id"]:
+                final_df.rename(
+                    columns={col: f"Area.Size.Shape_{compartment}_{channel}_{col}"},
+                    inplace=True,
+                )
+        final_df.insert(1, "image_set", image_set_loader.image_set_name)
 
         output_file = pathlib.Path(
             f"../results/{image_set_loader.image_set_name}/AreaSize_Shape_{compartment}_{channel}_features.parquet"

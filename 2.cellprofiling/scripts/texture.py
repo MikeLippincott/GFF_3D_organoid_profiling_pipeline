@@ -92,25 +92,14 @@ for compartment in tqdm(
             distance=1,
         )
         final_df = pd.DataFrame(output_texture_dict)
-        # prepend compartment and channel to column names
-        final_df.columns = [
-            f"{compartment}_{channel}_{col}" for col in final_df.columns
-        ]
-        final_df["image_set"] = image_set_loader.image_set_name
-        # pivot wide
-        final_df.rename(
-            columns={
-                f"{compartment}_{channel}_object_id": "object_id",
-            },
-            inplace=True,
-        )
+
         final_df = final_df.pivot(
-            index=["object_id", "image_set"],
-            columns=f"{compartment}_{channel}_texture_name",
-            values=f"{compartment}_{channel}_texture_value",
+            index="object_id",
+            columns="texture_name",
+            values="texture_value",
         )
         final_df.reset_index(inplace=True)
-        # rename the index columns
+        final_df.insert(0, "image_set", image_set_loader.image_set_name)
         final_df.columns.name = None
 
         output_file = pathlib.Path(
@@ -121,7 +110,7 @@ for compartment in tqdm(
         final_df.head()
 
 
-# In[7]:
+# In[ ]:
 
 
 print(f"Time elapsed: {time.time() - start_time}")

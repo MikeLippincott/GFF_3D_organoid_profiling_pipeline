@@ -121,8 +121,5 @@ def measure_3D_area_size_shape_gpu(
         features_to_record["SURFACE.AREA"] = features_to_record["SURFACE.AREA"].get()
     except:
         features_to_record["SURFACE.AREA"] = numpy.array([numpy.nan])
-        # extend the array to match the number of objects in numpy
-        features_to_record["SURFACE.AREA"] = numpy.repeat(
-            features_to_record["SURFACE.AREA"], len(props["label"])
-        )
+
     return features_to_record
