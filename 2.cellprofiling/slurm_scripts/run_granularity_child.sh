@@ -1,6 +1,6 @@
 #!/bin/bash
-
-use_GPU=$1
+well_fov=$1
+use_GPU=$2
 echo "Using GPU: $use_GPU"
 
 module load miniforge
@@ -13,10 +13,10 @@ cd ../scripts/ || exit
 start_timestamp=$(date +%s)
 if [ "$use_GPU" = "TRUE" ]; then
     echo "Running GPU version"
-    python granularity_gpu.py
+    python granularity_gpu.py --well_fov $well_fov
 else
     echo "Running CPU version"
-    python granularity.py
+    python granularity.py --well_fov $well_fov
 fi
 
 end=$(date +%s)

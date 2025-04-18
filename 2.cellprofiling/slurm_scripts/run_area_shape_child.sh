@@ -1,6 +1,6 @@
 #!/bin/bash
-
-use_GPU=$1
+well_fov=$1
+use_GPU=$2
 
 module load miniforge
 conda init bash
@@ -12,10 +12,10 @@ cd ../scripts/ || exit
 start_timestamp=$(date +%s)
 if [ "$use_GPU" = "TRUE" ]; then
     echo "Running GPU version"
-    python area_shape_gpu.py
+    python area_shape_gpu.py --well_fov $well_fov
 else
     echo "Running CPU version"
-    python area_shape.py
+    python area_shape.py --well_fov $well_fov
 fi
 
 end=$(date +%s)
