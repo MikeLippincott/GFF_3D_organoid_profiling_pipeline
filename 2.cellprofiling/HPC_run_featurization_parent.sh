@@ -107,11 +107,11 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=4 \
+        --ntasks=64 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=24:00:00 \
+        --time=6:00:00 \
         --output=intensity_cpu_child-%j.out \
         run_intensity_child.sh $well_fov $use_GPU
 
