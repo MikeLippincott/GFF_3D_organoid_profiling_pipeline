@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
+import argparse
+import os
 import pathlib
 import sys
 import time
+
+import psutil
 
 sys.path.append("../featurization_utils")
 import cucim.skimage.measure
@@ -31,10 +35,28 @@ else:
     from tqdm import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
-image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
+if not in_notebook:
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument(
+        "--well_fov",
+        type=str,
+        default="None",
+        help="Well and field of view to process, e.g. 'A01_1'",
+    )
+
+    args = argparser.parse_args()
+    well_fov = args.well_fov
+    if well_fov == "None":
+        raise ValueError(
+            "Please provide a well and field of view to process, e.g. 'A01_1'"
+        )
+
+    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+else:
+    image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
 
 
 # In[3]:
@@ -63,10 +85,12 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[5]:
+# In[ ]:
 
 
 start_time = time.time()
+# get starting memory (cpu)
+start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
 # In[6]:
@@ -114,10 +138,31 @@ for compartment in tqdm(
         final_df.to_parquet(output_file)
 
 
-# In[7]:
+# In[ ]:
 
 
-print("Intensity time:")
-print("--- %s seconds ---" % (time.time() - start_time))
-print("--- %s minutes ---" % ((time.time() - start_time) / 60))
-print("--- %s hours ---" % ((time.time() - start_time) / 3600))
+end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+end_time = time.time()
+print(f"Memory usage: {end_mem - start_mem:.2f} MB")
+print("Texture time:")
+print("--- %s seconds ---" % (end_time - start_time))
+print("--- %s minutes ---" % ((end_time - start_time) / 60))
+print("--- %s hours ---" % ((end_time - start_time) / 3600))
+# make a df of the run stats
+run_stats = pd.DataFrame(
+    {
+        "start_time": [start_time],
+        "end_time": [end_time],
+        "start_mem": [start_mem],
+        "end_mem": [end_mem],
+        "time_taken": [(end_time - start_time)],
+        "mem_usage": [(end_mem - start_mem)],
+        "gpu": [True],
+        "well_fov": [well_fov],
+        "feature_type": ["Intensity"],
+    }
+)
+# save the run stats to a file
+run_stats_file = pathlib.Path(f"../results/run_stats/{well_fov}_Intensity_gpu.parquet")
+run_stats_file.parent.mkdir(parents=True, exist_ok=True)
+run_stats.to_parquet(run_stats_file)

@@ -4,9 +4,13 @@
 # In[ ]:
 
 
+import argparse
+import os
 import pathlib
 import sys
 import time
+
+import psutil
 
 sys.path.append("../featurization_utils")
 import gc
@@ -88,10 +92,28 @@ def process_combination(args, image_set_loader):
     return f"Processed {compartment} - {channel}"
 
 
-# In[2]:
+# In[ ]:
 
 
-image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
+if not in_notebook:
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument(
+        "--well_fov",
+        type=str,
+        default="None",
+        help="Well and field of view to process, e.g. 'A01_1'",
+    )
+
+    args = argparser.parse_args()
+    well_fov = args.well_fov
+    if well_fov == "None":
+        raise ValueError(
+            "Please provide a well and field of view to process, e.g. 'A01_1'"
+        )
+
+    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+else:
+    image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
 
 
 # In[3]:
@@ -120,10 +142,12 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[5]:
+# In[ ]:
 
 
 start_time = time.time()
+# get starting memory (cpu)
+start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
 # In[ ]:
@@ -151,7 +175,31 @@ if __name__ == "__main__":
     print("Processing complete.")
 
 
-# In[8]:
+# In[ ]:
 
 
-print(f"Time elapsed: {time.time() - start_time}")
+end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+end_time = time.time()
+print(f"Memory usage: {end_mem - start_mem:.2f} MB")
+print("Texture time:")
+print("--- %s seconds ---" % (end_time - start_time))
+print("--- %s minutes ---" % ((end_time - start_time) / 60))
+print("--- %s hours ---" % ((end_time - start_time) / 3600))
+# make a df of the run stats
+run_stats = pd.DataFrame(
+    {
+        "start_time": [start_time],
+        "end_time": [end_time],
+        "start_mem": [start_mem],
+        "end_mem": [end_mem],
+        "time_taken": [(end_time - start_time)],
+        "mem_usage": [(end_mem - start_mem)],
+        "gpu": [None],
+        "well_fov": [well_fov],
+        "feature_type": ["texture"],
+    }
+)
+# save the run stats to a file
+run_stats_file = pathlib.Path(f"../results/run_stats/{well_fov}_texture.parquet")
+run_stats_file.parent.mkdir(parents=True, exist_ok=True)
+run_stats.to_parquet(run_stats_file)

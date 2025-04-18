@@ -1,18 +1,24 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
+import argparse
+import os
 import pathlib
 import sys
 import time
 
+import psutil
+
 sys.path.append("../featurization_utils")
-import numpy as np
+import multiprocessing
+import pathlib
+from functools import partial
+from itertools import product
+
 import pandas as pd
-import scipy
-import skimage
 from intensity_utils import measure_3D_intensity_CPU
 from loading_classes import ImageSetLoader, ObjectLoader
 
@@ -27,10 +33,88 @@ else:
     from tqdm import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
-image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
+def process_combination(args, image_set_loader):
+    """
+    Process a single combination of compartment and channel.
+
+    Parameters
+    ----------
+    args : _type_
+        Args that contain the compartment and channel.
+        Ordered as (compartment, channel).
+        Yes, order matters here.
+        channel : str
+            The channel name.
+        compartment : str
+            The compartment name.
+    image_set_loader : Class ImageSetLoader
+        This contains the image information needed to retreive the objects.
+
+    Returns
+    -------
+    str
+        A string indicating the compartment and channel that was processed.
+    """
+    compartment, channel = args
+    object_loader = ObjectLoader(
+        image_set_loader.image_set_dict[channel],
+        image_set_loader.image_set_dict[compartment],
+        channel,
+        compartment,
+    )
+    output_dict = measure_3D_intensity_CPU(object_loader)
+    final_df = pd.DataFrame(output_dict)
+    # prepend compartment and channel to column names
+    final_df = final_df.pivot(
+        index=["object_id"],
+        columns="feature_name",
+        values="value",
+    ).reset_index()
+    for col in final_df.columns:
+        if col == "object_id":
+            continue
+        else:
+            final_df.rename(
+                columns={col: f"Intensity_{compartment}_{channel}_{col}"},
+                inplace=True,
+            )
+
+    final_df.insert(0, "image_set", image_set_loader.image_set_name)
+
+    output_file = pathlib.Path(
+        f"../results/{image_set_loader.image_set_name}/Intensity_{compartment}_{channel}_features.parquet"
+    )
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    final_df.to_parquet(output_file)
+
+    return f"Processed {compartment} - {channel}"
+
+
+# In[ ]:
+
+
+if not in_notebook:
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument(
+        "--well_fov",
+        type=str,
+        default="None",
+        help="Well and field of view to process, e.g. 'A01_1'",
+    )
+
+    args = argparser.parse_args()
+    well_fov = args.well_fov
+    if well_fov == "None":
+        raise ValueError(
+            "Please provide a well and field of view to process, e.g. 'A01_1'"
+        )
+
+    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+else:
+    image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
 
 
 # In[3]:
@@ -59,60 +143,64 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[5]:
+# In[ ]:
 
 
 start_time = time.time()
+# get starting memory (cpu)
+start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
 # In[ ]:
 
 
-for compartment in tqdm(
-    image_set_loader.compartments, desc="Processing compartments", position=0
-):
-    for channel in tqdm(
-        image_set_loader.image_names,
-        desc="Processing channels",
-        leave=False,
-        position=1,
-    ):
-        object_loader = ObjectLoader(
-            image_set_loader.image_set_dict[channel],
-            image_set_loader.image_set_dict[compartment],
-            channel,
-            compartment,
+if __name__ == "__main__":
+    # Generate all combinations of compartments and channels
+    combinations = list(
+        product(image_set_loader.compartments, image_set_loader.image_names)
+    )
+    cores = multiprocessing.cpu_count()
+    print(f"Using {cores} cores for processing.")
+    # Use multiprocessing to process combinations in parallel
+    with multiprocessing.Pool(processes=cores) as pool:
+        results = list(
+            tqdm(
+                pool.imap(
+                    partial(process_combination, image_set_loader=image_set_loader),
+                    combinations,
+                ),
+                desc="Processing combinations",
+            )
         )
-        output_dict = measure_3D_intensity_CPU(object_loader)
-        final_df = pd.DataFrame(output_dict)
-        # prepend compartment and channel to column names
-        final_df = final_df.pivot(
-            index=["object_id"],
-            columns="feature_name",
-            values="value",
-        ).reset_index()
-        for col in final_df.columns:
-            if col == "object_id":
-                continue
-            else:
-                final_df.rename(
-                    columns={col: f"Intensity_{compartment}_{channel}_{col}"},
-                    inplace=True,
-                )
 
-        final_df.insert(0, "image_set", image_set_loader.image_set_name)
-
-        output_file = pathlib.Path(
-            f"../results/{image_set_loader.image_set_name}/Intensity_{compartment}_{channel}_features.parquet"
-        )
-        output_file.parent.mkdir(parents=True, exist_ok=True)
-        final_df.to_parquet(output_file)
+    print("Processing complete.")
 
 
-# In[7]:
+# In[ ]:
 
 
-print("Intensity time:")
-print("--- %s seconds ---" % (time.time() - start_time))
-print("--- %s minutes ---" % ((time.time() - start_time) / 60))
-print("--- %s hours ---" % ((time.time() - start_time) / 3600))
+end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+end_time = time.time()
+print(f"Memory usage: {end_mem - start_mem:.2f} MB")
+print("Texture time:")
+print("--- %s seconds ---" % (end_time - start_time))
+print("--- %s minutes ---" % ((end_time - start_time) / 60))
+print("--- %s hours ---" % ((end_time - start_time) / 3600))
+# make a df of the run stats
+run_stats = pd.DataFrame(
+    {
+        "start_time": [start_time],
+        "end_time": [end_time],
+        "start_mem": [start_mem],
+        "end_mem": [end_mem],
+        "time_taken": [(end_time - start_time)],
+        "mem_usage": [(end_mem - start_mem)],
+        "gpu": [None],
+        "well_fov": [well_fov],
+        "feature_type": ["Intensity"],
+    }
+)
+# save the run stats to a file
+run_stats_file = pathlib.Path(f"../results/run_stats/{well_fov}_Intensity.parquet")
+run_stats_file.parent.mkdir(parents=True, exist_ok=True)
+run_stats.to_parquet(run_stats_file)
