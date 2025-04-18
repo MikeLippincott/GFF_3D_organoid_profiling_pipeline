@@ -1,6 +1,7 @@
 #!/bin/bash
 
 use_GPU=$1
+echo "Using GPU: $use_GPU"
 
 module load miniforge
 conda init bash

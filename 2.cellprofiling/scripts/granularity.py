@@ -75,7 +75,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[6]:
 
 
 # for compartment in tqdm(
@@ -129,19 +129,19 @@ final_df.to_parquet(output_file)
 final_df.head()
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[8]:
 
 
 print(f"Memory usage: {end_mem - start_mem:.2f} MB")
 
 
-# In[ ]:
+# In[9]:
 
 
 print("--- %s seconds ---" % (time.time() - start_time))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import pathlib
@@ -10,15 +10,16 @@ import time
 
 sys.path.append("../featurization_utils")
 import gc
+import multiprocessing
+import pathlib
+from functools import partial
+from itertools import product
 
-import mahotas
-import numpy as np
 import pandas as pd
-import scipy
-import skimage
 import tqdm
 from loading_classes import ImageSetLoader, ObjectLoader
 from texture_utils import measure_3D_texture
+from tqdm import tqdm
 
 try:
     cfg = get_ipython().config
@@ -29,6 +30,62 @@ if in_notebook:
     from tqdm.notebook import tqdm
 else:
     from tqdm import tqdm
+
+
+# In[ ]:
+
+
+def process_combination(args, image_set_loader):
+    """
+    Process a single combination of compartment and channel.
+
+    Parameters
+    ----------
+    args : _type_
+        Args that contain the compartment and channel.
+        Ordered as (compartment, channel).
+        Yes, order matters here.
+        channel : str
+            The channel name.
+        compartment : str
+            The compartment name.
+    image_set_loader : Class ImageSetLoader
+        This contains the image information needed to retreive the objects.
+
+    Returns
+    -------
+    str
+        A string indicating the compartment and channel that was processed.
+    """
+    compartment, channel = args
+    object_loader = ObjectLoader(
+        image_set_loader.image_set_dict[channel],
+        image_set_loader.image_set_dict[compartment],
+        channel,
+        compartment,
+    )
+    output_texture_dict = measure_3D_texture(
+        object_loader=object_loader,
+        distance=1,
+    )
+    final_df = pd.DataFrame(output_texture_dict)
+
+    final_df = final_df.pivot(
+        index="object_id",
+        columns="texture_name",
+        values="texture_value",
+    )
+    final_df.reset_index(inplace=True)
+    final_df.insert(0, "image_set", image_set_loader.image_set_name)
+    final_df.columns.name = None
+
+    output_file = pathlib.Path(
+        f"../results/{image_set_loader.image_set_name}/Texture_{compartment}_{channel}_features.parquet"
+    )
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    final_df.to_parquet(output_file)
+
+    return f"Processed {compartment} - {channel}"
 
 
 # In[2]:
@@ -72,45 +129,29 @@ start_time = time.time()
 # In[ ]:
 
 
-for compartment in tqdm(
-    image_set_loader.compartments, desc="Processing compartments", position=0
-):
-    for channel in tqdm(
-        image_set_loader.image_names,
-        desc="Processing channels",
-        leave=False,
-        position=1,
-    ):
-        object_loader = ObjectLoader(
-            image_set_loader.image_set_dict[channel],
-            image_set_loader.image_set_dict[compartment],
-            channel,
-            compartment,
+if __name__ == "__main__":
+    # Generate all combinations of compartments and channels
+    combinations = list(
+        product(image_set_loader.compartments, image_set_loader.image_names)
+    )
+    cores = multiprocessing.cpu_count()
+    print(f"Using {cores} cores for processing.")
+    # Use multiprocessing to process combinations in parallel
+    with multiprocessing.Pool(processes=cores) as pool:
+        results = list(
+            tqdm(
+                pool.imap(
+                    partial(process_combination, image_set_loader=image_set_loader),
+                    combinations,
+                ),
+                desc="Processing combinations",
+            )
         )
-        output_texture_dict = measure_3D_texture(
-            object_loader=object_loader,
-            distance=1,
-        )
-        final_df = pd.DataFrame(output_texture_dict)
 
-        final_df = final_df.pivot(
-            index="object_id",
-            columns="texture_name",
-            values="texture_value",
-        )
-        final_df.reset_index(inplace=True)
-        final_df.insert(0, "image_set", image_set_loader.image_set_name)
-        final_df.columns.name = None
-
-        output_file = pathlib.Path(
-            f"../results/{image_set_loader.image_set_name}/Texture_{compartment}_{channel}_features.parquet"
-        )
-        output_file.parent.mkdir(parents=True, exist_ok=True)
-        final_df.to_parquet(output_file)
-        final_df.head()
+    print("Processing complete.")
 
 
-# In[ ]:
+# In[8]:
 
 
 print(f"Time elapsed: {time.time() - start_time}")
