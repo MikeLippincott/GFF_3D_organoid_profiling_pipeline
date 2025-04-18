@@ -88,7 +88,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --nstasks=2 \
+        --ntasks=2 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -108,11 +108,11 @@ else
 
     sbatch \
         --nodes=1 \
-        --mem=400G \
-        --partition=amem \
-        --qos=mem \
+        --ntasks=4 \
+        --partition=amilan \
+        --qos=normal \
         --account=amc-general \
-        --time=12:00:00 \
+        --time=6:00:00 \
         --output=granularity_cpu_child-%j.out \
         run_granularity_child.sh
 
@@ -142,7 +142,7 @@ sbatch \
 
 sbatch \
     --nodes=1 \
-    --nstasks=2 \
+    --ntasks=2 \
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
