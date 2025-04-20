@@ -11,8 +11,9 @@ module load miniforge
 conda init bash
 conda activate GFF_featurization
 
-use_GPU=$1
-well_fov=$2
+well_fov=$1
+use_GPU=$2
+
 
 echo "Submitting jobs for $well_fov"
 echo "Using GPU: $use_GPU"
