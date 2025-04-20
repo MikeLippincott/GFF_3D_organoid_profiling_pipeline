@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --partition=normal
+#SBATCH --partition=amilan
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
 #SBATCH --time=1:00:00
@@ -88,7 +88,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=64 \
+        --ntasks=20 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -108,7 +108,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=64 \
+        --ntasks=20 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -132,7 +132,7 @@ sbatch \
 
 sbatch \
     --nodes=1 \
-    --ntasks=64 \
+    --ntasks=20 \
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
