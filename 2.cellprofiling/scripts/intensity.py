@@ -156,26 +156,25 @@ start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 # In[ ]:
 
 
-if __name__ == "__main__":
-    # Generate all combinations of compartments and channels
-    combinations = list(
-        product(image_set_loader.compartments, image_set_loader.image_names)
-    )
-    cores = multiprocessing.cpu_count()
-    print(f"Using {cores} cores for processing.")
-    # Use multiprocessing to process combinations in parallel
-    with multiprocessing.Pool(processes=cores) as pool:
-        results = list(
-            tqdm(
-                pool.imap(
-                    partial(process_combination, image_set_loader=image_set_loader),
-                    combinations,
-                ),
-                desc="Processing combinations",
-            )
+# Generate all combinations of compartments and channels
+combinations = list(
+    product(image_set_loader.compartments, image_set_loader.image_names)
+)
+cores = multiprocessing.cpu_count()
+print(f"Using {cores} cores for processing.")
+# Use multiprocessing to process combinations in parallel
+with multiprocessing.Pool(processes=cores) as pool:
+    results = list(
+        tqdm(
+            pool.imap(
+                partial(process_combination, image_set_loader=image_set_loader),
+                combinations,
+            ),
+            desc="Processing combinations",
         )
+    )
 
-    print("Processing complete.")
+print("Processing complete.")
 
 
 # In[ ]:
