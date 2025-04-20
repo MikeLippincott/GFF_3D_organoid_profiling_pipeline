@@ -1,7 +1,8 @@
 #!/bin/bash
 
-use_GPU=$1
-well_fov=$2
+well_fov=$1
+use_GPU=$2
+
 
 module load miniforge
 conda init bash
