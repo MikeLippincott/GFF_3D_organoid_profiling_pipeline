@@ -116,6 +116,8 @@ if not in_notebook:
 else:
     image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
 
+print(f"Processing {image_set_path}...")
+
 
 # In[3]:
 
