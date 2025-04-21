@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -30,7 +30,7 @@ else:
     from tqdm import tqdm
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -51,6 +51,7 @@ if not in_notebook:
 
     image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
 else:
+    well_fov = "C4-2"
     image_set_path = pathlib.Path("../../data/NF0014/cellprofiler/C4-2/")
 
 
@@ -70,7 +71,7 @@ channel_n_compartment_mapping = {
 }
 
 
-# In[ ]:
+# In[4]:
 
 
 image_set_loader = ImageSetLoader(
@@ -80,7 +81,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[5]:
 
 
 start_time = time.time()
@@ -88,7 +89,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[6]:
 
 
 for compartment in tqdm(
@@ -131,7 +132,7 @@ for compartment in tqdm(
         final_df.head()
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

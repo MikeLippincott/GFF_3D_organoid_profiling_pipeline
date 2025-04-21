@@ -36,7 +36,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --qos=normal \
         --gres=gpu:1 \
         --account=amc-general \
-        --time=30:00 \
+        --time=10:00 \
         --output=area_shape_gpu_child-%j.out \
         run_area_shape_child.sh $well_fov $use_GPU
 
@@ -58,7 +58,7 @@ if [ "$use_GPU" = "TRUE" ]; then
         --qos=normal \
         --gres=gpu:1 \
         --account=amc-general \
-        --time=30:00 \
+        --time=1:30:00 \
         --output=granularity_gpu_child-%j.out \
         run_granularity_child.sh $well_fov $use_GPU
 
