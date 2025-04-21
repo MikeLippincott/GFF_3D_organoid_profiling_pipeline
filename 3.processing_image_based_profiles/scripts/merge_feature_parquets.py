@@ -19,7 +19,7 @@ well_fov = "C4-2"
 result_path = pathlib.Path(f"../../2.cellprofiling/results/{well_fov}/").resolve(
     strict=True
 )
-database_path = pathlib.Path("../results/").resolve()
+database_path = pathlib.Path(f"../results/converted_profiles/{well_fov}").resolve()
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
 sqlite_path = database_path / f"{well_fov}.sqlite"
@@ -148,7 +148,7 @@ for compartment in feature_types_dict.keys():
         )
 
 
-# In[ ]:
+# In[5]:
 
 
 conn = sqlite3.connect(sqlite_path)
