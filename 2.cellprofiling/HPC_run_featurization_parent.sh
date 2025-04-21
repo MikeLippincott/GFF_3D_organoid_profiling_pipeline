@@ -31,7 +31,7 @@ if [ "$use_GPU" = "TRUE" ]; then
 
     sbatch \
         --nodes=1 \
-        --ntasks=8 \
+        --ntasks=1 \
         --partition=aa100 \
         --qos=normal \
         --gres=gpu:1 \
@@ -42,7 +42,7 @@ if [ "$use_GPU" = "TRUE" ]; then
 
     sbatch \
         --nodes=1 \
-        --ntasks=4 \
+        --ntasks=2 \
         --partition=aa100 \
         --qos=normal \
         --gres=gpu:1 \
@@ -53,7 +53,7 @@ if [ "$use_GPU" = "TRUE" ]; then
 
     sbatch \
         --nodes=1 \
-        --ntasks=8 \
+        --ntasks=2 \
         --partition=aa100 \
         --qos=normal \
         --gres=gpu:1 \
@@ -64,7 +64,7 @@ if [ "$use_GPU" = "TRUE" ]; then
 
     sbatch \
         --nodes=1 \
-        --ntasks=8 \
+        --ntasks=2 \
         --partition=aa100 \
         --qos=normal \
         --gres=gpu:1 \
@@ -98,7 +98,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=3 \
+        --ntasks=2 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
