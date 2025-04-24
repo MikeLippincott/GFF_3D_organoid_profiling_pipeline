@@ -21,7 +21,7 @@ except NameError:
     in_notebook = False
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -37,7 +37,9 @@ if not in_notebook:
 
     args = parser.parse_args()
     well_fov = args.well_fov
-    mask_input_dir = pathlib.Path(f"../processed_data/{well_fov}").resolve(strict=True)
+    mask_input_dir = pathlib.Path(
+        f"../../data/NF0014/processed_data/{well_fov}"
+    ).resolve(strict=True)
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
