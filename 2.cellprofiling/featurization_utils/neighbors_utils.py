@@ -159,6 +159,8 @@ def measure_3D_number_of_neighbors(
         self_cropped_neighbor_image = crop_3D_image(
             image=label_object, bbox=original_bbox
         )
+        # find all the unique values in the cropped image of the object of interest
+        # this is the number of neighbors in the cropped image
         n_neighbors_adjacent = (
             len(
                 numpy.unique(
@@ -168,6 +170,8 @@ def measure_3D_number_of_neighbors(
             - 1
         )
 
+        # find all the unique values in the expanded cropped image of the object of interest
+        # this gives the number of neighbors in a n distance of the object
         n_neighbors_by_distance = (
             len(numpy.unique(croppped_neighbor_image[croppped_neighbor_image > 0])) - 1
         )

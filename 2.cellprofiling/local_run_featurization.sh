@@ -6,42 +6,50 @@ jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*
 
 cd scripts/ || exit
 
-GPU=False
+GPU_OPTIONS=( "TRUE" "FALSE" )
 
 # start the timer
 start_timestamp=$(date +%s)
 
 
-# parent_dir="../../data/NF0014/cellprofiler"
-# # get the list of all dirs in the parent_dir
-# dirs=$(ls -d $parent_dir/*)
+parent_dir="../../data/NF0014/cellprofiler"
+# get the list of all dirs in the parent_dir
+dirs=$(ls -d $parent_dir/*)
 
-# for dir in $dirs; do
-#     dir_name=$(basename $dir)
-#     echo $dir_name
-#         # python run_featurization.py --input_dir $dir
-# done
+for dir in $dirs; do
+    well_fov=$(basename $dir)
+    for use_GPU in "${GPU_OPTIONS[@]}"; do
+        echo $well_fov
 
-if [ "$GPU" = True ]; then
-    echo "Running GPU version"
-    time python area_shape_gpu.py
-    time python colocalization_gpu.py
-    time python granularity_gpu.py
-    time python instensity_gpu.py
-    time python neighbors.py
-    time python texture.py
-else
-    echo "Running CPU version"
-    # time python area_shape.py
-    time python colocalization.py
-    time python granularity.py
-    time python instensity.py
-    time python neighbors.py
-    time python texture.py
-fi
+        cd slurm_scripts || exit
 
-end=$(date +%s)
-echo "Time taken to run the featurization: $(($end-$start_timestamp))"
+        if [ "$use_GPU" = "TRUE" ]; then
+            echo "Running GPU version"
+
+            source run_area_shape_child.sh $well_fov $use_GPU
+
+            source run_colocalization_child.sh $well_fov $use_GPU
+
+            source run_granularity_child.sh $well_fov $use_GPU
+
+            source run_intensity_child.sh $well_fov $use_GPU
+
+        else
+            echo "Running CPU version"
+
+            source run_area_shape_child.sh $well_fov $use_GPU
+
+            source run_colocalization_child.sh $well_fov $use_GPU
+
+            source run_granularity_child.sh $well_fov $use_GPU
+
+            source run_intensity_child.sh $well_fov $use_GPU
+        fi
+            source run_neighbors_child.sh $well_fov $use_GPU
+
+            source run_texture_child.sh $well_fov $use_GPU
+    done
+done
 
 cd ../ || exit
 

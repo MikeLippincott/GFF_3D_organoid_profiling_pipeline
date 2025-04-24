@@ -9,6 +9,9 @@ from loading_classes import ObjectLoader
 def scale_image(image: numpy.ndarray, num_gray_levels=256) -> numpy.ndarray:
     """
     Scale the image to a specified number of gray levels.
+    Example: 1024 gray levels will be scaled to 256 gray levels if num_gray_levels=256.
+    An image with a pixel value of 0 will be scaled to 0 and a pixel value of 1023 will be scaled to 255.
+
 
     Parameters
     ----------
@@ -43,6 +46,8 @@ def measure_3D_texture(
         The object loader containing the image and object information.
     distance : int, optional
         The distance parameter for Haralick features, by default 1
+    grayscale : int, optional
+        The number of gray levels to scale the image to, by default 256
 
     Returns
     -------

@@ -1,9 +1,10 @@
 # Featurization
+![Featurization pipeline](./diagram/featurization_strategy.png)
 
 The approach to the featurization is to run each feature extraction function for each cell compartment for each channel in a distributed manner.
 The results are then combined into a single dataframe for each cell compartment and channel.
 Distinct features from this dataframe are saved as parquet files.
-These parquet files are then merged by the following cell compartments as <format / description>:
+These parquet files are then merged by the following cell compartments as:
 - Nuclei
 - Cell
 - Cytoplasm
@@ -11,8 +12,7 @@ These parquet files are then merged by the following cell compartments as <forma
 
 These are stored as related tables in a SQLite database.
 The SQLite database tables are then integrated as a single-cell feature table using CytoTable.
-For a visual and simplified representation of the pipeline, see the figure below.
-![Featurization pipeline](./diagram/featurization_strategy.png)
+
 
 ## Running the featurization
 A parent/child approach is used to perform featurization.
@@ -39,7 +39,7 @@ For this dataset we have:
 * 5 channels
 * 4 compartments
 
-We featurize each feature types:
+We extract features for each of the feature types:
 * AreaSizeShape (5 channels * 4 compartments = 20 parquet files)
 * Colocalization (10 channel combinations * 4 compartments = 40 parquet files)
 * Granularity (5 channels * 4 compartments = 20 parquet files)
@@ -48,3 +48,8 @@ We featurize each feature types:
 * Texture (5 channels * 4 compartments = 20 parquet files)
 
 So each parent process will result in the child processes generating 121 parquet files per well and FOV combination.
+
+
+Usage of featurization vs feature extraction:
+* Featurization: The process of running the feature extraction functions on the images and saving the results to a parquet file.
+* Feature extraction: The process of extracting features from the images using the feature extraction functions.
