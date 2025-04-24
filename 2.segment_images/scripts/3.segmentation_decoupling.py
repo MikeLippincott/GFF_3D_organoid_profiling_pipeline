@@ -87,7 +87,7 @@ else:
     compartment = "nuclei"
     window_size = 2
 
-input_dir = pathlib.Path(f"../../data/NF0014/resliced_images/{well_fov}").resolve(
+input_dir = pathlib.Path(f"../../data/NF0014/zstack_images/{well_fov}").resolve(
     strict=True
 )
 
