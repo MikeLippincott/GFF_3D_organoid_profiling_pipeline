@@ -33,7 +33,7 @@ for dir in "${input_dirs[@]}"; do
         sleep 1s
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
-    dir=${dir%*/}
+    dir=$(basename "$dir")
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
     echo "Beginning segmentation for $dir"

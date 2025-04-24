@@ -71,7 +71,7 @@ else:
     clip_limit = 0.1
 
 
-input_dir = pathlib.Path(f"../../data/NF0014/resliced_images/{well_fov}").resolve(
+input_dir = pathlib.Path(f"../../data/NF0014/zstack_images/{well_fov}").resolve(
     strict=True
 )
 
