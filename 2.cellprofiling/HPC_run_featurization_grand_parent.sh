@@ -5,7 +5,7 @@
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
 #SBATCH --time=2:00:00
-#SBATCH --output=featurization_sc_parent-%j.out
+#SBATCH --output=featurization_sc_grand_parent-%j.out
 
 
 module load anaconda
