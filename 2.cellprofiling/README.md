@@ -17,7 +17,7 @@ For a visual and simplified representation of the pipeline, see the figure below
 ## Running the featurization
 A parent/child approach is used to perform featurization.
 Each parent process runs child processes.
-In this case we have a grandparent process that runs multiple parent processes that then runs multiple child processes.
+Each grandparent process runs multiple parent processes.
 ### The grandparent process
 The grandparent process spins off the parent processes.
 Where each parent process is responsible for the well and FOV of a given organoid(s).
