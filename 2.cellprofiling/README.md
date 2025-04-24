@@ -1,6 +1,6 @@
 # Featurization
 
-The approach to the featurization is to run each feature extraction function for each cell compartment for each channel in a distubted manner.
+The approach to the featurization is to run each feature extraction function for each cell compartment for each channel in a distributed manner.
 The results are then combined into a single dataframe for each cell compartment and channel.
 The final distinct features are saved as parquet files.
 These parquet files are then merged by cell compartment into:
