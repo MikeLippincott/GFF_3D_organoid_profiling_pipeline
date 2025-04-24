@@ -4,7 +4,7 @@
 #SBATCH --partition=amilan
 #SBATCH --qos=long
 #SBATCH --account=amc-general
-#SBATCH --time=96:00:00
+#SBATCH --time=7-00:00:00
 #SBATCH --output=segmentation_parent-%j.out
 
 # activate  cellprofiler environment
