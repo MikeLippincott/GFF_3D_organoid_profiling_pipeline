@@ -10,6 +10,6 @@ These parquet files are then merged by cell compartment into:
 - Organoid
 
 These are stored as related tables in a sqlite database.
-The databased is then used to merge into a single-cell feature table using CytoTable.
+The database is then used to merge into a single-cell feature table using CytoTable.
 For a visual and simplified representation of the pipeline, see the figure below.
 ![Featurization pipeline](./diagram/featurization_strategy.png)
