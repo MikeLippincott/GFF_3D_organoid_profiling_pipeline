@@ -16,7 +16,7 @@ For a visual and simplified representation of the pipeline, see the figure below
 
 ## Running the featurization
 I take a parent/child approach to the featurization.
-Where a parent process is the main process that runs the child processes.
+Each parent process runs child processes.
 In this case we have a grandparent process that runs multiple parent processes that then runs multiple child processes.
 ### The grandparent process
 The grandparent process spins off the parent processes.
