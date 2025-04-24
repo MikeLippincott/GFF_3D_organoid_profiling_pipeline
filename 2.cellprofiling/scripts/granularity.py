@@ -27,6 +27,7 @@ from granularity_utils import measure_3D_granularity
 
 # from granularity import measure_3D_granularity
 from loading_classes import ImageSetLoader, ObjectLoader
+from resource_profiling_util import get_mem_and_time_profiling
 
 try:
     cfg = get_ipython().config
@@ -155,26 +156,12 @@ for compartment in tqdm(
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 end_time = time.time()
-print(f"Memory usage: {end_mem - start_mem:.2f} MB")
-print("Texture time:")
-print("--- %s seconds ---" % (end_time - start_time))
-print("--- %s minutes ---" % ((end_time - start_time) / 60))
-print("--- %s hours ---" % ((end_time - start_time) / 3600))
-# make a df of the run stats
-run_stats = pd.DataFrame(
-    {
-        "start_time": [start_time],
-        "end_time": [end_time],
-        "start_mem": [start_mem],
-        "end_mem": [end_mem],
-        "time_taken": [(end_time - start_time)],
-        "mem_usage": [(end_mem - start_mem)],
-        "gpu": [None],
-        "well_fov": [well_fov],
-        "feature_type": ["granularity"],
-    }
+get_mem_and_time_profiling(
+    start_mem=start_mem,
+    end_mem=end_mem,
+    start_time=start_time,
+    end_time=end_time,
+    process_name="Granularity",
+    well_fov=well_fov,
+    CPU_GPU="CPU",
 )
-# save the run stats to a file
-run_stats_file = pathlib.Path(f"../results/run_stats/{well_fov}_granularity.parquet")
-run_stats_file.parent.mkdir(parents=True, exist_ok=True)
-run_stats.to_parquet(run_stats_file)

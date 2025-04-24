@@ -28,6 +28,7 @@ from colocalization_utils_gpu import (
     prepare_two_images_for_colocalization_gpu,
 )
 from loading_classes import ImageSetLoader, ObjectLoader, TwoObjectLoader
+from resource_profiling_util import get_mem_and_time_profiling
 
 try:
     cfg = get_ipython().config
@@ -122,6 +123,10 @@ for compartment in tqdm(
         leave=False,
         position=1,
     ):
+        output_dir = pathlib.Path(
+            f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features"
+        )
+        output_dir.mkdir(parents=True, exist_ok=True)
         coloc_loader = TwoObjectLoader(
             image_set_loader=image_set_loader,
             compartment=compartment,
@@ -156,14 +161,7 @@ for compartment in tqdm(
             ]
             coloc_df.insert(0, "object_id", object_id)
             coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
-            list_of_dfs.append(coloc_df)
-        coloc_df = pd.concat(list_of_dfs, ignore_index=True)
-        output_file = pathlib.Path(
-            f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features.parquet"
-        )
-        output_file.parent.mkdir(parents=True, exist_ok=True)
-        coloc_df.to_parquet(output_file)
-        coloc_df.head()
+            coloc_df.to_parquet(output_dir / f"object_{object_id}.parquet")
 
 
 # In[ ]:
@@ -171,28 +169,12 @@ for compartment in tqdm(
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 end_time = time.time()
-print(f"Memory usage: {end_mem - start_mem:.2f} MB")
-print("Texture time:")
-print("--- %s seconds ---" % (end_time - start_time))
-print("--- %s minutes ---" % ((end_time - start_time) / 60))
-print("--- %s hours ---" % ((end_time - start_time) / 3600))
-# make a df of the run stats
-run_stats = pd.DataFrame(
-    {
-        "start_time": [start_time],
-        "end_time": [end_time],
-        "start_mem": [start_mem],
-        "end_mem": [end_mem],
-        "time_taken": [(end_time - start_time)],
-        "mem_usage": [(end_mem - start_mem)],
-        "gpu": [True],
-        "well_fov": [well_fov],
-        "feature_type": ["colocalization"],
-    }
+get_mem_and_time_profiling(
+    start_mem=start_mem,
+    end_mem=end_mem,
+    start_time=start_time,
+    end_time=end_time,
+    process_name="Colocalization",
+    well_fov=well_fov,
+    CPU_GPU="GPU",
 )
-# save the run stats to a file
-run_stats_file = pathlib.Path(
-    f"../results/run_stats/{well_fov}_colocalization_gpu.parquet"
-)
-run_stats_file.parent.mkdir(parents=True, exist_ok=True)
-run_stats.to_parquet(run_stats_file)

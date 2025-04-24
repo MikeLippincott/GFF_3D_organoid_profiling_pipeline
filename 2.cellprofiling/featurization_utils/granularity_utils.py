@@ -279,10 +279,12 @@ def measure_3D_granularity_gpu(
     back_pixels_mask = cupy.asarray(back_pixels_mask)
 
     # getting a jitify runtime error
-    # bad fix and workaround
+    # bad fix and workaround -> I do not like converting between numpy and cupy
+    # too much overhead...
     # convert to numpy array
     # run the skimage erosion
     # convert back to cupy array
+    # the cucim version of skimage does not work with jitify for erosion or dilation
     back_pixels_mask = back_pixels_mask.get()
     footprint = footprint.get()
     back_pixels = skimage.morphology.erosion(back_pixels_mask, footprint=footprint)
@@ -300,6 +302,8 @@ def measure_3D_granularity_gpu(
     # convert to numpy array
     # run the skimage erosion
     # convert back to cupy array
+    # the cucim version of skimage does not work with jitify for erosion or dilation
+
     back_pixels_mask = back_pixels_mask.get()
     footprint = footprint.get()
     back_pixels = skimage.morphology.dilation(back_pixels_mask, footprint=footprint)
@@ -346,6 +350,8 @@ def measure_3D_granularity_gpu(
         # convert to numpy array
         # run the skimage erosion
         # convert back to cupy array
+        # the cucim version of skimage does not work with jitify for erosion or dilation
+
         ero_mask = ero_mask.get()
         footprint = footprint.get()
         ero = skimage.morphology.erosion(ero_mask, footprint=footprint)

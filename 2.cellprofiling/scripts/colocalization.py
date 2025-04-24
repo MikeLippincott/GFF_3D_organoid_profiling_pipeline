@@ -24,6 +24,7 @@ from colocalization_utils import (
     prepare_two_images_for_colocalization,
 )
 from loading_classes import ImageSetLoader, TwoObjectLoader
+from resource_profiling_util import get_mem_and_time_profiling
 
 try:
     cfg = get_ipython().config
@@ -43,7 +44,7 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 # In[ ]:
 
 
-def process_combination(args, image_set_loader):
+def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader) -> str:
     """
     Process a single combination of compartment and channel pair for colocalization analysis.
 
@@ -76,7 +77,11 @@ def process_combination(args, image_set_loader):
         channel1=channel1,
         channel2=channel2,
     )
-    list_of_dfs = []
+
+    output_dir = pathlib.Path(
+        f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features"
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
     for object_id in coloc_loader.object_ids:
         cropped_image1, cropped_image2 = prepare_two_images_for_colocalization(
             label_object1=coloc_loader.label_image,
@@ -99,14 +104,8 @@ def process_combination(args, image_set_loader):
         ]
         coloc_df.insert(0, "object_id", object_id)
         coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
-        list_of_dfs.append(coloc_df)
-
-    coloc_df = pd.concat(list_of_dfs, ignore_index=True)
-    output_file = pathlib.Path(
-        f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features.parquet"
-    )
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    coloc_df.to_parquet(output_file)
+        # list_of_dfs.append(coloc_df)
+        coloc_df.to_parquet(output_dir / f"object_{object_id}.parquet")
 
     return f"Processed {compartment} - {channel1}.{channel2}"
 
@@ -136,7 +135,7 @@ else:
     image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
 
 
-# In[3]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -152,7 +151,7 @@ channel_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
@@ -162,7 +161,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[5]:
+# In[ ]:
 
 
 # get all channel combinations
@@ -196,7 +195,6 @@ if __name__ == "__main__":
         (compartment, channel1, channel2)
         for compartment, (channel1, channel2) in combinations
     ]
-
     # Specify the number of cores to use
     cores_to_use = multiprocessing.cpu_count()  # Adjust the number of cores as needed
     print(f"Using {cores_to_use} cores for processing.")
@@ -221,26 +219,12 @@ if __name__ == "__main__":
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 end_time = time.time()
-print(f"Memory usage: {end_mem - start_mem:.2f} MB")
-print("Texture time:")
-print("--- %s seconds ---" % (end_time - start_time))
-print("--- %s minutes ---" % ((end_time - start_time) / 60))
-print("--- %s hours ---" % ((end_time - start_time) / 3600))
-# make a df of the run stats
-run_stats = pd.DataFrame(
-    {
-        "start_time": [start_time],
-        "end_time": [end_time],
-        "start_mem": [start_mem],
-        "end_mem": [end_mem],
-        "time_taken": [(end_time - start_time)],
-        "mem_usage": [(end_mem - start_mem)],
-        "gpu": [None],
-        "well_fov": [well_fov],
-        "feature_type": ["colocalization"],
-    }
+get_mem_and_time_profiling(
+    start_mem=start_mem,
+    end_mem=end_mem,
+    start_time=start_time,
+    end_time=end_time,
+    process_name="Colocalization",
+    well_fov=well_fov,
+    CPU_GPU="CPU",
 )
-# save the run stats to a file
-run_stats_file = pathlib.Path(f"../results/run_stats/{well_fov}_colocalization.parquet")
-run_stats_file.parent.mkdir(parents=True, exist_ok=True)
-run_stats.to_parquet(run_stats_file)
