@@ -5,7 +5,7 @@
 #SBATCH --qos=long
 #SBATCH --account=amc-general
 #SBATCH --time=96:00:00
-#SBATCH --output=segmentation-%j.out
+#SBATCH --output=segmentation_parent-%j.out
 
 # activate  cellprofiler environment
 module load anaconda
@@ -14,10 +14,10 @@ conda activate GFF_segmentation
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
-
+patient=$1
 cd scripts/ || exit
 # get all input directories in specified directory
-z_stack_dir="../../data/NF0014/zstack_images/"
+z_stack_dir="../../data/$patient/test_dir/"
 # z_stack_dir="../../data/NF0014/test_dir/"
 mapfile -t input_dirs < <(ls -d "$z_stack_dir"/*)
 cd ../ || exit
@@ -47,4 +47,5 @@ echo -ne "\n"
 # deactivate cellprofiler environment
 conda deactivate
 
-echo "Segmentation complete"
+echo "All segmentation child jobs submitted"
+

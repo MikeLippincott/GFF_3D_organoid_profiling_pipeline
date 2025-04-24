@@ -6,7 +6,7 @@
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
 #SBATCH --time=1:00:00
-#SBATCH --output=segmentation-%j.out
+#SBATCH --output=segmentation_child-%j.out
 
 
 # activate  cellprofiler environment
@@ -38,11 +38,7 @@ for compartment in "${compartments[@]}"; do
 done
 python 5.create_cytoplasm_masks.py --well_fov "$well_fov" >> segmentation.log
 
-
-
-
 cd ../ || exit
-
 
 # deactivate cellprofiler environment
 conda deactivate
