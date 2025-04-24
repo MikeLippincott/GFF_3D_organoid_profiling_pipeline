@@ -15,10 +15,10 @@ conda activate GFF_segmentation
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
 patient=$1
+
 cd scripts/ || exit
 # get all input directories in specified directory
-z_stack_dir="../../data/$patient/test_dir/"
-# z_stack_dir="../../data/NF0014/test_dir/"
+z_stack_dir="../../data/$patient/zstack_images/"
 mapfile -t input_dirs < <(ls -d "$z_stack_dir"/*)
 cd ../ || exit
 total_dirs=$(echo "${input_dirs[@]}" | wc -w)
@@ -29,7 +29,7 @@ touch segmentation.log
 # loop through all input directories
 for dir in "${input_dirs[@]}"; do
     number_of_jobs=$(squeue -u $USER | wc -l)
-    while [ $number_of_jobs -gt 990 ]; do
+    while [ $number_of_jobs -gt 21 ]; do
         sleep 1s
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
@@ -39,10 +39,6 @@ for dir in "${input_dirs[@]}"; do
     echo "Beginning segmentation for $dir"
     sbatch child_segmentation.sh "$dir"
 done
-
-echo "Cleaning up segmentation files"
-python 7.clean_up_segmentation.py >> segmentation.log
-echo -ne "\n"
 
 # deactivate cellprofiler environment
 conda deactivate
