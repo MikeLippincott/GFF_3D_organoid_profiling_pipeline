@@ -9,7 +9,7 @@ These parquet files are then merged by the following cell compartments as <forma
 - Cytoplasm
 - Organoid
 
-These are stored as related tables in a sqlite database.
+These are stored as related tables in a SQLite database.
 The SQLite database tables are then integrated as a single-cell feature table using CytoTable.
 For a visual and simplified representation of the pipeline, see the figure below.
 ![Featurization pipeline](./diagram/featurization_strategy.png)
