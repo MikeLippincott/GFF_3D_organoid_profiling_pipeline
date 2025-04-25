@@ -6,6 +6,10 @@ conda activate GFF_featurization
 
 well_fov=$1
 use_GPU=$2
+patient=$3
+
+echo "Running featurization for $patient $well_fov"
+
 cd ../scripts/ || exit
 
 # start the timer

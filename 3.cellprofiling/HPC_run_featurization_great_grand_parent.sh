@@ -2,15 +2,15 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --partition=amilan
-#SBATCH --qos=long
+#SBATCH --qos=normal
 #SBATCH --account=amc-general
-#SBATCH --time=7-00:00:00
-#SBATCH --output=segmentation_grandparent-%j.out
+#SBATCH --time=2:00:00
+#SBATCH --output=featurization_sc_grand_parent-%j.out
 
-# activate  cellprofiler environment
+
 module load anaconda
 conda init bash
-conda activate GFF_segmentation
+conda activate GFF_featurization
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
@@ -23,10 +23,10 @@ for patient in "${patient_array[@]}"; do
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
 
-    sbatch parent_segmentation.sh "$patient"
-    sleep 100s # this allows for the parent and child jobs to submit prior to the next patient
+    sbatch HPC_run_featurization_grand_parent.sh "$patient"
 done
 
 conda deactivate
 
 echo "All patients submitted for segmentation"
+

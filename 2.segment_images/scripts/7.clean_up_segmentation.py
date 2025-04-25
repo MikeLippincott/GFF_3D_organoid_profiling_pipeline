@@ -20,7 +20,7 @@ from file_checking import check_number_of_files
 overwrite = True
 
 
-# In[3]:
+# In[ ]:
 
 
 # set path to the processed data dir
@@ -37,7 +37,7 @@ else:
     cellprofiler_dir.mkdir(parents=True, exist_ok=True)
 
 
-# In[4]:
+# In[ ]:
 
 
 # perform checks for each directory
@@ -71,7 +71,7 @@ for file in normalized_data_dir_directories:
 
 # ## Copy the normalized images to the cellprofiler images dir
 
-# In[5]:
+# In[ ]:
 
 
 # get the list of dirs in the normalized_data_dir
@@ -90,7 +90,7 @@ for norm_dir in tqdm.tqdm(norm_dirs):
 
 # ## Copy files from processed dir to cellprofiler images dir
 
-# In[6]:
+# In[ ]:
 
 
 # get a list of dirs in processed_data
@@ -108,7 +108,7 @@ for well_dir in tqdm.tqdm(dirs):
             shutil.copy(file, new_file_dir)
 
 
-# In[7]:
+# In[ ]:
 
 
 jobs_to_rerun_path = pathlib.Path("../rerun_jobs.txt").resolve()
@@ -116,7 +116,7 @@ if jobs_to_rerun_path.exists():
     jobs_to_rerun_path.unlink()
 
 
-# In[8]:
+# In[ ]:
 
 
 dirs_in_cellprofiler_dir = [x for x in cellprofiler_dir.iterdir() if x.is_dir()]
@@ -127,7 +127,7 @@ for dir in tqdm.tqdm(dirs_in_cellprofiler_dir):
             f.write(f"{dir.name}\n")
 
 
-# In[9]:
+# In[ ]:
 
 
 # move an example to the example dir

@@ -40,7 +40,7 @@ except NameError:
 print(in_notebook)
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -67,7 +67,7 @@ if not in_notebook:
     well_fov = args.well_fov
 
 else:
-    well_fov = "C4-2"
+    well_fov = "C2-1"
     window_size = 4
     clip_limit = 0.05
 
@@ -151,7 +151,11 @@ print("2.5D cyto image stack shape:", cyto.shape)
 
 butterworth_optimization = True
 if butterworth_optimization:
-    img_to_optimize = cyto[9]
+    # get the median most image from the cyto image stack
+    # this is the image that will be used for the butterworth filter optimization
+    # get the median image from the cyto image stack
+    middle_index = int(cyto.shape[0] / 2)
+    img_to_optimize = cyto[middle_index]
     optimization_steps = 5
     # optimize the butterworth filter for the cyto image
     search_space_cutoff_freq = np.linspace(0.01, 0.5, optimization_steps)
@@ -206,11 +210,11 @@ if in_notebook:
     # plot the nuclei and the cyto channels
     plt.figure(figsize=(10, 10))
     plt.subplot(121)
-    plt.imshow(cyto[9, :, :], cmap="gray")
+    plt.imshow(cyto[middle_index, :, :], cmap="gray")
     plt.title("Raw cyto")
     plt.axis("off")
     plt.subplot(122)
-    plt.imshow(imgs[9, :, :], cmap="gray")
+    plt.imshow(imgs[middle_index, :, :], cmap="gray")
     plt.title("Butterworth filtered cyto")
     plt.axis("off")
     plt.show()
