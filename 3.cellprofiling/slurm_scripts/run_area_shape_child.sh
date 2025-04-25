@@ -1,6 +1,10 @@
 #!/bin/bash
 well_fov=$1
 use_GPU=$2
+patient=$3
+
+echo "Running featurization for $patient $well_fov"
+
 
 module load miniforge
 conda init bash

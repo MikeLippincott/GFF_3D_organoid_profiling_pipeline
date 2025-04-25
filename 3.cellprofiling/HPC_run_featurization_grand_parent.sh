@@ -17,10 +17,14 @@ jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*
 cd scripts/ || exit
 
 USE_GPU="FALSE"
+patient=$1
+patient="NF0014"
 
-parent_dir="../../data/NF0014/cellprofiler"
+parent_dir="../../data/$patient/cellprofiler"
 # get the list of all dirs in the parent_dir
 dirs=$(ls -d $parent_dir/*)
+
+cd ../ || exit
 
 # loop through each dir and submit a job
 for dir in $dirs; do
@@ -33,12 +37,9 @@ for dir in $dirs; do
         sleep 1s
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
-    sbatch HPC_run_featurization_parent.sh "$well_fov" $USE_GPU
-    sleep 10s # avoid stacking the parent jobs rather - let us stack the child jobs
+    sbatch HPC_run_featurization_parent.sh "$well_fov" $USE_GPU $patient
+
 done
-
-
-cd ../ || exit
 
 conda deactivate
 

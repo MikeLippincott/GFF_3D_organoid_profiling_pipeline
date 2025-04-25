@@ -37,7 +37,7 @@ for dir in "${input_dirs[@]}"; do
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
     echo "Beginning segmentation for $dir"
-    sbatch child_segmentation.sh "$dir"
+    sbatch child_segmentation.sh "$dir" "$patient"
 done
 
 # deactivate cellprofiler environment

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -41,7 +41,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-# In[ ]:
+# In[2]:
 
 
 def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader) -> str:
@@ -110,7 +110,7 @@ def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader)
     return f"Processed {compartment} - {channel1}.{channel2}"
 
 
-# In[ ]:
+# In[3]:
 
 
 if not in_notebook:
@@ -131,11 +131,11 @@ if not in_notebook:
 
     image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
 else:
-    well_fov = "C4-2"
+    well_fov = "C2-2"
     image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
 
 
-# In[ ]:
+# In[4]:
 
 
 channel_mapping = {
@@ -151,7 +151,7 @@ channel_mapping = {
 }
 
 
-# In[ ]:
+# In[5]:
 
 
 image_set_loader = ImageSetLoader(
@@ -161,14 +161,14 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 # get all channel combinations
 channel_combinations = list(itertools.combinations(image_set_loader.image_names, 2))
 
 
-# In[ ]:
+# In[7]:
 
 
 start_time = time.time()
@@ -178,43 +178,42 @@ start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 # runs upon converted script execution
 
-# In[ ]:
+# In[8]:
 
 
-if __name__ == "__main__":
-    # Generate all combinations of compartments and channel pairs
-    combinations = list(
-        product(
-            image_set_loader.compartments,
-            [pair for pair in channel_combinations],
+# Generate all combinations of compartments and channel pairs
+combinations = list(
+    product(
+        image_set_loader.compartments,
+        [pair for pair in channel_combinations],
+    )
+)
+
+# Flatten the channel combinations for easier unpacking
+combinations = [
+    (compartment, channel1, channel2)
+    for compartment, (channel1, channel2) in combinations
+]
+# Specify the number of cores to use
+cores_to_use = multiprocessing.cpu_count()  # Adjust the number of cores as needed
+print(f"Using {cores_to_use} cores for processing.")
+
+# Use multiprocessing to process combinations in parallel
+with multiprocessing.Pool(processes=cores_to_use) as pool:
+    results = list(
+        tqdm(
+            pool.imap(
+                partial(process_combination, image_set_loader=image_set_loader),
+                combinations,
+            ),
+            desc="Processing combinations",
         )
     )
 
-    # Flatten the channel combinations for easier unpacking
-    combinations = [
-        (compartment, channel1, channel2)
-        for compartment, (channel1, channel2) in combinations
-    ]
-    # Specify the number of cores to use
-    cores_to_use = multiprocessing.cpu_count()  # Adjust the number of cores as needed
-    print(f"Using {cores_to_use} cores for processing.")
-
-    # Use multiprocessing to process combinations in parallel
-    with multiprocessing.Pool(processes=cores_to_use) as pool:
-        results = list(
-            tqdm(
-                pool.imap(
-                    partial(process_combination, image_set_loader=image_set_loader),
-                    combinations,
-                ),
-                desc="Processing combinations",
-            )
-        )
-
-    print("Processing complete.")
+print("Processing complete.")
 
 
-# In[ ]:
+# In[9]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
