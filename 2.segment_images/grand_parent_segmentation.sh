@@ -4,7 +4,7 @@
 #SBATCH --partition=amilan
 #SBATCH --qos=long
 #SBATCH --account=amc-general
-#SBATCH --time=7-00:00:00
+#SBATCH --time=1:00:00
 #SBATCH --output=segmentation_grandparent-%j.out
 
 # activate  cellprofiler environment
@@ -24,7 +24,6 @@ for patient in "${patient_array[@]}"; do
     done
 
     sbatch parent_segmentation.sh "$patient"
-    sleep 100s # this allows for the parent and child jobs to submit prior to the next patient
 done
 
 conda deactivate
