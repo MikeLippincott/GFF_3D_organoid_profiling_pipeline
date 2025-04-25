@@ -29,7 +29,7 @@ touch segmentation.log
 # loop through all input directories
 for dir in "${input_dirs[@]}"; do
     number_of_jobs=$(squeue -u $USER | wc -l)
-    while [ $number_of_jobs -gt 21 ]; do
+    while [ $number_of_jobs -gt 990 ]; do
         sleep 1s
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
