@@ -18,7 +18,6 @@ cd scripts/ || exit
 
 USE_GPU="FALSE"
 patient=$1
-patient="NF0014"
 
 parent_dir="../../data/$patient/cellprofiler"
 # get the list of all dirs in the parent_dir
