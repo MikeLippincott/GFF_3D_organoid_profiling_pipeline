@@ -150,7 +150,7 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    process_name="Intensity",
+    feature_type="Intensity",
     well_fov=well_fov,
     CPU_GPU="GPU",
 )
