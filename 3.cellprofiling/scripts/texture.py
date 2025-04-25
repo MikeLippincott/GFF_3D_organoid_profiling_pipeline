@@ -22,7 +22,7 @@ from itertools import product
 import pandas as pd
 import tqdm
 from loading_classes import ImageSetLoader, ObjectLoader
-from resource_profiling_utils import get_mem_and_time_profiling
+from resource_profiling_util import get_mem_and_time_profiling
 from texture_utils import measure_3D_texture
 from tqdm import tqdm
 
