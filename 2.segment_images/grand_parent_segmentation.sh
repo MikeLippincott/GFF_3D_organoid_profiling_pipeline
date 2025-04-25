@@ -2,7 +2,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --partition=amilan
-#SBATCH --qos=long
+#SBATCH --qos=normal
 #SBATCH --account=amc-general
 #SBATCH --time=1:00:00
 #SBATCH --output=segmentation_grandparent-%j.out
