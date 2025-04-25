@@ -18,7 +18,7 @@ patient=$1
 
 cd scripts/ || exit
 # get all input directories in specified directory
-z_stack_dir="../../data/$patient/zstack_images/"
+z_stack_dir="../../data/$patient/zstack_images"
 mapfile -t input_dirs < <(ls -d "$z_stack_dir"/*)
 cd ../ || exit
 total_dirs=$(echo "${input_dirs[@]}" | wc -w)
