@@ -14,23 +14,23 @@ import tqdm
 sys.path.append(str(pathlib.Path("../../utils").resolve()))
 from file_checking import check_number_of_files
 
-# In[2]:
+# In[ ]:
 
 
 overwrite = True
+patient = "NF0014"
 
 
 # In[ ]:
 
 
 # set path to the processed data dir
-processed_data_dir = pathlib.Path("../../data/NF0014/processed_data").resolve(
+processed_data_dir = pathlib.Path(f"../../data/{patient}/processed_data").resolve(
     strict=True
 )
-raw_input_dir = pathlib.Path("../../data/NF0014/zstack_images").resolve(strict=True)
+raw_input_dir = pathlib.Path(f"../../data/{patient}/zstack_images").resolve(strict=True)
 
-# normalized_data_dir = pathlib.Path("../../data/test_dir").resolve(strict=True)
-cellprofiler_dir = pathlib.Path("../../data/NF0014/cellprofiler").resolve()
+cellprofiler_dir = pathlib.Path(f"../../data/{patient}/cellprofiler").resolve()
 if cellprofiler_dir.exists():
     shutil.rmtree(cellprofiler_dir)
 else:
