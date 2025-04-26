@@ -30,6 +30,12 @@ if not in_notebook:
     parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
 
     parser.add_argument(
+        "--patient",
+        type=str,
+        help="Patient ID",
+    )
+
+    parser.add_argument(
         "--well_fov",
         type=str,
         help="Path to the input directory containing the tiff images",
@@ -37,21 +43,24 @@ if not in_notebook:
 
     args = parser.parse_args()
     well_fov = args.well_fov
+    patient = args.patient
     mask_input_dir = pathlib.Path(
-        f"../../data/NF0014/processed_data/{well_fov}"
+        f"../../data/{patient}/processed_data/{well_fov}"
     ).resolve(strict=True)
+
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
+    patient = "NF0014"
 
 
-input_dir = pathlib.Path(f"../../data/NF0014/zstack_images/{well_fov}/").resolve(
+input_dir = pathlib.Path(f"../../data/{patient}/zstack_images/{well_fov}/").resolve(
     strict=True
 )
-mask_input_dir = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}").resolve(
-    strict=True
-)
-output_path = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}").resolve()
+mask_input_dir = pathlib.Path(
+    f"../../data/{patient}/processed_data/{well_fov}"
+).resolve(strict=True)
+output_path = pathlib.Path(f"../../data/{patient}/processed_data/{well_fov}").resolve()
 output_path.mkdir(parents=True, exist_ok=True)
 output_file_path = pathlib.Path(output_path / "cytoplasm_mask.tiff").resolve()
 
