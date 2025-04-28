@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[2]:
 
 
 import argparse
@@ -13,7 +13,7 @@ import tqdm
 
 # ## Set paths and variables
 
-# In[ ]:
+# In[3]:
 
 
 argparse = argparse.ArgumentParser(
@@ -28,7 +28,7 @@ HPC = args.HPC
 print(f"HPC: {HPC}")
 
 
-# In[ ]:
+# In[4]:
 
 
 if HPC:
@@ -44,6 +44,8 @@ else:
     # Jenna's computer
     # raw_image_dir_local = pathlib.Path("/media/18tbdrive/GFF_organoid_data/Cell Painting-NF0014 Thawed3-Pilot Drug Screening")
 
+
+# ## NF0014 specific preprocessing
 
 # In[ ]:
 

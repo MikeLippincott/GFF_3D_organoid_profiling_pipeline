@@ -29,16 +29,16 @@ else:
 
 # ## Set input and output directories
 
-# In[ ]:
+# In[2]:
 
 
 list_of_patients = [  # will be in a separate file in the future
-    "NF0014",
+    # "NF0014",
     "NF0016",
-    "NF0017",
+    # "NF0017",
     "NF0018",
-    "NF0021",
-    "SACRO219",
+    # "NF0021",
+    # "SACRO219",
 ]
 
 
@@ -84,6 +84,8 @@ channel_images
 # In[7]:
 
 
+# loop through patients, well_fovs, and each channel
+# outer loop through patients
 for patient in tqdm(patient_input_dict.keys(), desc="Processing patients"):
     input_dirs = [
         x for x in patient_input_dict[patient]["raw_images"].iterdir() if x.is_dir()

@@ -14,6 +14,7 @@
 
 import argparse
 import multiprocessing
+import os
 import pathlib
 import shutil
 import sys
@@ -268,3 +269,71 @@ for key, paths in dir_mapping.items():
             pass
 
     print(f"Completed processing {key}: {parent_dir} -> {dest_dir}")
+
+
+# ## NF0016 specific preprocessing
+
+# In[7]:
+
+
+parent_dir_NF0016 = pathlib.Path("../../data/NF0016/raw_images").resolve(strict=True)
+# get all dirs in the parent dir
+parent_dir_NF0016 = list(parent_dir_NF0016.glob("*/"))
+parent_dir_NF0016 = [x for x in parent_dir_NF0016 if x.is_dir()]
+# get all child files in the parent dir
+file_dir_NF0016 = []
+for parent_dir in parent_dir_NF0016:
+    file_dir_NF0016.extend(list(parent_dir.glob("*")))
+
+
+# In[8]:
+
+
+# rename the files in the parent dir
+for file in file_dir_NF0016:
+    new_file_dir = pathlib.Path(
+        f"{file.parent}/{str(file.stem).replace(' (60X)', '')}.{file.suffix}"
+    )
+    file.rename(new_file_dir)
+
+# rename the parent dir
+for parent_dir in parent_dir_NF0016:
+    new_parent_dir = pathlib.Path(
+        f"{parent_dir.parent}/{str(parent_dir.stem).replace(' (60X)', '')}"
+    )
+    # rename the parent dir
+    os.rename(parent_dir, new_parent_dir)
+
+
+# ## NF0018 specific preprocessing
+
+# In[9]:
+
+
+parent_dir_NF0018 = pathlib.Path("../../data/NF0018/raw_images").resolve(strict=True)
+# get all dirs in the parent dir
+parent_dir_NF0018 = list(parent_dir_NF0018.glob("*/"))
+parent_dir_NF0018 = [x for x in parent_dir_NF0018 if x.is_dir()]
+# get all child files in the parent dir
+file_dir_NF0018 = []
+for parent_dir in parent_dir_NF0018:
+    file_dir_NF0018.extend(list(parent_dir.glob("*")))
+
+
+# In[10]:
+
+
+# rename the files in the parent dir
+for file in file_dir_NF0018:
+    new_file_dir = pathlib.Path(
+        f"{file.parent}/{str(file.stem).replace(' (60X)', '')}{file.suffix}"
+    )
+    file.rename(new_file_dir)
+
+# rename the parent dir
+for parent_dir in parent_dir_NF0018:
+    new_parent_dir = pathlib.Path(
+        f"{parent_dir.parent}/{str(parent_dir.stem).replace(' (60X)', '')}"
+    )
+    # rename the parent dir
+    os.rename(parent_dir, new_parent_dir)
