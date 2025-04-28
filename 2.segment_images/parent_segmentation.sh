@@ -35,10 +35,10 @@ for well_fov in "${input_dirs[@]}"; do
         sleep 1s
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
-    well_fov=$(basename "$dir")
+    well_fov=$(basename "$well_fov")
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
-    echo "Beginning segmentation for $dir"
+    echo "Beginning segmentation for $well_fov"
     sbatch child_segmentation.sh "$well_fov" "$patient"
 done
 
