@@ -16,6 +16,8 @@ jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*
 
 patient=$1
 
+echo "Processing patient $patient"
+
 cd scripts/ || exit
 # get all input directories in specified directory
 z_stack_dir="../../data/$patient/zstack_images"
@@ -37,7 +39,7 @@ for well_fov in "${input_dirs[@]}"; do
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
     echo "Beginning segmentation for $dir"
-    sbatch --output="segmentation_child_${1}_${well_fov}-%j.out" child_segmentation.sh "$well_fov" "$patient"
+    sbatch child_segmentation.sh "$well_fov" "$patient"
 done
 
 # deactivate cellprofiler environment
