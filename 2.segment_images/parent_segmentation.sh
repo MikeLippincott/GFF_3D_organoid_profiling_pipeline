@@ -27,17 +27,17 @@ current_dir=0
 
 touch segmentation.log
 # loop through all input directories
-for dir in "${input_dirs[@]}"; do
+for well_fov in "${input_dirs[@]}"; do
     number_of_jobs=$(squeue -u $USER | wc -l)
     while [ $number_of_jobs -gt 990 ]; do
         sleep 1s
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
-    dir=$(basename "$dir")
+    well_fov=$(basename "$dir")
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
     echo "Beginning segmentation for $dir"
-    sbatch child_segmentation.sh "$dir" "$patient"
+    sbatch --output="segmentation_child_${1}_${well_fov}-%j.out" child_segmentation.sh "$well_fov" "$patient"
 done
 
 # deactivate cellprofiler environment
