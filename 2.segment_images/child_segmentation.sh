@@ -6,7 +6,7 @@
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
 #SBATCH --time=1:00:00
-#SBATCH --output=segmentation_child-%j.out"
+#SBATCH --output=segmentation_child-%j.out
 
 
 # activate  cellprofiler environment
