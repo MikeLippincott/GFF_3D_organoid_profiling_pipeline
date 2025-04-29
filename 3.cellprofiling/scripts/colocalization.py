@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
@@ -41,10 +41,14 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-# In[2]:
+# In[ ]:
 
 
-def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader) -> str:
+def process_combination(
+    args: tuple[str, str],
+    image_set_loader: ImageSetLoader,
+    output_parent_path: pathlib.Path,
+) -> str:
     """
     Process a single combination of compartment and channel pair for colocalization analysis.
 
@@ -65,6 +69,8 @@ def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader)
     image_set_loader : ImageSetLoader
         An instance of the ImageSetLoader class that loads the images and metadata.
 
+    output_parent_path : pathlib.Path
+        The parent directory where the output files will be saved.
     Returns
     -------
     str
@@ -77,10 +83,11 @@ def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader)
         channel1=channel1,
         channel2=channel2,
     )
-
     output_dir = pathlib.Path(
-        f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features"
+        output_parent_path
+        / f"Colocalization_{compartment}_{channel1}.{channel2}_features"
     )
+
     output_dir.mkdir(parents=True, exist_ok=True)
     for object_id in coloc_loader.object_ids:
         cropped_image1, cropped_image2 = prepare_two_images_for_colocalization(
@@ -110,7 +117,7 @@ def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader)
     return f"Processed {compartment} - {channel1}.{channel2}"
 
 
-# In[3]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -121,21 +128,32 @@ if not in_notebook:
         default="None",
         help="Well and field of view to process, e.g. 'A01_1'",
     )
+    argparser.add_argument(
+        "--patient",
+        type=str,
+        help="Patient ID, e.g. 'NF0014'",
+    )
 
     args = argparser.parse_args()
     well_fov = args.well_fov
+    patient = args.patient
     if well_fov == "None":
         raise ValueError(
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 else:
-    well_fov = "C2-2"
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    well_fov = "C4-2"
+    patient = "NF0014"
+    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+    output_parent_path = pathlib.Path(
+        f"../../data/{patient}/extracted_features/{well_fov}/"
+    )
+    output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[4]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -151,7 +169,7 @@ channel_mapping = {
 }
 
 
-# In[5]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
@@ -161,14 +179,14 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[6]:
+# In[ ]:
 
 
 # get all channel combinations
 channel_combinations = list(itertools.combinations(image_set_loader.image_names, 2))
 
 
-# In[7]:
+# In[ ]:
 
 
 start_time = time.time()
@@ -178,7 +196,7 @@ start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 # runs upon converted script execution
 
-# In[8]:
+# In[ ]:
 
 
 # Generate all combinations of compartments and channel pairs
@@ -203,7 +221,11 @@ with multiprocessing.Pool(processes=cores_to_use) as pool:
     results = list(
         tqdm(
             pool.imap(
-                partial(process_combination, image_set_loader=image_set_loader),
+                partial(
+                    process_combination,
+                    image_set_loader=image_set_loader,
+                    output_parent_path=output_parent_path,
+                ),
                 combinations,
             ),
             desc="Processing combinations",
@@ -213,7 +235,7 @@ with multiprocessing.Pool(processes=cores_to_use) as pool:
 print("Processing complete.")
 
 
-# In[9]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

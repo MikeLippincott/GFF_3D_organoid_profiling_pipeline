@@ -14,7 +14,7 @@ cd ../scripts/ || exit
 
 # start the timer
 start_timestamp=$(date +%s)
-python texture.py --well_fov $well_fov
+python texture.py --well_fov $well_fov --patient $patient
 end=$(date +%s)
 echo "Time taken to run the featurization: $(($end-$start_timestamp))"
 
