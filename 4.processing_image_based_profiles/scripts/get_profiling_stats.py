@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import pathlib
@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-# In[2]:
+# In[3]:
 
 
 well_fov = "C4-2"
@@ -25,7 +25,7 @@ stats_files.sort()
 stats_files
 
 
-# In[3]:
+# In[5]:
 
 
 df = pd.concat(
