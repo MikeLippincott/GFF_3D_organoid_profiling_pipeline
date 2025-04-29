@@ -57,20 +57,32 @@ if not in_notebook:
         help="Well and field of view to process, e.g. 'A01_1'",
     )
 
+    argparser.add_argument(
+        "--patient",
+        type=str,
+        help="Patient to process, e.g. 'NF0014'",
+    )
+
     args = argparser.parse_args()
     well_fov = args.well_fov
+    patient = args.patient
     if well_fov == "None":
         raise ValueError(
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 else:
     well_fov = "C4-2"
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    patient = "NF0014"
+    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+    output_parent_path = pathlib.Path(
+        f"../../data/{patient}/extracted_features/{well_fov}/"
+    )
+    output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[3]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -86,7 +98,7 @@ channel_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
@@ -96,7 +108,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[5]:
+# In[ ]:
 
 
 # get all channel combinations
@@ -124,7 +136,8 @@ for compartment in tqdm(
         position=1,
     ):
         output_dir = pathlib.Path(
-            f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features"
+            output_parent_path
+            / f"Colocalization_{compartment}_{channel1}.{channel2}_features"
         )
         output_dir.mkdir(parents=True, exist_ok=True)
         coloc_loader = TwoObjectLoader(
@@ -161,6 +174,7 @@ for compartment in tqdm(
             ]
             coloc_df.insert(0, "object_id", object_id)
             coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
+
             coloc_df.to_parquet(output_dir / f"object_{object_id}.parquet")
 
 

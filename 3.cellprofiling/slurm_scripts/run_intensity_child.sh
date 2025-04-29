@@ -16,10 +16,10 @@ cd ../scripts/ || exit
 start_timestamp=$(date +%s)
 if [ "$use_GPU" = "TRUE" ]; then
     echo "Running GPU version"
-    python intensity_gpu.py --well_fov $well_fov
+    python intensity_gpu.py --well_fov $well_fov --patient $patient
 else
     echo "Running CPU version"
-    python intensity.py --well_fov $well_fov
+    python intensity.py --well_fov $well_fov --patient $patient
 fi
 
 end=$(date +%s)

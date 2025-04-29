@@ -37,7 +37,11 @@ else:
 # In[ ]:
 
 
-def process_combination(args, image_set_loader):
+def process_combination(
+    args: tuple[str, str],
+    image_set_loader: ImageSetLoader,
+    output_parent_path: pathlib.Path,
+) -> str:
     """
     Process a single combination of compartment and channel.
 
@@ -53,7 +57,8 @@ def process_combination(args, image_set_loader):
             The compartment name.
     image_set_loader : Class ImageSetLoader
         This contains the image information needed to retreive the objects.
-
+    output_parent_path : pathlib.Path
+        The parent path where the output files will be saved.
     Returns
     -------
     str
@@ -86,7 +91,7 @@ def process_combination(args, image_set_loader):
     final_df.insert(0, "image_set", image_set_loader.image_set_name)
 
     output_file = pathlib.Path(
-        f"../results/{image_set_loader.image_set_name}/Intensity_{compartment}_{channel}_features.parquet"
+        output_parent_path / f"Intensity_{compartment}_{channel}_features.parquet"
     )
     output_file.parent.mkdir(parents=True, exist_ok=True)
     final_df.to_parquet(output_file)
@@ -105,20 +110,29 @@ if not in_notebook:
         default="None",
         help="Well and field of view to process, e.g. 'A01_1'",
     )
+    argparser.add_argument(
+        "--patient",
+        type=str,
+        help="Patient ID, e.g. 'NF0014'",
+    )
 
     args = argparser.parse_args()
     well_fov = args.well_fov
+    patient = args.patient
     if well_fov == "None":
         raise ValueError(
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 else:
     well_fov = "C4-2"
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
-
-print(f"Processing {image_set_path}...")
+    patient = "NF0014"
+    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+    output_parent_path = pathlib.Path(
+        f"../../data/{patient}/extracted_features/{well_fov}/"
+    )
+    output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
 # In[3]:
@@ -169,7 +183,11 @@ with multiprocessing.Pool(processes=cores) as pool:
     results = list(
         tqdm(
             pool.imap(
-                partial(process_combination, image_set_loader=image_set_loader),
+                partial(
+                    process_combination,
+                    image_set_loader=image_set_loader,
+                    output_parent_path=output_parent_path,
+                ),
                 combinations,
             ),
             desc="Processing combinations",

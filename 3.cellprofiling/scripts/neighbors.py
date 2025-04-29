@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -32,7 +32,7 @@ else:
     from tqdm import tqdm
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -43,18 +43,29 @@ if not in_notebook:
         default="None",
         help="Well and field of view to process, e.g. 'A01_1'",
     )
+    argparser.add_argument(
+        "--patient",
+        type=str,
+        help="Patient ID, e.g. 'NF0014'",
+    )
 
     args = argparser.parse_args()
     well_fov = args.well_fov
+    patient = args.patient
     if well_fov == "None":
         raise ValueError(
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 else:
     well_fov = "C4-2"
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    patient = "NF0014"
+    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+    output_parent_path = pathlib.Path(
+        f"../../data/{patient}/extracted_features/{well_fov}/"
+    )
+    output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
 # In[3]:
@@ -83,7 +94,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[5]:
 
 
 start_time = time.time()
@@ -91,7 +102,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[6]:
 
 
 # loop through each compartment and channel
@@ -115,14 +126,14 @@ final_df = pd.DataFrame(neighbors_out_dict)
 final_df.insert(0, "image_set", image_set_loader.image_set_name)
 
 output_file = pathlib.Path(
-    f"../results/{image_set_loader.image_set_name}/Neighbors_{compartment}_{channel}_features.parquet"
+    output_parent_path / f"Neighbors_{compartment}_{channel}_features.parquet"
 )
 output_file.parent.mkdir(parents=True, exist_ok=True)
 final_df.to_parquet(output_file)
 final_df.head()
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

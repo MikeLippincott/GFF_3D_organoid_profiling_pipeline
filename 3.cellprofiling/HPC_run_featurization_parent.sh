@@ -102,7 +102,7 @@ else
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=6:00:00 \
+        --time=8:00:00 \
         --output="granularity_cpu_child_${PATIENT}_${WELLFOV}-%j.out" \
         run_granularity_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
