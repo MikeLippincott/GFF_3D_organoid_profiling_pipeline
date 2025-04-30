@@ -46,7 +46,7 @@ repos:
           - --autofix
           - --indent=4
           - --no-sort-keys
-  - repo: https://github.com/pre-commit/mirrors-prettier
+  - repo: https://github.com/pre-commit/mirrors-prettier # for nextflow (js) files
     rev: v3.1.0 # Use the sha or tag you want to point at
     hooks:
       - id: prettier
