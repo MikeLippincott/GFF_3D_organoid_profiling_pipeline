@@ -1,12 +1,4 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --partition=amilan
-#SBATCH --qos=long
-#SBATCH --account=amc-general
-#SBATCH --time=7-00:00:00
-#SBATCH --output=segmentation_parent-%j.out
-
 # activate  cellprofiler environment
 module load anaconda
 conda init bash
@@ -39,7 +31,17 @@ for well_fov in "${input_dirs[@]}"; do
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
     echo "Beginning segmentation for $well_fov"
-    sbatch child_segmentation.sh "$well_fov" "$patient"
+    sbatch \
+        --nodes=1 \
+        --ntasks=6 \
+        --partition=aa100 \
+        --gres=gpu:1 \
+        --qos=normal \
+        --account=amc-general \
+        --time=1:00:00 \
+        --output=segmentation_child-%j.out \
+        child_segmentation.sh "$well_fov" "$patient"
+
 done
 
 # deactivate cellprofiler environment

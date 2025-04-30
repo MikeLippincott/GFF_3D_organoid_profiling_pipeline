@@ -23,7 +23,16 @@ for patient in "${patient_array[@]}"; do
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
 
-    sbatch parent_segmentation.sh "$patient"
+    sbatch \
+        --nodes=1 \
+        --ntasks=1 \
+        --partition=amilan \
+        --qos=long \
+        --account=amc-general \
+        --time=7-00:00:00 \
+        --output=segmentation_parent-%j.out \
+        parent_segmentation.sh "$patient"
+
 done
 
 conda deactivate

@@ -1,11 +1,4 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --partition=amilan
-#SBATCH --qos=normal
-#SBATCH --account=amc-general
-#SBATCH --time=1:00:00
-#SBATCH --output=parent_featurize-%j.out
 
 module load miniforge
 conda init bash
@@ -78,7 +71,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=2 \
+        --ntasks=20 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -98,7 +91,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=2 \
+        --ntasks=20 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \

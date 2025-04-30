@@ -23,7 +23,15 @@ for patient in "${patient_array[@]}"; do
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
 
-    sbatch HPC_run_featurization_grand_parent.sh "$patient"
+    sbatch \
+    --nodes=1 \
+    --ntasks=1 \
+    --partition=amilan \
+    --qos=normal \
+    --account=amc-general \
+    --time=2:00:00 \
+    --output=featurization_sc_grand_parent-%j.out \
+    HPC_run_featurization_grand_parent.sh "$patient"
 done
 
 conda deactivate
