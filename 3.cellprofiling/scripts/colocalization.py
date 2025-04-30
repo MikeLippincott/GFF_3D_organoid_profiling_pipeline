@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -41,7 +41,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-# In[ ]:
+# In[2]:
 
 
 def process_combination(
@@ -114,10 +114,16 @@ def process_combination(
         # list_of_dfs.append(coloc_df)
         coloc_df.to_parquet(output_dir / f"object_{object_id}.parquet")
 
+        # del all the in memory objects
+        del cropped_image1
+        del cropped_image2
+        del coloc_df
+        del colocalization_features
+
     return f"Processed {compartment} - {channel1}.{channel2}"
 
 
-# In[ ]:
+# In[3]:
 
 
 if not in_notebook:
@@ -154,7 +160,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[4]:
 
 
 channel_mapping = {
@@ -170,7 +176,7 @@ channel_mapping = {
 }
 
 
-# In[ ]:
+# In[5]:
 
 
 start_time = time.time()
@@ -178,7 +184,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[6]:
 
 
 image_set_loader = ImageSetLoader(
@@ -188,7 +194,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[7]:
 
 
 # get all channel combinations
@@ -197,7 +203,7 @@ channel_combinations = list(itertools.combinations(image_set_loader.image_names,
 
 # runs upon converted script execution
 
-# In[ ]:
+# In[10]:
 
 
 # Generate all combinations of compartments and channel pairs
@@ -213,6 +219,11 @@ combinations = [
     (compartment, channel1, channel2)
     for compartment, (channel1, channel2) in combinations
 ]
+
+
+# In[11]:
+
+
 # Specify the number of cores to use
 cores_to_use = multiprocessing.cpu_count()  # Adjust the number of cores as needed
 print(f"Using {cores_to_use} cores for processing.")
@@ -248,5 +259,6 @@ get_mem_and_time_profiling(
     end_time=end_time,
     feature_type="Colocalization",
     well_fov=well_fov,
+    patient_id=patient,
     CPU_GPU="CPU",
 )

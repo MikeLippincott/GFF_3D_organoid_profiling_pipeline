@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -43,7 +43,7 @@ else:
     from tqdm import tqdm
 
 
-# In[ ]:
+# In[2]:
 
 
 def process_combination(
@@ -115,7 +115,7 @@ def process_combination(
     return f"Processed {compartment} - {channel}"
 
 
-# In[ ]:
+# In[3]:
 
 
 if not in_notebook:
@@ -152,7 +152,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[4]:
 
 
 channel_mapping = {
@@ -168,7 +168,7 @@ channel_mapping = {
 }
 
 
-# In[ ]:
+# In[5]:
 
 
 start_time = time.time()
@@ -176,7 +176,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[6]:
 
 
 image_set_loader = ImageSetLoader(
@@ -224,7 +224,8 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    feature_type="Granularity",
+    feature_type="Colocalization",
     well_fov=well_fov,
+    patient_id=patient,
     CPU_GPU="CPU",
 )

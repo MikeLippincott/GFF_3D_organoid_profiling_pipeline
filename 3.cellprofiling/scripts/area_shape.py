@@ -32,7 +32,7 @@ else:
 
 import gc
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -84,7 +84,7 @@ channel_n_compartment_mapping = {
 }
 
 
-# In[5]:
+# In[4]:
 
 
 start_time = time.time()
@@ -92,7 +92,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[4]:
+# In[5]:
 
 
 image_set_loader = ImageSetLoader(
@@ -102,7 +102,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 for compartment in tqdm(
@@ -155,7 +155,8 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    feature_type="AreaSizeShape",
+    feature_type="Colocalization",
     well_fov=well_fov,
+    patient_id=patient,
     CPU_GPU="CPU",
 )

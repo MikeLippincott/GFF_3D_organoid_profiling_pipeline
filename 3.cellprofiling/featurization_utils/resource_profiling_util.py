@@ -13,6 +13,7 @@ def get_mem_and_time_profiling(
     end_time: time.time,
     end_mem: psutil.Process(os.getpid()).memory_info().rss / 1024**2,
     well_fov: str,
+    patient_id: str,
     feature_type: str,
     CPU_GPU: str,
 ) -> bool:
@@ -31,6 +32,8 @@ def get_mem_and_time_profiling(
         Memory usage when the function ended running.
     well_fov : str
         Well and field of view for the run.
+    patient_id : str
+        Patient ID for the run.
     feature_type : str
         Feature type for the run.
     CPU_GPU : str
@@ -60,6 +63,7 @@ def get_mem_and_time_profiling(
             "mem_usage": [(end_mem - start_mem)],
             "gpu": [CPU_GPU],
             "well_fov": [well_fov],
+            "patient_id": [patient_id],
             "feature_type": [feature_type],
         }
     )
