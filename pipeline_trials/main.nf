@@ -41,7 +41,7 @@ process segmentation {
     """
     cd ../2.segment_images/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    source child_segmentation.sh $well_fov $patient
+    source child_segmentation_nf.sh $well_fov $patient
     cd ../pipeline_trials/ || exit 1
     """
 }
