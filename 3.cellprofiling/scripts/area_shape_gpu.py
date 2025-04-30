@@ -144,7 +144,7 @@ for compartment in tqdm(
         final_df.head()
 
 
-# In[7]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -154,7 +154,8 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    feature_type="AreaSizeShape",
+    feature_type="Colocalization",
     well_fov=well_fov,
-    CPU_GPU="GPU",
+    patient_id=patient,
+    CPU_GPU="CPU",
 )

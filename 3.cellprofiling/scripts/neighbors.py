@@ -133,7 +133,7 @@ final_df.to_parquet(output_file)
 final_df.head()
 
 
-# In[7]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -143,7 +143,8 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    feature_type="Neighbors",
+    feature_type="Colocalization",
     well_fov=well_fov,
+    patient_id=patient,
     CPU_GPU="CPU",
 )

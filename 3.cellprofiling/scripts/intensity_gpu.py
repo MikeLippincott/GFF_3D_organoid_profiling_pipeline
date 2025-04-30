@@ -161,7 +161,8 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    feature_type="Intensity",
+    feature_type="Colocalization",
     well_fov=well_fov,
-    CPU_GPU="GPU",
+    patient_id=patient,
+    CPU_GPU="CPU",
 )
