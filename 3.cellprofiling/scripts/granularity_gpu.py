@@ -41,7 +41,7 @@ else:
     from tqdm import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -67,15 +67,15 @@ if not in_notebook:
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
-    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 else:
     well_fov = "C4-2"
     patient = "NF0014"
-    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
-    output_parent_path = pathlib.Path(
-        f"../../data/{patient}/extracted_features/{well_fov}/"
-    )
-    output_parent_path.mkdir(parents=True, exist_ok=True)
+
+image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+output_parent_path = pathlib.Path(
+    f"../../data/{patient}/extracted_features/{well_fov}/"
+)
+output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
 # In[3]:

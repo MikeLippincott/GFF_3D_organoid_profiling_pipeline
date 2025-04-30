@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -43,7 +43,7 @@ else:
     from tqdm import tqdm
 
 
-# In[ ]:
+# In[2]:
 
 
 def process_combination(
@@ -141,18 +141,18 @@ if not in_notebook:
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
-    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 else:
     well_fov = "C4-2"
     patient = "NF0014"
-    image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
-    output_parent_path = pathlib.Path(
-        f"../../data/{patient}/extracted_features/{well_fov}/"
-    )
-    output_parent_path.mkdir(parents=True, exist_ok=True)
+
+image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+output_parent_path = pathlib.Path(
+    f"../../data/{patient}/extracted_features/{well_fov}/"
+)
+output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[4]:
 
 
 channel_mapping = {
@@ -168,7 +168,7 @@ channel_mapping = {
 }
 
 
-# In[ ]:
+# In[5]:
 
 
 image_set_loader = ImageSetLoader(

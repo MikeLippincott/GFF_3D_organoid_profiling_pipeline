@@ -30,7 +30,7 @@ if [ "$USEGPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=10:00 \
-        --output="area_shape_gpu_child_${PATIENT}_${WELLFOV}-%j.out" \
+        --output=area_shape_gpu_child-%j.out \
         run_area_shape_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
     sbatch \
@@ -41,7 +41,7 @@ if [ "$USEGPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=30:00 \
-        --output="colocalization_gpu_child_${PATIENT}_${WELLFOV}-%j.out" \
+        --output=colocalization_gpu_child-%j.out \
         run_colocalization_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
     sbatch \
@@ -52,7 +52,7 @@ if [ "$USEGPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=1:30:00 \
-        --output="granularity_gpu_child_${PATIENT}_${WELLFOV}-%j.out" \
+        --output=granularity_gpu_child-%j.out \
         run_granularity_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
     sbatch \
@@ -63,7 +63,7 @@ if [ "$USEGPU" = "TRUE" ]; then
         --gres=gpu:1 \
         --account=amc-general \
         --time=3:00:00 \
-        --output="intensity_gpu_child_${PATIENT}_${WELLFOV}-%j.out" \
+        --output=intensity_gpu_child-%j.out \
         run_intensity_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
 else
@@ -76,7 +76,7 @@ else
         --qos=normal \
         --account=amc-general \
         --time=10:00 \
-        --output="area_shape_cpu_child_${PATIENT}_${WELLFOV}-%j.out" \
+        --output=area_shape_cpu_child-%j.out \
         run_area_shape_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
     sbatch \
@@ -86,7 +86,7 @@ else
         --qos=normal \
         --account=amc-general \
         --time=1:00:00 \
-        --output=c"olocalization_cpu_child_${PATIENT}_${WELLFOV}-%j.out" \
+        --output=colocalization_cpu_child-%j.out \
         run_colocalization_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
     sbatch \
@@ -96,7 +96,7 @@ else
         --qos=normal \
         --account=amc-general \
         --time=8:00:00 \
-        --output="granularity_cpu_child_${PATIENT}_${WELLFOV}-%j.out" \
+        --output=granularity_cpu_child-%j.out \
         run_granularity_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
     sbatch \
@@ -106,7 +106,7 @@ else
         --qos=normal \
         --account=amc-general \
         --time=6:00:00 \
-        --output="intensity_cpu_child_${PATIENT}_${WELLFOV}-%j.out" \
+        --output=intensity_cpu_child-%j.out \
         run_intensity_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
 fi
@@ -118,7 +118,7 @@ sbatch \
     --qos=normal \
     --account=amc-general \
     --time=10:00 \
-    --output="neighbors_child_${PATIENT}_${WELLFOV}-%j.out" \
+    --output=neighbors_child-%j.out \
     run_neighbors_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
 
@@ -130,7 +130,7 @@ sbatch \
     --qos=normal \
     --account=amc-general \
     --time=16:00:00 \
-    --output="texture_child_${PATIENT}_${WELLFOV}-%j.out" \
+    --output=texture_child-%j.out \
     run_texture_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
 
