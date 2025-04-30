@@ -1,12 +1,4 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks=6
-#SBATCH --partition=aa100
-#SBATCH --gres=gpu:1
-#SBATCH --qos=normal
-#SBATCH --account=amc-general
-#SBATCH --time=1:00:00
-#SBATCH --output=segmentation_child-%j.out
 
 
 # activate  cellprofiler environment
