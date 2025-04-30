@@ -150,6 +150,14 @@ channel_mapping = {
 }
 
 
+# In[ ]:
+
+
+start_time = time.time()
+# get starting memory (cpu)
+start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+
+
 # In[4]:
 
 
@@ -158,14 +166,6 @@ image_set_loader = ImageSetLoader(
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_mapping,
 )
-
-
-# In[ ]:
-
-
-start_time = time.time()
-# get starting memory (cpu)
-start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
 # In[ ]:

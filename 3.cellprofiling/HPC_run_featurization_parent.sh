@@ -81,7 +81,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=20 \
+        --mem=90G \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -92,6 +92,7 @@ else
     sbatch \
         --nodes=1 \
         --ntasks=20 \
+        --mem-per-cpu=8G \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -102,6 +103,7 @@ else
     sbatch \
         --nodes=1 \
         --ntasks=20 \
+        --mem-per-cpu=8G \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -113,7 +115,7 @@ fi
 
 sbatch \
     --nodes=1 \
-    --ntasks=1 \
+    --ntasks=10 \
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
@@ -126,6 +128,7 @@ sbatch \
 sbatch \
     --nodes=1 \
     --ntasks=20 \
+    --mem-per-cpu=8G \
     --partition=amilan \
     --qos=normal \
     --account=amc-general \

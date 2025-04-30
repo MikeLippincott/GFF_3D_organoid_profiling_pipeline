@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
@@ -43,7 +43,7 @@ else:
     from tqdm import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
 def process_combination(
@@ -152,7 +152,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[4]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -168,7 +168,15 @@ channel_mapping = {
 }
 
 
-# In[5]:
+# In[ ]:
+
+
+start_time = time.time()
+# get starting memory (cpu)
+start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+
+
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
@@ -176,14 +184,6 @@ image_set_loader = ImageSetLoader(
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_mapping,
 )
-
-
-# In[ ]:
-
-
-start_time = time.time()
-# get starting memory (cpu)
-start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
 # In[ ]:

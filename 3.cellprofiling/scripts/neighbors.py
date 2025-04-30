@@ -32,7 +32,7 @@ else:
     from tqdm import tqdm
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -87,19 +87,19 @@ channel_n_compartment_mapping = {
 # In[4]:
 
 
-image_set_loader = ImageSetLoader(
-    image_set_path=image_set_path,
-    anisotropy_spacing=(1, 0.1, 0.1),
-    channel_mapping=channel_n_compartment_mapping,
-)
+start_time = time.time()
+# get starting memory (cpu)
+start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
 # In[5]:
 
 
-start_time = time.time()
-# get starting memory (cpu)
-start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+image_set_loader = ImageSetLoader(
+    image_set_path=image_set_path,
+    anisotropy_spacing=(1, 0.1, 0.1),
+    channel_mapping=channel_n_compartment_mapping,
+)
 
 
 # In[6]:
