@@ -207,8 +207,11 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    feature_type="Colocalization",
+    feature_type="Intensity",
     well_fov=well_fov,
     patient_id=patient,
     CPU_GPU="CPU",
+    output_file_dir=pathlib.Path(
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Intensity_CPU.parquet"
+    ),
 )

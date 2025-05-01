@@ -16,6 +16,7 @@ def get_mem_and_time_profiling(
     patient_id: str,
     feature_type: str,
     CPU_GPU: str,
+    output_dir: pathlib.Path,
 ) -> bool:
     """
     Function to get memory and time profiling for the run. This function will
@@ -38,6 +39,8 @@ def get_mem_and_time_profiling(
         Feature type for the run.
     CPU_GPU : str
         Whether the run was done on CPU or GPU.
+    output_dir : pathlib.Path
+        Directory to save the run stats file.
 
     Returns
     -------
@@ -68,9 +71,6 @@ def get_mem_and_time_profiling(
         }
     )
     # save the run stats to a file
-    run_stats_file = pathlib.Path(
-        f"../results/run_stats/{well_fov}_{feature_type}_{CPU_GPU}.parquet"
-    )
-    run_stats_file.parent.mkdir(parents=True, exist_ok=True)
-    run_stats.to_parquet(run_stats_file)
+    output_dir.parent.mkdir(parents=True, exist_ok=True)
+    run_stats.to_parquet(output_dir)
     return True
