@@ -124,11 +124,12 @@ sbatch \
 
 sbatch \
     --nodes=1 \
+    --mem=100G \
     --ntasks=20 \
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
-    --time=16:00:00 \
+    --time=24:00:00 \
     --output=texture_child-%j.out \
     run_texture_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 

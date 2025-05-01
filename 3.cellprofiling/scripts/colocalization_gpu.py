@@ -190,5 +190,8 @@ get_mem_and_time_profiling(
     feature_type="Colocalization",
     well_fov=well_fov,
     patient_id=patient,
-    CPU_GPU="CPU",
+    CPU_GPU="GPU",
+    output_file_dir=pathlib.Path(
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Colocalization_GPU.parquet"
+    ),
 )

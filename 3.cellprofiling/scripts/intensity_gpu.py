@@ -72,7 +72,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[3]:
+# In[ ]:
 
 
 channel_n_compartment_mapping = {
@@ -96,7 +96,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
@@ -161,8 +161,11 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    feature_type="Colocalization",
+    feature_type="Intensity",
     well_fov=well_fov,
     patient_id=patient,
-    CPU_GPU="CPU",
+    CPU_GPU="GPU",
+    output_file_dir=pathlib.Path(
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Intensity_GPU.parquet"
+    ),
 )
