@@ -43,7 +43,7 @@ else:
     from tqdm import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
 def process_combination(
@@ -84,7 +84,7 @@ def process_combination(
     object_measurements = measure_3D_granularity(
         object_loader=object_loader,
         radius=10,  # radius of the sphere to use for granularity measurement
-        granular_spectrum_length=2,  # usually 16 but 2 is used for testing for now
+        granular_spectrum_length=16,  # usually 16 but 2 is used for testing for now
         subsample_size=0.25,  # subsample to 25% of the image to reduce computation time
         image_name=channel,
     )

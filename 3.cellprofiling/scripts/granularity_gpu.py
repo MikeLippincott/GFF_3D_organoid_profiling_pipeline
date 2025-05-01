@@ -136,7 +136,7 @@ for compartment in tqdm(
         object_measurements = measure_3D_granularity_gpu(
             object_loader=object_loader,
             image_set_loader=image_set_loader,
-            radius=20,
+            radius=10,
             granular_spectrum_length=16,
             subsample_size=0.25,
             image_name=object_loader.channel,
