@@ -1,0 +1,35 @@
+usage: conda [-h] [--no-plugins] [-V] COMMAND ...
+conda: error: argument COMMAND: invalid choice: 'deactivate' (choose from 'clean', 'compare', 'config', 'create', 'info', 'init', 'install', 'list', 'notices', 'package', 'remove', 'uninstall', 'rename', 'run', 'search', 'update', 'upgrade', 'build', 'content-trust', 'convert', 'debug', 'develop', 'doctor', 'index', 'inspect', 'metapackage', 'render', 'skeleton', 'pack', 'token', 'env', 'repo', 'server', 'verify')
+usage: conda [-h] [--no-plugins] [-V] COMMAND ...
+conda: error: argument COMMAND: invalid choice: 'deactivate' (choose from 'clean', 'compare', 'config', 'create', 'info', 'init', 'install', 'list', 'notices', 'package', 'remove', 'uninstall', 'rename', 'run', 'search', 'update', 'upgrade', 'build', 'content-trust', 'convert', 'debug', 'develop', 'doctor', 'index', 'inspect', 'metapackage', 'render', 'skeleton', 'pack', 'token', 'server', 'repo', 'env', 'verify')
+no change     /curc/sw/anaconda3/2023.09/condabin/conda
+no change     /curc/sw/anaconda3/2023.09/bin/conda
+no change     /curc/sw/anaconda3/2023.09/bin/conda-env
+no change     /curc/sw/anaconda3/2023.09/bin/activate
+no change     /curc/sw/anaconda3/2023.09/bin/deactivate
+no change     /curc/sw/anaconda3/2023.09/etc/profile.d/conda.sh
+no change     /curc/sw/anaconda3/2023.09/etc/fish/conf.d/conda.fish
+no change     /curc/sw/anaconda3/2023.09/shell/condabin/Conda.psm1
+no change     /curc/sw/anaconda3/2023.09/shell/condabin/conda-hook.ps1
+no change     /curc/sw/anaconda3/2023.09/lib/python3.11/site-packages/xontrib/conda.xsh
+no change     /curc/sw/anaconda3/2023.09/etc/profile.d/conda.csh
+no change     /home/mlippincott@xsede.org/.bashrc
+No action taken.
+Processing well_fov C8-1 for patient NF0018
+Processing directory  of Segmenting Nuclei
+  0%|          | 0/16 [00:00<?, ?it/s]  6%|▋         | 1/16 [00:01<00:15,  1.02s/it] 12%|█▎        | 2/16 [00:01<00:08,  1.74it/s] 19%|█▉        | 3/16 [00:01<00:05,  2.34it/s] 25%|██▌       | 4/16 [00:01<00:04,  2.81it/s] 31%|███▏      | 5/16 [00:02<00:03,  3.13it/s] 38%|███▊      | 6/16 [00:02<00:02,  3.35it/s] 44%|████▍     | 7/16 [00:02<00:02,  3.56it/s] 50%|█████     | 8/16 [00:02<00:02,  3.65it/s]no seeds found in get_masks_torch - no masks found.
+ 56%|█████▋    | 9/16 [00:03<00:02,  3.09it/s] 62%|██████▎   | 10/16 [00:04<00:04,  1.48it/s] 69%|██████▉   | 11/16 [00:04<00:02,  1.85it/s] 75%|███████▌  | 12/16 [00:05<00:01,  2.23it/s] 81%|████████▏ | 13/16 [00:05<00:01,  2.16it/s] 88%|████████▊ | 14/16 [00:06<00:00,  2.09it/s] 94%|█████████▍| 15/16 [00:06<00:00,  2.05it/s]100%|██████████| 16/16 [00:06<00:00,  2.40it/s]100%|██████████| 16/16 [00:06<00:00,  2.31it/s]
+Completed Nuclei Segmentation
+Segmenting Cells
+Completed Cell Segmentation
+Segmenting Organoids
+  0%|          | 0/25 [00:00<?, ?it/s]  8%|▊         | 2/25 [00:00<00:01, 11.64it/s] 16%|█▌        | 4/25 [00:00<00:01, 10.59it/s] 24%|██▍       | 6/25 [00:00<00:01, 11.24it/s] 32%|███▏      | 8/25 [00:00<00:01, 10.67it/s] 40%|████      | 10/25 [00:00<00:01, 10.41it/s] 48%|████▊     | 12/25 [00:01<00:01, 10.89it/s] 56%|█████▌    | 14/25 [00:01<00:01, 10.51it/s] 64%|██████▍   | 16/25 [00:01<00:00, 10.95it/s] 72%|███████▏  | 18/25 [00:01<00:00, 10.50it/s] 80%|████████  | 20/25 [00:01<00:00, 10.20it/s] 88%|████████▊ | 22/25 [00:02<00:00, 10.62it/s] 96%|█████████▌| 24/25 [00:02<00:00, 10.29it/s]100%|██████████| 25/25 [00:02<00:00, 10.52it/s]
+  0%|          | 0/14 [00:00<?, ?it/s]  7%|▋         | 1/14 [00:03<00:47,  3.69s/it] 14%|█▍        | 2/14 [00:05<00:32,  2.74s/it] 21%|██▏       | 3/14 [00:07<00:26,  2.42s/it] 29%|██▊       | 4/14 [00:09<00:21,  2.15s/it] 36%|███▌      | 5/14 [00:11<00:17,  2.00s/it] 43%|████▎     | 6/14 [00:12<00:14,  1.86s/it] 50%|█████     | 7/14 [00:14<00:12,  1.77s/it] 57%|█████▋    | 8/14 [00:16<00:10,  1.72s/it] 64%|██████▍   | 9/14 [00:17<00:08,  1.74s/it] 71%|███████▏  | 10/14 [00:19<00:07,  1.77s/it] 79%|███████▊  | 11/14 [00:21<00:05,  1.80s/it] 86%|████████▌ | 12/14 [00:23<00:03,  1.84s/it] 93%|█████████▎| 13/14 [00:25<00:01,  1.87s/it]100%|██████████| 14/14 [00:27<00:00,  1.90s/it]100%|██████████| 14/14 [00:27<00:00,  1.96s/it]
+Completed Organoid Segmentation
+Decoupling nuclei
+0it [00:00, ?it/s]2it [00:00, 19.91it/s]4it [00:00, 16.29it/s]6it [00:00, 15.25it/s]8it [00:00, 14.89it/s]10it [00:00, 14.71it/s]12it [00:00, 14.61it/s]14it [00:01, 12.02it/s]16it [00:01, 10.55it/s]17it [00:01, 13.12it/s]
+Decoupling cell
+0it [00:00, ?it/s]2it [00:00, 19.52it/s]4it [00:00, 11.99it/s]6it [00:00,  8.75it/s]8it [00:00,  7.88it/s]9it [00:01,  7.58it/s]10it [00:01,  7.39it/s]11it [00:01,  7.27it/s]12it [00:01,  7.20it/s]13it [00:01,  7.10it/s]14it [00:01,  7.08it/s]15it [00:01,  7.66it/s]17it [00:01, 10.59it/s]17it [00:01,  8.56it/s]
+Decoupling organoid
+0it [00:00, ?it/s]1it [00:00,  7.49it/s]2it [00:00,  7.64it/s]3it [00:00,  6.25it/s]4it [00:00,  5.11it/s]5it [00:00,  4.72it/s]6it [00:01,  4.25it/s]7it [00:01,  4.03it/s]8it [00:01,  3.88it/s]9it [00:02,  3.81it/s]10it [00:02,  3.74it/s]11it [00:02,  3.70it/s]12it [00:02,  3.88it/s]13it [00:03,  3.99it/s]14it [00:03,  4.02it/s]15it [00:03,  4.37it/s]16it [00:03,  5.16it/s]17it [00:03,  4.63it/s]
+Segmentation complete
