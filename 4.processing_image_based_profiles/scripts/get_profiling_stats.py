@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[ ]:
 
 
 import pathlib
@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-# In[3]:
+# In[ ]:
 
 
 well_fov = "C4-2"
@@ -25,7 +25,7 @@ stats_files.sort()
 stats_files
 
 
-# In[5]:
+# In[ ]:
 
 
 df = pd.concat(
@@ -45,7 +45,7 @@ df.head(10)
 
 # ## Preliminary plots - will finalize in R later
 
-# In[4]:
+# In[ ]:
 
 
 # plot the memory and time for each feature type
