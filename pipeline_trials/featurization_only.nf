@@ -197,6 +197,9 @@ workflow {
             tuple(row.patient, row.well_fov, params.featurize_with_gpu)
         }
 
+    // Run segmentation (shared between all)
+    def segmented_ch = fov_ch.map { patient, well_fov, _ -> tuple(patient, well_fov) }
+
     // Split the channel into two: segmented and persistent
     def full_ch = fov_ch.map { patient, well_fov -> tuple(patient, well_fov, params.featurize_with_gpu) }
 
