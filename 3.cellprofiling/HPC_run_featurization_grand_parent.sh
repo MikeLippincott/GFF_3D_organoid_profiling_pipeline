@@ -35,7 +35,7 @@ for dir in $dirs; do
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=1:00:00 \
+        --time=72:00:00 \
         --output=parent_featurize-%j.out \
         HPC_run_featurization_parent.sh "$well_fov" $USE_GPU $patient
 

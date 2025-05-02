@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
+import argparse
 import pathlib
 import shutil
 import sys
@@ -14,14 +15,37 @@ import tqdm
 sys.path.append(str(pathlib.Path("../../utils").resolve()))
 from file_checking import check_number_of_files
 
+try:
+    cfg = get_ipython().config
+    in_notebook = True
+except NameError:
+    in_notebook = False
+
+
 # In[ ]:
 
+
+if not in_notebook:
+    argparser = argparse.ArgumentParser(
+        description="set up directories for the analysis of the data"
+    )
+
+    argparser.add_argument(
+        "--patient",
+        type=str,
+        required=True,
+        help="patient name, e.g. 'P01'",
+    )
+
+    args = argparser.parse_args()
+    patient = args.patient
+else:
+    patient = "NF0014"
 
 overwrite = True
-patient = "NF0014"
 
 
-# In[ ]:
+# In[3]:
 
 
 # set path to the processed data dir
@@ -33,11 +57,12 @@ raw_input_dir = pathlib.Path(f"../../data/{patient}/zstack_images").resolve(stri
 cellprofiler_dir = pathlib.Path(f"../../data/{patient}/cellprofiler").resolve()
 if cellprofiler_dir.exists():
     shutil.rmtree(cellprofiler_dir)
+    cellprofiler_dir.mkdir(parents=True, exist_ok=True)
 else:
     cellprofiler_dir.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[4]:
 
 
 # perform checks for each directory
@@ -71,7 +96,7 @@ for file in normalized_data_dir_directories:
 
 # ## Copy the normalized images to the cellprofiler images dir
 
-# In[ ]:
+# In[5]:
 
 
 # get the list of dirs in the normalized_data_dir
@@ -90,7 +115,7 @@ for norm_dir in tqdm.tqdm(norm_dirs):
 
 # ## Copy files from processed dir to cellprofiler images dir
 
-# In[ ]:
+# In[6]:
 
 
 # get a list of dirs in processed_data
@@ -108,7 +133,7 @@ for well_dir in tqdm.tqdm(dirs):
             shutil.copy(file, new_file_dir)
 
 
-# In[ ]:
+# In[7]:
 
 
 jobs_to_rerun_path = pathlib.Path("../rerun_jobs.txt").resolve()
@@ -116,7 +141,7 @@ if jobs_to_rerun_path.exists():
     jobs_to_rerun_path.unlink()
 
 
-# In[ ]:
+# In[8]:
 
 
 dirs_in_cellprofiler_dir = [x for x in cellprofiler_dir.iterdir() if x.is_dir()]
@@ -127,7 +152,7 @@ for dir in tqdm.tqdm(dirs_in_cellprofiler_dir):
             f.write(f"{dir.name}\n")
 
 
-# In[ ]:
+# In[9]:
 
 
 # move an example to the example dir
