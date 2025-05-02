@@ -197,9 +197,6 @@ workflow {
             tuple(row.patient, row.well_fov, params.featurize_with_gpu)
         }
 
-    // Re-attach featurize_with_gpu flag
-    def full_ch = segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, params.featurize_with_gpu) }
-
     // always run CPU branches
     def persistent_ch = full_ch
 

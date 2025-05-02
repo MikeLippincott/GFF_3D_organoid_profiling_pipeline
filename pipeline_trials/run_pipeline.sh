@@ -7,7 +7,6 @@
 #SBATCH --time=7-00:00:00
 #SBATCH --output=nextflow_pipe-%j.out
 
-module load java
 module load nextflow
 
 # featurization only
