@@ -2,10 +2,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --partition=amilan
-#SBATCH --qos=normal
+#SBATCH --qos=long
 #SBATCH --account=amc-general
-#SBATCH --time=7-00:00:00
-#SBATCH --output=nextflow_pipe-%j.out
+#SBATCH --time=3-00:00:00
+#SBATCH --output=output_for_nf_featurization-%j.out
 
 module load nextflow
 

@@ -197,6 +197,9 @@ workflow {
             tuple(row.patient, row.well_fov, params.featurize_with_gpu)
         }
 
+    // Split the channel into two: segmented and persistent
+    def full_ch = fov_ch.map { patient, well_fov -> tuple(patient, well_fov, params.featurize_with_gpu) }
+
     // always run CPU branches
     def persistent_ch = full_ch
 
