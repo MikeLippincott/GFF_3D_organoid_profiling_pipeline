@@ -14,7 +14,9 @@ conda activate GFF_segmentation
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
-patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SARCO219" )
+patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SACRO219" )
+
+cd scripts/ || exit
 
 for patient in "${patient_array[@]}"; do
     number_of_jobs=$(squeue -u $USER | wc -l)
@@ -26,6 +28,8 @@ for patient in "${patient_array[@]}"; do
     python 7.clean_up_segmentation.py --patient "$patient"
 
 done
+
+cd ../ || exit
 
 conda deactivate
 echo "Segmentation cleanup completed"

@@ -40,7 +40,7 @@ except NameError:
 print(in_notebook)
 
 
-# In[ ]:
+# In[6]:
 
 
 if not in_notebook:
@@ -74,10 +74,10 @@ if not in_notebook:
     patient = args.patient
 
 else:
-    well_fov = "C2-1"
+    well_fov = "C3-2"
     window_size = 4
     clip_limit = 0.05
-    patient = "NF0014"
+    patient = "NF0016"
 
 
 input_dir = pathlib.Path(f"../../data/{patient}/zstack_images/{well_fov}").resolve(
@@ -92,7 +92,7 @@ mask_path.mkdir(exist_ok=True, parents=True)
 
 # ## Set up images, paths and functions
 
-# In[3]:
+# In[7]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -100,7 +100,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[4]:
+# In[8]:
 
 
 # find the cytoplasmic channels in the image set
