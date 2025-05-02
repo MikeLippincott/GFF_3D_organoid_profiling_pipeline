@@ -13,7 +13,7 @@ process areasizeshape_cpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -32,7 +32,7 @@ process areasizeshape_gpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -50,7 +50,7 @@ process colocalization_cpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -68,7 +68,7 @@ process colocalization_gpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -86,7 +86,7 @@ process granularity_cpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -104,7 +104,7 @@ process granularity_gpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -122,7 +122,7 @@ process intensity_cpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -140,7 +140,7 @@ process intensity_gpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -158,7 +158,7 @@ process neighbors_cpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -176,7 +176,7 @@ process texture_cpu {
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
 
     output:
-    stdout into dummy_output_ch
+    stdout emit: dummy_output_ch_txt
 
     script:
     """
@@ -194,21 +194,21 @@ workflow {
         .fromPath(params.fov_file)
         .splitCsv(header: true, sep: '\t')
         .map { row ->
-            tuple(row.patient, row.well_fov, params.featurize_with_gpu)
+            tuple(row.patient, row.well_fov, params.featurize_with_gpu ?: false) // Ensure featurize_with_gpu is not null
         }
 
     // Run segmentation (shared between all)
     def segmented_ch = fov_ch.map { patient, well_fov, _ -> tuple(patient, well_fov) }
 
-    // Split the channel into two: segmented and persistent
-    def full_ch = fov_ch.map { patient, well_fov -> tuple(patient, well_fov, params.featurize_with_gpu) }
+    // Re-attach featurize_with_gpu flag
+    def full_ch = segmented_ch.map { patient, well_fov ->
+        tuple(patient, well_fov, params.featurize_with_gpu)
+    }
 
-    // always run CPU branches
-    def persistent_ch = full_ch
-
-    // Split full channel into two: GPU and CPU
-    def (gpu_ch, cpu_ch) = full_ch.split { it[2] }
-
+    // if featurize_with_gpu is false, run CPU branches
+    def cpu_ch = full_ch.filter { patient, well_fov, featurize_with_gpu -> !featurize_with_gpu }
+    // if featurize_with_gpu is true, run GPU branches
+    def gpu_ch = full_ch.filter { patient, well_fov, featurize_with_gpu -> featurize_with_gpu }
     // Run GPU branches
     gpu_ch | areasizeshape_gpu
     gpu_ch | colocalization_gpu
@@ -221,7 +221,6 @@ workflow {
     cpu_ch | granularity_cpu
     cpu_ch | intensity_cpu
 
-    // Run neighbors and texture on CPU
-    persistent_ch | neighbors_cpu
-    persistent_ch | texture_cpu
+    // Always run texture on CPU
+    segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | texture_cpu
 }

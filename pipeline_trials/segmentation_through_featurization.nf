@@ -238,7 +238,7 @@ workflow {
     def persistent_ch = full_ch
 
     // Split full channel into two: GPU and CPU
-    def (gpu_ch, cpu_ch) = full_ch.split { it[2] }
+    def (gpu_ch, cpu_ch) = full_ch.split { it[2] == true }
 
     // Run GPU branches
     gpu_ch | areasizeshape_gpu
