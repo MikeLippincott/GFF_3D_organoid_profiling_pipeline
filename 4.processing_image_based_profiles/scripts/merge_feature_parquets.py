@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -20,7 +20,7 @@ except NameError:
     in_notebook = False
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -54,12 +54,13 @@ database_path.mkdir(parents=True, exist_ok=True)
 sqlite_path = database_path / f"{well_fov}.sqlite"
 
 
-# get a list of all parquets in the directory
-parquet_files = list(result_path.glob("*.parquet"))
+# get a list of all parquets in the directory recursively
+parquet_files = list(result_path.rglob("*.parquet"))
 parquet_files.sort()
+print(len(parquet_files), "parquet files found")
 
 
-# In[ ]:
+# In[3]:
 
 
 feature_types_dict = {
@@ -99,12 +100,12 @@ feature_types_dict = {
 for file in parquet_files:
     for compartment in feature_types_dict.keys():
         for feature_type in feature_types_dict[compartment].keys():
-            if compartment in file.name and feature_type in file.name:
+            if compartment in str(file) and feature_type in str(file):
                 feature_types_dict[compartment][feature_type].append(file)
 pprint.pprint(feature_types_dict)
 
 
-# In[ ]:
+# In[4]:
 
 
 # create a record for each compartment
@@ -177,7 +178,7 @@ for compartment in feature_types_dict.keys():
         )
 
 
-# In[ ]:
+# In[5]:
 
 
 with closing(sqlite3.connect(sqlite_path)) as cx:
