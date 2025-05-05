@@ -6,7 +6,7 @@ patient=$3
 echo "Running featurization for $patient $well_fov"
 
 
-module load miniforge
+# module load miniforge
 conda init bash
 conda activate GFF_featurization
 
