@@ -15,9 +15,9 @@ nextflow \
     --fov_file "patient_well_fov.tsv" \
     --featurize_with_gpu false
 
-# segmentation and featurization commented out for now
-nextflow \
-    featurization_only.nf \
-    --fov_file "patient_well_fov.tsv" \
-    --featurize_with_gpu "false" \
-    -c nextflow_local.config
+# # segmentation and featurization commented out for now
+# nextflow \
+#     featurization_only.nf \
+#     --fov_file "patient_well_fov.tsv" \
+#     --featurize_with_gpu "false" \
+#     -c nextflow_local.config
