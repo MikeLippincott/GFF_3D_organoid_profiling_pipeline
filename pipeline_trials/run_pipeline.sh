@@ -9,15 +9,36 @@
 
 module load nextflow
 
-# featurization only
-nextflow \
-    featurization_only.nf \
-    --fov_file "patient_well_fov.tsv" \
-    --featurize_with_gpu false
+HPC_RUN=False
+FEATS_ONLY=True
 
-# segmentation and featurization commented out for now
-# nextflow \
-#     featurization_only.nf \
-#     --fov_file "patient_well_fov.tsv" \
-#     --featurize_with_gpu "false" \
-#     -c nextflow_local.config
+
+if [ "$HPC_RUN" = "True" ]; then
+    if [ "$FEATS_ONLY" = "True" ]; then
+        nextflow \
+            featurization_only.nf \
+            --fov_file "patient_well_fov.tsv" \
+            --featurize_with_gpu false \
+            -c ./configs/nextflow_hpc.config
+    else
+        nextflow \
+            segmentation_through_featurization.nf \
+            --fov_file "patient_well_fov.tsv" \
+            --featurize_with_gpu false \
+            -c ./configs/nextflow_hpc.config
+    fi
+else
+    if [ "$FEATS_ONLY" = "True" ]; then
+        nextflow \
+            featurization_only.nf \
+            --fov_file "patient_well_fov.tsv" \
+            --featurize_with_gpu false \
+            -c ./configs/nextflow_local.config
+    else
+        nextflow \
+            segmentation_through_featurization.nf \
+            --fov_file "patient_well_fov.tsv" \
+            --featurize_with_gpu false \
+            -c ./configs/nextflow_local.config
+    fi
+fi

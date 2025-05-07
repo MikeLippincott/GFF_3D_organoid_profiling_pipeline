@@ -26,16 +26,22 @@ flowchart TB
     subgraph " "
     v0["Channel.fromPath"]
     end
+    v3([segmentation])
+    v6([areasizeshape_cpu])
     subgraph " "
     v7[" "]
-    v9["-"]
+    v10[" "]
     end
-    v8([areasizeshape_cpu])
+    v9([areasizeshape_gpu])
     v1(( ))
+    v4(( ))
     v0 --> v1
-    v1 --> v7
-    v1 --> v8
-    v8 --> v9
+    v1 --> v3
+    v3 --> v4
+    v4 --> v6
+    v6 --> v7
+    v4 --> v9
+    v9 --> v10
 
 </pre
     >
