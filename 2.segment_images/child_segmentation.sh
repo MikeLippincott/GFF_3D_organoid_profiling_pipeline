@@ -2,9 +2,9 @@
 
 
 # activate  cellprofiler environment
-module load anaconda
-conda init bash
-conda activate GFF_segmentation
+# module load anaconda
+# conda init bash
+# conda activate GFF_segmentation
 
 cd scripts/ || exit
 
@@ -13,7 +13,6 @@ patient=$2
 echo "Processing well_fov $well_fov for patient $patient"
 compartments=( "nuclei" "cell" "organoid" )
 
-echo -ne "Processing directory $current_dir of $total_dirs\r"
 # echo "Reslicing images" # comment out for now -> needs further testing
 # python 00.reslice_images.py --well_fov "$well_fov"
 echo "Segmenting Nuclei"
@@ -35,6 +34,6 @@ python 5.create_cytoplasm_masks.py --patient "$patient" --well_fov "$well_fov" >
 cd ../ || exit
 
 # deactivate cellprofiler environment
-conda deactivate
+# conda deactivate
 
 echo "Segmentation complete"

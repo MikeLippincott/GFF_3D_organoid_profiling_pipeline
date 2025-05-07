@@ -39,7 +39,7 @@ process areasizeshape_gpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}, use_gpu: ${featurize_with_gpu}"
-    conda run -n GFF_featurization bash run_area_shape_child.sh ${patient} ${well_fov} TRUE ${featurize_with_gpu}
+    bash run_area_shape_child.sh ${patient} ${well_fov} TRUE ${featurize_with_gpu}
     cd ${baseDir}/ || exit 1
     """
 }
@@ -59,7 +59,7 @@ process colocalization_cpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    conda run -n GFF_featurization bash run_colocalization_child.sh ${patient} FALSE ${well_fov}
+    bash run_colocalization_child.sh ${patient} FALSE ${well_fov}
     cd ${baseDir}/ || exit 1
     """
 }
@@ -79,7 +79,7 @@ process colocalization_gpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    conda run -n GFF_featurization bash run_colocalization_child.sh ${patient} TRUE ${well_fov}
+    bash run_colocalization_child.sh ${patient} TRUE ${well_fov}
     cd ${baseDir}/ || exit 1
     """
 }
@@ -99,7 +99,7 @@ process granularity_cpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    conda run -n GFF_featurization bash run_granularity_child.sh ${patient} FALSE ${well_fov}
+    bash run_granularity_child.sh ${patient} FALSE ${well_fov}
     cd ${baseDir}/ || exit 1
     """
 }
@@ -119,7 +119,7 @@ process granularity_gpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    conda run -n GFF_featurization bash run_granularity_child.sh ${patient} TRUE ${well_fov}
+    bash run_granularity_child.sh ${patient} TRUE ${well_fov}
     cd ${baseDir}/ || exit 1
     """
 }
@@ -139,7 +139,7 @@ process intensity_cpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Running GPU featurization for patient: ${patient}, well_fov: ${well_fov} use_gpu: ${featurize_with_gpu}"
-    conda run -n GFF_featurization bash run_intensity_child.sh ${well_fov} FALSE ${patient}
+    bash run_intensity_child.sh ${well_fov} FALSE ${patient}
     cd ${baseDir}/ || exit 1
     """
 }
@@ -159,7 +159,7 @@ process intensity_gpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Running GPU featurization for patient: ${patient}, well_fov: ${well_fov} use_gpu: ${featurize_with_gpu}"
-    conda run -n GFF_featurization bash run_intensity_child.sh ${well_fov} TRUE ${patient}
+    bash run_intensity_child.sh ${well_fov} TRUE ${patient}
     cd ${baseDir}/ || exit 1
     """
 }
@@ -179,7 +179,7 @@ process neighbors_cpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Running GPU featurization for patient: ${patient}, well_fov: ${well_fov} use_gpu: ${featurize_with_gpu}"
-    conda run -n GFF_featurization bash run_neighbors_child.sh ${well_fov} FALSE ${patient}
+    bash run_neighbors_child.sh ${well_fov} FALSE ${patient}
     cd ${baseDir}/ || exit 1
     """
 }
@@ -197,15 +197,12 @@ process texture_cpu {
     """
     cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Running CPU featurization for patient: ${patient}, well_fov: ${well_fov} use_gpu: ${featurize_with_gpu}"
-    conda run -n GFF_featurization bash run_texture_child.sh ${well_fov} FALSE ${patient}
+    bash run_texture_child.sh ${well_fov} FALSE ${patient}
     cd ${baseDir}/ || exit 1
     """
 }
 
 workflow {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-
     // Common channel from input file
     def fov_ch = Channel
         .fromPath(params.fov_file)
