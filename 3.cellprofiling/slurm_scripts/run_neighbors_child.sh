@@ -1,8 +1,8 @@
 #!/bin/bash
 
-module load miniforge
-conda init bash
-conda activate GFF_featurization
+# module load miniforge
+# conda init bash
+# conda activate GFF_featurization
 
 cd ../scripts/ || exit
 well_fov=$1
@@ -18,4 +18,4 @@ echo "Time taken to run the featurization: $(($end-$start_timestamp))"
 
 cd ../ || exit
 
-conda deactivate
+# conda deactivate

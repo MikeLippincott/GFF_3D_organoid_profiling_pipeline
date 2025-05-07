@@ -7,8 +7,8 @@ echo "Running featurization for $patient $well_fov"
 
 
 # module load miniforge
-conda init bash
-conda activate GFF_featurization
+# conda init bash
+# conda activate GFF_featurization
 
 cd ../scripts/ || exit
 
@@ -27,4 +27,4 @@ echo "Time taken to run the featurization: $(($end-$start_timestamp))"
 
 cd ../ || exit
 
-conda deactivate
+# conda deactivate
