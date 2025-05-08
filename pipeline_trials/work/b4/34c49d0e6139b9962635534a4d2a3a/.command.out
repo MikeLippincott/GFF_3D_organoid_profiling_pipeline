@@ -1,9 +1,0 @@
-Processing patient: NF0014, well_fov: C4-2, use_gpu: /home/lippincm/miniforge3/envs/
-Running featurization for TRUE NF0014
-Running CPU version
-Memory usage: 0.56 MB
-Texture time:
---- 0.0026357173919677734 seconds ---
---- 4.392862319946289e-05 minutes ---
---- 7.321437199910482e-07 hours ---
-Time taken to run the featurization: 0
