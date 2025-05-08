@@ -5,8 +5,10 @@ nextflow.enable.dsl = 2
 params.fov_file = 'patient_well_fov.tsv'
 params.featurize_with_gpu = false
 
+params.conda_env_prefix = '/projects/mlippincott@xsede.org/software/anaconda/envs/'
+
 process segmentation {
-    conda '/home/lippincm/miniforge3/envs/GFF_segmentation'
+    conda 'conda_env_prefix + "GFF_segmentation"'
 
     tag { "${patient}-${well_fov}" }
 
@@ -26,7 +28,7 @@ process segmentation {
 }
 
 process areasizeshape_cpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
+    conda 'conda_env_prefix + "GFF_segmentation"'
     tag { "areasizeshape_cpu" }
 
     input:
