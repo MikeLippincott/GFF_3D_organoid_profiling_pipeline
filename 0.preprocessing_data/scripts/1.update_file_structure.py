@@ -202,6 +202,8 @@ def has_equal_images_per_channel(
 
 
 # Function to process a single nested directory
+
+
 def process_nested_dir(nested_dir, dest_well_dir, channel_names, image_extensions):
     if not nested_dir.is_dir():
         return f"Skipping {nested_dir}: Not a directory"
