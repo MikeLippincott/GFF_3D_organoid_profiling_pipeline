@@ -1,7 +1,10 @@
 #!/bin/bash
 
 
-# activate  cellprofiler environment
+# activate cellprofiler environment
+# The following environment activation commands are commented out.
+# Ensure the required environment is activated manually before running this script,
+# or confirm that activation is handled by a parent script or workflow.
 # module load anaconda
 # conda init bash
 # conda activate GFF_segmentation
