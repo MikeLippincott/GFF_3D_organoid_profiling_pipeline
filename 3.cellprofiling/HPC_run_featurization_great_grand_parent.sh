@@ -5,7 +5,7 @@
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
 #SBATCH --time=2:00:00
-#SBATCH --output=featurization_sc_grand_parent-%j.out
+#SBATCH --output=featurization_sc_great_grand_parent-%j.out
 
 
 module load anaconda
@@ -29,7 +29,7 @@ for patient in "${patient_array[@]}"; do
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
-    --time=24:00:00 \
+    --time=1:00:00 \
     --output=featurization_sc_grand_parent-%j.out \
     HPC_run_featurization_grand_parent.sh "$patient"
 done
