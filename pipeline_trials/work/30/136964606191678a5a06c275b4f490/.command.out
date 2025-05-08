@@ -1,0 +1,10 @@
+Processing patient: NF0014, well_fov: C4-2
+Running featurization for C4-2 NF0014
+Using GPU: TRUE
+Running GPU version
+Memory usage: 0.38 MB
+Texture time:
+--- 0.0023679733276367188 seconds ---
+--- 3.9466222127278645e-05 minutes ---
+--- 6.577703687879774e-07 hours ---
+Time taken to run the featurization: 0
