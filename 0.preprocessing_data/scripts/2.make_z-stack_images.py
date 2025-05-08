@@ -29,16 +29,16 @@ else:
 
 # ## Set input and output directories
 
-# In[2]:
+# In[ ]:
 
 
 list_of_patients = [  # will be in a separate file in the future
-    # "NF0014",
+    "NF0014",
     "NF0016",
-    # "NF0017",
+    "NF0017",
     "NF0018",
-    # "NF0021",
-    # "SACRO219",
+    "NF0021",
+    "SACRO219",
 ]
 
 
