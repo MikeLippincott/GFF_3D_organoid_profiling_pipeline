@@ -4,7 +4,7 @@
 # # Run whole image QC pipeline in CellProfiler
 #
 # To determine if there are images that of poor quality, we run a CellProfiler pipeline specific to extracting image quality metrics.
-# We extract blur and saturation metrics, we can use to identify thresholds for these metrics to separate the good and poor quality images.
+# We use blur and saturation metrics to identify thresholds for good and poor quality images.
 #
 
 # ## Import libraries
