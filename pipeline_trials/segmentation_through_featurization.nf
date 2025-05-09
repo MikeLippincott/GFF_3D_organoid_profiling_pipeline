@@ -1,17 +1,25 @@
 #!/usr/bin/env nextflow
 
+// This is a nexflow script for running the GFF segmentation and featurization pipeline
+// It is designed to run on a SLURM cluster or locally
+// Note that all code written here is written in nextflow DSL2
+// DSL2 = Domain Specific Language 2
+
+
 nextflow.enable.dsl = 2
 
-params.fov_file = 'patient_well_fov.tsv'
-params.featurize_with_gpu = false
-
-params.conda_env_prefix = '/projects/mlippincott@xsede.org/software/anaconda/envs/'
+// global vars are set here
+params.fov_file = 'patient_well_fov.tsv' // tsv containing patient and well_fov information
+params.featurize_with_gpu = false // boolean to determine if GPU should be used for featurization
+params.conda_env_prefix = '/projects/mlippincott@xsede.org/software/anaconda/envs/' // prefix for conda environments
 
 process segmentation {
+    // specify the conda environment to use for this process
     conda 'conda_env_prefix + "GFF_segmentation"'
 
     tag { "${patient}-${well_fov}" }
 
+    // specify the input for this process
     input:
     tuple val(patient), val(well_fov)
 
@@ -20,13 +28,15 @@ process segmentation {
 
     script:
     """
+    # Set the base directory to the current working directory
     cd ${baseDir}/../2.segment_images/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
+    # call the chile script to run segmentation for the given patient and well_fov
     source child_segmentation.sh ${well_fov} ${patient}
     cd ${baseDir}/ || exit 1
     """
 }
-
+// Define each of the featurizer processes
 process areasizeshape_cpu {
     conda 'conda_env_prefix + "GFF_segmentation"'
     tag { "areasizeshape_cpu" }

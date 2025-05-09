@@ -1,206 +1,22 @@
 #!/usr/bin/env nextflow
+// This is a nexflow script for running the GFF featurization pipeline
+// It is designed to run on a SLURM cluster or locally
+// Note that all code written here is written in nextflow DSL2
+// DSL2 = Domain Specific Language 2
+// For this pipeline to run it is assumed that segmentation has already been run
 
 nextflow.enable.dsl = 2
 
 params.fov_file = 'patient_well_fov.tsv'
 params.featurize_with_gpu = false
 
-process areasizeshape_cpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-    tag { "areasizeshape_cpu" }
+include { AREASIZESHAPE_CPU; AREASIZESHAPE_GPU } from './modules/areasizeshape.nf'
+include { COLOCALIZATION_CPU; COLOCALIZATION_GPU } from './modules/colocalization.nf'
+include { GRANULARITY_CPU; GRANULARITY_GPU } from './modules/granularity.nf'
+include { INTENSITY_CPU; INTENSITY_GPU } from './modules/intensity.nf'
+include { NEIGHBORS_CPU } from './modules/neighbors.nf'
+include { TEXTURE_CPU } from './modules/texture.nf'
 
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Processing patient: ${patient}, well_fov: ${well_fov}, use_gpu: ${featurize_with_gpu}"
-    bash run_area_shape_child.sh ${well_fov} ${featurize_with_gpu} ${patient}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process areasizeshape_gpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-    tag { "areasizeshape_gpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Processing patient: ${patient}, well_fov: ${well_fov}, use_gpu: ${featurize_with_gpu}"
-    bash run_area_shape_child.sh ${patient} ${well_fov} TRUE ${featurize_with_gpu}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process colocalization_cpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-    tag { "colocalization_cpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    bash run_colocalization_child.sh ${patient} FALSE ${well_fov}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process colocalization_gpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-    tag { "colocalization_gpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    bash run_colocalization_child.sh ${patient} TRUE ${well_fov}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process granularity_cpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-    tag { "granularity_cpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    bash run_granularity_child.sh ${patient} FALSE ${well_fov}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process granularity_gpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-    tag { "granularity_gpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    bash run_granularity_child.sh ${patient} TRUE ${well_fov}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process intensity_cpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-    tag { "intensity_cpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Running GPU featurization for patient: ${patient}, well_fov: ${well_fov} use_gpu: ${featurize_with_gpu}"
-    bash run_intensity_child.sh ${well_fov} FALSE ${patient}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process intensity_gpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-    tag { "intensity_gpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Running GPU featurization for patient: ${patient}, well_fov: ${well_fov} use_gpu: ${featurize_with_gpu}"
-    bash run_intensity_child.sh ${well_fov} TRUE ${patient}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process neighbors_cpu {
-    conda '/home/lippincm/miniforge3/envs/GFF_featurization'
-
-    tag { "neighbors_cpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Running GPU featurization for patient: ${patient}, well_fov: ${well_fov} use_gpu: ${featurize_with_gpu}"
-    bash run_neighbors_child.sh ${well_fov} FALSE ${patient}
-    cd ${baseDir}/ || exit 1
-    """
-}
-
-process texture_cpu {
-    tag { "texture_cpu" }
-
-    input:
-    tuple val(patient), val(well_fov), val(featurize_with_gpu)
-
-    output:
-    stdout emit: dummy_output_ch_txt
-
-    script:
-    """
-    cd ${baseDir}/../3.cellprofiling/slurm_scripts/ || exit 1
-    echo "Running CPU featurization for patient: ${patient}, well_fov: ${well_fov} use_gpu: ${featurize_with_gpu}"
-    bash run_texture_child.sh ${well_fov} FALSE ${patient}
-    cd ${baseDir}/ || exit 1
-    """
-}
 
 workflow {
     // Common channel from input file
@@ -224,19 +40,19 @@ workflow {
     // if featurize_with_gpu is true, run GPU branches
     def gpu_ch = full_ch.filter { patient, well_fov, featurize_with_gpu -> featurize_with_gpu }
     // Run GPU branches
-    gpu_ch | areasizeshape_gpu
-    gpu_ch | colocalization_gpu
-    gpu_ch | granularity_gpu
-    gpu_ch | intensity_gpu
+    gpu_ch | AREASIZESHAPE_GPU
+    gpu_ch | COLOCALIZATION_GPU
+    gpu_ch | GRANULARITY_GPU
+    gpu_ch | INTENSITY_GPU
 
     // Run CPU branches
-    cpu_ch | areasizeshape_cpu
-    cpu_ch | colocalization_cpu
-    cpu_ch | granularity_cpu
-    cpu_ch | intensity_cpu
+    cpu_ch | AREASIZESHAPE_CPU
+    cpu_ch | COLOCALIZATION_CPU
+    cpu_ch | GRANULARITY_CPU
+    cpu_ch | INTENSITY_CPU
 
     // Run neighbors on CPU
-    segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | neighbors_cpu
+    segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | NEIGHBORS_CPU
     // Always run texture on CPU
-    segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | texture_cpu
+    segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | TEXTURE_CPU
 }
