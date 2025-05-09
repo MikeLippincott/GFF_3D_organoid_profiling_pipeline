@@ -40,7 +40,64 @@ except NameError:
 print(in_notebook)
 
 
-# In[6]:
+# In[2]:
+
+
+def segment_with_diameter(
+    img: np.ndarray,
+    model: models.Cellpose,
+    diameter: int,
+    z_axis: int = 0,
+    channels: tuple = [1, 0],
+):
+    """
+    Recursively perform segmentation, stepping down through diameters by 250
+    until a valid label is found or the minimum diameter is reached.
+    This effectively performs a dynamic search for the largest detectable object
+    in the image.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        The image to segment. Can be 3D in the format of (z, y, x).
+    model : models.Cellpose
+        The Cellpose model to use for segmentation.
+    diameter : int
+        The diameter to use for segmentation.
+        This is where the search starts.
+    z_axis : int, optional
+        The axis of the z-stack. Default is axis 0.
+    channels : tuple, optional
+        The channels to use for segmentation. Default is (1, 0).
+        Where 1 is the channel for the cytoplasm and 0 using no other channel.
+
+    Returns
+    -------
+    tuple
+        labels : np.ndarray
+            The labels of the segmented image.
+        details : dict
+            The details of the segmentation.
+        _ : None
+            Placeholder for additional return values.
+    """
+    if diameter < 250:
+        print("Minimum diameter reached. Returning empty labels.")
+        zero_labels = np.zeros_like(img)
+        return zero_labels, None, None
+
+    labels, details, _ = model.eval(
+        img, channels=channels, z_axis=z_axis, diameter=diameter
+    )
+
+    if labels is None:
+        print(f"Labels are empty for diameter {diameter}. Trying smaller diameter...")
+        return segment_with_diameter(img, model, channels, z_axis, diameter - 250)
+
+    return labels, details, _
+
+
+# In[3]:
 
 
 if not in_notebook:
@@ -74,10 +131,10 @@ if not in_notebook:
     patient = args.patient
 
 else:
-    well_fov = "C3-2"
+    well_fov = "G11-2"
     window_size = 4
     clip_limit = 0.05
-    patient = "NF0016"
+    patient = "NF0014"
 
 
 input_dir = pathlib.Path(f"../../data/{patient}/zstack_images/{well_fov}").resolve(
@@ -92,7 +149,7 @@ mask_path.mkdir(exist_ok=True, parents=True)
 
 # ## Set up images, paths and functions
 
-# In[7]:
+# In[4]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -100,7 +157,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[8]:
+# In[5]:
 
 
 # find the cytoplasmic channels in the image set
@@ -120,9 +177,9 @@ for f in files:
 
 cyto = np.max(
     [
-        # cyto1,
-        cyto2,
-        cyto3,
+        # cyto1, # ER
+        cyto2,  # AGP
+        # cyto3, # Mito
     ],
     axis=0,
 )
@@ -133,9 +190,10 @@ cyto = np.max(
 original_cyto_image = cyto.copy()
 
 original_cyto_z_count = cyto.shape[0]
+print(f"Original cyto image shape: {original_cyto_image.shape}")
 
 
-# In[5]:
+# In[6]:
 
 
 # make a 2.5 D max projection image stack with a sliding window of 3 slices
@@ -156,7 +214,7 @@ cyto = np.array(image_stack_2_5D)
 print("2.5D cyto image stack shape:", cyto.shape)
 
 
-# In[6]:
+# In[7]:
 
 
 butterworth_optimization = True
@@ -205,17 +263,21 @@ if butterworth_optimization:
         plt.show()
 
 
-# In[7]:
+# In[8]:
 
 
-# Use butterworth FFT filter to remove high frequency noise :)
-imgs = skimage.filters.butterworth(
-    cyto,
-    cutoff_frequency_ratio=0.5,
-    high_pass=False,
-    order=1,
-    squared_butterworth=True,
-)
+# # Use butterworth FFT filter to remove high frequency noise :)
+for i in range(cyto.shape[0]):
+    cyto[i, :, :] = skimage.filters.butterworth(
+        cyto[i, :, :],
+        cutoff_frequency_ratio=0.05,
+        high_pass=False,
+        order=1,
+        squared_butterworth=True,
+    )
+
+# add a guassian blur to the image
+imgs = skimage.filters.gaussian(cyto, sigma=1)
 if in_notebook:
     # plot the nuclei and the cyto channels
     plt.figure(figsize=(10, 10))
@@ -230,7 +292,7 @@ if in_notebook:
     plt.show()
 
 
-# In[8]:
+# In[9]:
 
 
 use_GPU = torch.cuda.is_available()
@@ -243,20 +305,24 @@ output_dict = {
     "labels": [],
     "details": [],
 }
+# Iterate through slices and perform segmentation
 for slice in tqdm.tqdm(range(imgs.shape[0])):
-    # Perform segmentation of whole organoids
-    labels, details, _ = model.eval(
+    # Perform segmentation of whole organoids with initial diameter of 750
+    labels, details, _ = segment_with_diameter(
         imgs[slice, :, :],
+        model=model,
         channels=[1, 0],
         z_axis=0,
         diameter=750,
     )
+
+    # Append results to the output dictionary
     output_dict["slice"].append(slice)
     output_dict["labels"].append(labels)
     output_dict["details"].append(details)
 
 
-# In[9]:
+# In[10]:
 
 
 # reverse sliding window max projection
@@ -284,7 +350,7 @@ for z_stack_mask_index in range(len(output_dict["labels"])):
 np.save(mask_path / "organoid_reconstruction_dict.npy", reconstruction_dict)
 
 
-# In[10]:
+# In[11]:
 
 
 if in_notebook:
