@@ -1,12 +1,4 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks=1
-#SBATCH --partition=amilan
-#SBATCH --qos=long
-#SBATCH --account=amc-general
-#SBATCH --time=96:00:00
-#SBATCH --output=segmentation-%j.out
-
 # activate  cellprofiler environment
 module load anaconda
 conda init bash
@@ -14,11 +6,13 @@ conda activate GFF_segmentation
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
+patient=$1
+
+echo "Processing patient $patient"
 
 cd scripts/ || exit
 # get all input directories in specified directory
-z_stack_dir="../../data/NF0014/zstack_images/"
-# z_stack_dir="../../data/NF0014/test_dir/"
+z_stack_dir="../../data/$patient/zstack_images"
 mapfile -t input_dirs < <(ls -d "$z_stack_dir"/*)
 cd ../ || exit
 total_dirs=$(echo "${input_dirs[@]}" | wc -w)
@@ -27,24 +21,31 @@ current_dir=0
 
 touch segmentation.log
 # loop through all input directories
-for dir in "${input_dirs[@]}"; do
+for well_fov in "${input_dirs[@]}"; do
     number_of_jobs=$(squeue -u $USER | wc -l)
     while [ $number_of_jobs -gt 990 ]; do
         sleep 1s
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
-    dir=${dir%*/}
+    well_fov=$(basename "$well_fov")
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
-    echo "Beginning segmentation for $dir"
-    sbatch child_segmentation.sh "$dir"
-done
+    echo "Beginning segmentation for $well_fov"
+    sbatch \
+        --nodes=1 \
+        --ntasks=6 \
+        --partition=aa100 \
+        --gres=gpu:1 \
+        --qos=normal \
+        --account=amc-general \
+        --time=1:00:00 \
+        --output=segmentation_child-%j.out \
+        child_segmentation.sh "$well_fov" "$patient"
 
-echo "Cleaning up segmentation files"
-python 7.clean_up_segmentation.py >> segmentation.log
-echo -ne "\n"
+done
 
 # deactivate cellprofiler environment
 conda deactivate
 
-echo "Segmentation complete"
+echo "All segmentation child jobs submitted"
+
