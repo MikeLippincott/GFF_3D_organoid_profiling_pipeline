@@ -182,7 +182,7 @@ mask_path.mkdir(exist_ok=True, parents=True)
 
 # ## Set up images, paths and functions
 
-# In[4]:
+# In[3]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -190,7 +190,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[5]:
+# In[4]:
 
 
 # find the cytoplasmic channels in the image set

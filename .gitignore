@@ -185,3 +185,4 @@ data/*
 pipeline_trials/.nextflow/*
 pipeline_trials/work/*
 pipeline_trials/.nextflow.log*
+.nextflow*
