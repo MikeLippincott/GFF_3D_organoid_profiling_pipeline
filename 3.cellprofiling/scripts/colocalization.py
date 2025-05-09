@@ -44,7 +44,11 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 # In[ ]:
 
 
-def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader) -> str:
+def process_combination(
+    args: tuple[str, str],
+    image_set_loader: ImageSetLoader,
+    output_parent_path: pathlib.Path,
+) -> str:
     """
     Process a single combination of compartment and channel pair for colocalization analysis.
 
@@ -65,6 +69,8 @@ def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader)
     image_set_loader : ImageSetLoader
         An instance of the ImageSetLoader class that loads the images and metadata.
 
+    output_parent_path : pathlib.Path
+        The parent directory where the output files will be saved.
     Returns
     -------
     str
@@ -77,10 +83,11 @@ def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader)
         channel1=channel1,
         channel2=channel2,
     )
-
     output_dir = pathlib.Path(
-        f"../results/{image_set_loader.image_set_name}/Colocalization_{compartment}_{channel1}.{channel2}_features"
+        output_parent_path
+        / f"Colocalization_{compartment}_{channel1}.{channel2}_features"
     )
+
     output_dir.mkdir(parents=True, exist_ok=True)
     for object_id in coloc_loader.object_ids:
         cropped_image1, cropped_image2 = prepare_two_images_for_colocalization(
@@ -107,6 +114,12 @@ def process_combination(args: tuple[str, str], image_set_loader: ImageSetLoader)
         # list_of_dfs.append(coloc_df)
         coloc_df.to_parquet(output_dir / f"object_{object_id}.parquet")
 
+        # del all the in memory objects
+        del cropped_image1
+        del cropped_image2
+        del coloc_df
+        del colocalization_features
+
     return f"Processed {compartment} - {channel1}.{channel2}"
 
 
@@ -121,18 +134,30 @@ if not in_notebook:
         default="None",
         help="Well and field of view to process, e.g. 'A01_1'",
     )
+    argparser.add_argument(
+        "--patient",
+        type=str,
+        help="Patient ID, e.g. 'NF0014'",
+    )
 
     args = argparser.parse_args()
     well_fov = args.well_fov
+    patient = args.patient
     if well_fov == "None":
         raise ValueError(
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
 else:
     well_fov = "C4-2"
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    patient = "NF0014"
+
+
+image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+output_parent_path = pathlib.Path(
+    f"../../data/{patient}/extracted_features/{well_fov}/"
+)
+output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
 # In[ ]:
@@ -154,6 +179,14 @@ channel_mapping = {
 # In[ ]:
 
 
+start_time = time.time()
+# get starting memory (cpu)
+start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+
+
+# In[ ]:
+
+
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
     anisotropy_spacing=(1, 0.1, 0.1),
@@ -168,50 +201,50 @@ image_set_loader = ImageSetLoader(
 channel_combinations = list(itertools.combinations(image_set_loader.image_names, 2))
 
 
-# In[ ]:
-
-
-start_time = time.time()
-# get starting memory (cpu)
-start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
-
-
 # runs upon converted script execution
 
 # In[ ]:
 
 
-if __name__ == "__main__":
-    # Generate all combinations of compartments and channel pairs
-    combinations = list(
-        product(
-            image_set_loader.compartments,
-            [pair for pair in channel_combinations],
+# Generate all combinations of compartments and channel pairs
+combinations = list(
+    product(
+        image_set_loader.compartments,
+        [pair for pair in channel_combinations],
+    )
+)
+
+# Flatten the channel combinations for easier unpacking
+combinations = [
+    (compartment, channel1, channel2)
+    for compartment, (channel1, channel2) in combinations
+]
+
+
+# In[ ]:
+
+
+# Specify the number of cores to use
+cores_to_use = multiprocessing.cpu_count()  # Adjust the number of cores as needed
+print(f"Using {cores_to_use} cores for processing.")
+
+# Use multiprocessing to process combinations in parallel
+with multiprocessing.Pool(processes=cores_to_use) as pool:
+    results = list(
+        tqdm(
+            pool.imap(
+                partial(
+                    process_combination,
+                    image_set_loader=image_set_loader,
+                    output_parent_path=output_parent_path,
+                ),
+                combinations,
+            ),
+            desc="Processing combinations",
         )
     )
 
-    # Flatten the channel combinations for easier unpacking
-    combinations = [
-        (compartment, channel1, channel2)
-        for compartment, (channel1, channel2) in combinations
-    ]
-    # Specify the number of cores to use
-    cores_to_use = multiprocessing.cpu_count()  # Adjust the number of cores as needed
-    print(f"Using {cores_to_use} cores for processing.")
-
-    # Use multiprocessing to process combinations in parallel
-    with multiprocessing.Pool(processes=cores_to_use) as pool:
-        results = list(
-            tqdm(
-                pool.imap(
-                    partial(process_combination, image_set_loader=image_set_loader),
-                    combinations,
-                ),
-                desc="Processing combinations",
-            )
-        )
-
-    print("Processing complete.")
+print("Processing complete.")
 
 
 # In[ ]:
@@ -224,7 +257,11 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    process_name="Colocalization",
+    feature_type="Colocalization",
     well_fov=well_fov,
+    patient_id=patient,
     CPU_GPU="CPU",
+    output_file_dir=pathlib.Path(
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Colocalization_CPU.parquet"
+    ),
 )
