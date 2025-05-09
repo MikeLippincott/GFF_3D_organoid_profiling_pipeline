@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import argparse
@@ -13,7 +13,7 @@ import tqdm
 
 # ## Set paths and variables
 
-# In[3]:
+# In[2]:
 
 
 argparse = argparse.ArgumentParser(
@@ -28,7 +28,7 @@ HPC = args.HPC
 print(f"HPC: {HPC}")
 
 
-# In[4]:
+# In[3]:
 
 
 if HPC:
@@ -47,7 +47,7 @@ else:
 
 # ## NF0014 specific preprocessing
 
-# In[ ]:
+# In[4]:
 
 
 # Define parent and destination directories in a single dictionary
@@ -61,7 +61,7 @@ parent_dir_NF0014 = list(parent_dir_NF0014_parent.glob("*/"))
 parent_dir_NF0014 = [x for x in parent_dir_NF0014 if x.is_dir()]
 
 
-# In[ ]:
+# In[5]:
 
 
 for parent_dir in parent_dir_NF0014:
