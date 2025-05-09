@@ -49,7 +49,7 @@ except NameError:
     in_notebook = False
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:

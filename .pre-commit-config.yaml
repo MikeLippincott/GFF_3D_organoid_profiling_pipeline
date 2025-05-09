@@ -1,6 +1,7 @@
 repos:
--   repo: https://gitlab.com/vojko.pribudic.foss/pre-commit-update
-    rev: v0.7.0       # Insert the latest tag here
+  - repo: https://gitlab.com/vojko.pribudic.foss/pre-commit-update
+    rev: v0.7.0 # Insert the latest tag here
+
     hooks:
       - id: pre-commit-update
         args: [--exclude, black, --keep, isort]
