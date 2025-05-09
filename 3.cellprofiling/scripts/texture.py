@@ -22,7 +22,7 @@ from itertools import product
 import pandas as pd
 import tqdm
 from loading_classes import ImageSetLoader, ObjectLoader
-from resource_profiling_utils import get_mem_and_time_profiling
+from resource_profiling_util import get_mem_and_time_profiling
 from texture_utils import measure_3D_texture
 from tqdm import tqdm
 
@@ -40,7 +40,11 @@ else:
 # In[ ]:
 
 
-def process_combination(args, image_set_loader):
+def process_combination(
+    args: tuple[str, str],
+    image_set_loader: ImageSetLoader,
+    output_parent_path: pathlib.Path,
+) -> str:
     """
     Process a single combination of compartment and channel.
 
@@ -56,7 +60,8 @@ def process_combination(args, image_set_loader):
             The compartment name.
     image_set_loader : Class ImageSetLoader
         This contains the image information needed to retreive the objects.
-
+    output_parent_path : pathlib.Path
+        The parent path where the output files will be saved.
     Returns
     -------
     str
@@ -85,7 +90,7 @@ def process_combination(args, image_set_loader):
     final_df.columns.name = None
 
     output_file = pathlib.Path(
-        f"../results/{image_set_loader.image_set_name}/Texture_{compartment}_{channel}_features.parquet"
+        output_parent_path / f"Texture_{compartment}_{channel}_features.parquet"
     )
     output_file.parent.mkdir(parents=True, exist_ok=True)
     final_df.to_parquet(output_file)
@@ -104,18 +109,29 @@ if not in_notebook:
         default="None",
         help="Well and field of view to process, e.g. 'A01_1'",
     )
-
+    argparser.add_argument(
+        "--patient",
+        type=str,
+        help="Patient ID, e.g. 'NF0014'",
+    )
     args = argparser.parse_args()
     well_fov = args.well_fov
+    patient = args.patient
+
     if well_fov == "None":
         raise ValueError(
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
 else:
     well_fov = "C4-2"
-    image_set_path = pathlib.Path(f"../../data/NF0014/cellprofiler/{well_fov}/")
+    patient = "NF0014"
+
+image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+output_parent_path = pathlib.Path(
+    f"../../data/{patient}/extracted_features/{well_fov}/"
+)
+output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
 # In[3]:
@@ -134,6 +150,14 @@ channel_mapping = {
 }
 
 
+# In[ ]:
+
+
+start_time = time.time()
+# get starting memory (cpu)
+start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
+
+
 # In[4]:
 
 
@@ -142,14 +166,6 @@ image_set_loader = ImageSetLoader(
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_mapping,
 )
-
-
-# In[ ]:
-
-
-start_time = time.time()
-# get starting memory (cpu)
-start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
 # In[ ]:
@@ -167,7 +183,11 @@ if __name__ == "__main__":
         results = list(
             tqdm(
                 pool.imap(
-                    partial(process_combination, image_set_loader=image_set_loader),
+                    partial(
+                        process_combination,
+                        image_set_loader=image_set_loader,
+                        output_parent_path=output_parent_path,
+                    ),
                     combinations,
                 ),
                 desc="Processing combinations",
@@ -187,7 +207,11 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    process_name="Texture",
+    feature_type="Texture",
     well_fov=well_fov,
+    patient_id=patient,
     CPU_GPU="CPU",
+    output_file_dir=pathlib.Path(
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Texture_CPU.parquet"
+    ),
 )
