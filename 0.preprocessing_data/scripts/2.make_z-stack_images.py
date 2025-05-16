@@ -5,7 +5,7 @@
 
 # ## Import libraries
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -29,17 +29,17 @@ else:
 
 # ## Set input and output directories
 
-# In[ ]:
+# In[2]:
 
 
 list_of_patients = [  # will be in a separate file in the future
     "NF0014",
-    "NF0016",
-    "NF0017",
-    "NF0018",
-    "NF0021",
-    "SARCO219",
-    "SARCO361",
+    # "NF0016",
+    # "NF0017",
+    # "NF0018",
+    # "NF0021",
+    # "SARCO219",
+    # "SARCO361",
 ]
 
 
@@ -82,7 +82,7 @@ channel_images
 
 # ## Create list of the well-site folders
 
-# In[ ]:
+# In[7]:
 
 
 # loop through patients, well_fovs, and each channel
@@ -113,7 +113,7 @@ for patient in tqdm.tqdm(patient_input_dict.keys(), desc="Processing patients"):
                     if channel_name in filename.name:
                         channel_images[channel_name]["filepath"].append(filename)
 
-        for channel_name in tqdm(
+        for channel_name in tqdm.tqdm(
             channel_names, desc=f"Processing channels in {well_dir.name}", leave=False
         ):
             channel_images[channel_name]["filepath"] = sorted(
