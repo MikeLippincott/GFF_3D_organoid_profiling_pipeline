@@ -5,7 +5,7 @@
 
 # ## Import libraries
 
-# In[1]:
+# In[ ]:
 
 
 import pathlib
@@ -22,7 +22,7 @@ except NameError:
     in_notebook = False
 
 if in_notebook:
-    from tqdm.notebook import tqdm
+    import tqdm.notebook as tqdm
 else:
     import tqdm
 
@@ -82,18 +82,18 @@ channel_images
 
 # ## Create list of the well-site folders
 
-# In[7]:
+# In[ ]:
 
 
 # loop through patients, well_fovs, and each channel
 # outer loop through patients
-for patient in tqdm(patient_input_dict.keys(), desc="Processing patients"):
+for patient in tqdm.tqdm(patient_input_dict.keys(), desc="Processing patients"):
     input_dirs = [
         x for x in patient_input_dict[patient]["raw_images"].iterdir() if x.is_dir()
     ]
     input_dirs.sort()
 
-    for well_dir in tqdm(
+    for well_dir in tqdm.tqdm(
         input_dirs, desc=f"Processing wells for patient {patient}", leave=False
     ):
         channel_images = {
