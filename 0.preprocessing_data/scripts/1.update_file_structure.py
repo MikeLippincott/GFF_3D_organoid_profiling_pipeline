@@ -77,16 +77,16 @@ dir_mapping = {
         ).resolve(strict=True),
         "destination": pathlib.Path("../../data/NF0016/raw_images").resolve(),
     },
-    "NF0017": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"  # TODO: Update this later if not correct
-        ).resolve(strict=True),
-        "destination": pathlib.Path(
-            "../../data/raw_images/NF0017/raw_images"
-        ).resolve(),
-    },
+    # "NF0017": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"  # TODO: Update this later if not correct
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path(
+    #         "../../data/raw_images/NF0017/raw_images"
+    #     ).resolve(),
+    # },
     "NF0018": {
         "parent": pathlib.Path(
             f"{raw_image_dir_local}/NF0018 (T6) Cell Painting-Pilot Drug Screeining/NF0018-Cell Painting Images/NF0018-All Acquisitions"
