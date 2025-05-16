@@ -109,7 +109,15 @@ dir_mapping = {
             if not HPC
             else f"{raw_image_dir_hpc}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
         ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/SACRO219/raw_images").resolve(),
+        "destination": pathlib.Path("../../data/SARCO219/raw_images").resolve(),
+    },
+    "SARCO361": {
+        "parent": pathlib.Path(
+            f"{raw_image_dir_local}/SARC0361/SARC0361 Combined/"
+            if not HPC
+            else f"{raw_image_dir_hpc}/SARC0361/SARC0361 Combined/"
+        ).resolve(strict=True),
+        "destination": pathlib.Path("../../data/SARCO361/raw_images").resolve(),
     },
 }
 

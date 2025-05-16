@@ -38,7 +38,8 @@ list_of_patients = [  # will be in a separate file in the future
     "NF0017",
     "NF0018",
     "NF0021",
-    "SACRO219",
+    "SARCO219",
+    "SARCO361",
 ]
 
 
