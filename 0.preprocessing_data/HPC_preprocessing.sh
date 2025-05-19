@@ -15,8 +15,8 @@ jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*
 
 cd scripts/ || exit
 
-python 0.patient_specific_preprocessing.py --HPC True
-python 1.update_file_structure.py --HPC True
+# python 0.patient_specific_preprocessing.py --HPC
+# python 1.update_file_structure.py --HPC
 python 2.make_z-stack_images.py
 
 cd .. || exit
