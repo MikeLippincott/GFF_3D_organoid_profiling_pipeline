@@ -39,7 +39,7 @@ except NameError:
 print(in_notebook)
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -178,22 +178,23 @@ if in_notebook:
 # In[7]:
 
 
-imgs = []
-# save each z-slice as an RGB png
-for z in range(nuclei.shape[0]):
-    nuclei_tmp = nuclei[z, :, :]
-    cyto_tmp = cyto[z, :, :]
-    nuclei_tmp = (nuclei_tmp / nuclei_tmp.max() * 255).astype(np.uint8)
-    cyto_tmp = (cyto_tmp / cyto_tmp.max() * 255).astype(np.uint8)
-    # save the image as an RGB png with nuclei in blue and cytoplasm in red
-    RGB = np.stack([cyto_tmp, np.zeros_like(cyto_tmp), nuclei_tmp], axis=-1)
+# imgs = []
+# # save each z-slice as an RGB png
+# for z in range(nuclei.shape[0]):
+#     nuclei_tmp = nuclei[z, :, :]
+#     cyto_tmp = cyto[z, :, :]
+#     nuclei_tmp = (nuclei_tmp / nuclei_tmp.max() * 255).astype(np.uint8)
+#     cyto_tmp = (cyto_tmp / cyto_tmp.max() * 255).astype(np.uint8)
+#     # save the image as an RGB png with nuclei in blue and cytoplasm in red
+#     RGB = np.stack([cyto_tmp, np.zeros_like(cyto_tmp), nuclei_tmp], axis=-1)
 
-    # change to 8-bit
-    RGB = (RGB / RGB.max() * 255).astype(np.uint8)
+#     # change to 8-bit
+#     RGB = (RGB / RGB.max() * 255).astype(np.uint8)
 
-    rgb_image_pil = Image.fromarray(RGB)
+#     rgb_image_pil = Image.fromarray(RGB)
 
-    imgs.append(rgb_image_pil)
+#     imgs.append(rgb_image_pil)
+imgs = cyto.copy()
 
 
 # ## Cellpose
@@ -203,7 +204,7 @@ for z in range(nuclei.shape[0]):
 
 # model_type='cyto' or 'nuclei' or 'cyto2' or 'cyto3'
 model_name = "cyto3"
-model = models.Cellpose(model_type=model_name, gpu=use_GPU)
+model = models.CellposeModel(gpu=use_GPU)
 
 channels = [[1, 3]]  # channels=[red cells, blue nuclei]
 diameter = 200
@@ -214,7 +215,7 @@ imgs = np.array(imgs)
 # get masks for all the images
 # save to a dict for later use
 for img in imgs:
-    masks, flows, styles, diams = model.eval(img, diameter=diameter, channels=channels)
+    masks, flows, styles = model.eval(img, diameter=diameter)
     masks_all_dict["masks"].append(masks)
     masks_all_dict["imgs"].append(img)
 print(len(masks_all_dict))
@@ -255,7 +256,7 @@ print(f"Saving the decoupled masks of size {len(reconstruction_dict)}")
 np.save(mask_path / "cell_reconstruction_dict.npy", reconstruction_dict)
 
 
-# In[11]:
+# In[ ]:
 
 
 if in_notebook:

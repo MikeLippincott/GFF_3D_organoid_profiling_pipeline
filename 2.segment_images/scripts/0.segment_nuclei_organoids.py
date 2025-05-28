@@ -74,7 +74,7 @@ else:
     print("Running in a notebook")
     patient = "NF0014"
     well_fov = "C4-2"
-    window_size = 2
+    window_size = 3
     clip_limit = 0.05
 
 
@@ -148,9 +148,7 @@ output_dict = {
 for slice in tqdm.tqdm(range(imgs.shape[0])):
     # Perform segmentation
     output_dict["slice"].append(slice)
-    labels, details, _ = model.eval(
-        imgs[slice, :, :], diameter=75, channels=[0, 0], z_axis=0
-    )
+    labels, details, _ = model.eval(imgs[slice, :, :], diameter=75, channels=[0, 0])
     output_dict["labels"].append(labels)
     output_dict["details"].append(details)
 
