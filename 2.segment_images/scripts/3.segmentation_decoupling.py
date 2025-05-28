@@ -50,7 +50,7 @@ except NameError:
 
 # ## parse args and set paths
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -91,8 +91,8 @@ else:
     print("Running in a notebook")
     print("Running in a notebook")
     well_fov = "C4-2"
-    compartment = "nuclei"
-    window_size = 2
+    compartment = "cell"
+    window_size = 3
     patient = "NF0014"
 
 input_dir = pathlib.Path(f"../../data/{patient}/zstack_images/{well_fov}").resolve(

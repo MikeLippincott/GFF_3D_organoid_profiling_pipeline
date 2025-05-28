@@ -51,7 +51,7 @@ except NameError:
     in_notebook = False
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -91,7 +91,7 @@ if not in_notebook:
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
-    compartment = "nuclei"
+    compartment = "cell"
     patient = "NF0014"
 
 input_dir = pathlib.Path(f"../../data/{patient}/processed_data/{well_fov}").resolve()
@@ -100,7 +100,7 @@ if compartment == "nuclei":
     input_image_dir = pathlib.Path(mask_dir / "nuclei_masks_decoupled.tiff").resolve(
         strict=True
     )
-    x_y_vector_radius_max_constaint = 10  # pixels
+    x_y_vector_radius_max_constaint = 5  # pixels
     output_image_dir = pathlib.Path(
         mask_dir / "nuclei_masks_reconstructed.tiff"
     ).resolve()
