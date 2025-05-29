@@ -5,7 +5,7 @@
 # The end goals is to segment cell and extract morphology features from cellprofiler.
 # These masks must be imported into cellprofiler to extract features.
 
-# In[1]:
+# In[2]:
 
 
 import argparse
@@ -210,19 +210,20 @@ for f in files:
 
 cyto = np.max(
     [
-        # cyto1,
-        cyto2,
-        # cyto3,
+        # cyto1, # ER
+        cyto2,  # AGP
+        # cyto3, # Mito
     ],
     axis=0,
 )
 # pick which channels to use for cellpose
-# cyto = skimage.exposure.equalize_adapthist(cyto, clip_limit=clip_limit)
+cyto = skimage.exposure.equalize_adapthist(cyto, clip_limit=clip_limit)
 
 
 original_cyto_image = cyto.copy()
 
 original_cyto_z_count = cyto.shape[0]
+print(f"Original cyto image shape: {original_cyto_image.shape}")
 
 
 # In[6]:
