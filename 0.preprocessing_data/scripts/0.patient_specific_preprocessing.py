@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
 import pathlib
 import sys
-from concurrent.futures import ProcessPoolExecutor
-
-import tqdm
 
 # ## Set paths and variables
 
