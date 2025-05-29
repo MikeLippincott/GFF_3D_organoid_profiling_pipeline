@@ -2,21 +2,21 @@
 
 # activate  cellprofiler environment
 conda init bash
-conda activate GFF_segmentation_cellpose3
+conda activate GFF_segmentation
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
 
 cd scripts/ || exit
 patient="NF0014"
-well_fov="C4-2"
+well_fov="C2-2"
 
 
 # # get all input directories in specified directory
 compartments=( "nuclei" "organoid" )
 # compartments=( "nuclei" )
 
-python 0.segment_nuclei_organoids.py \
+python 0.segment_nuclei.py \
     --patient "$patient" \
     --well_fov "$well_fov" \
     --window_size 3 \
@@ -28,14 +28,6 @@ python 2.segment_whole_organoids.py \
     --window_size 4 \
     --clip_limit 0.1
 
-conda deactivate
-conda activate GFF_segmentation_cellpose4
-python 1.segment_cells_watershed_method.ipynb \
-    --patient "$patient" \
-    --well_fov "$well_fov" \
-    --clip_limit 0.05
-
-
 for compartment in "${compartments[@]}"; do
 
     if [ "$compartment" == "nuclei" ]; then
@@ -46,29 +38,34 @@ for compartment in "${compartments[@]}"; do
         echo "Not specified compartment: $compartment"
 
     fi
-    python 3.segmentation_decoupling.py \
+    python 2.segmentation_decoupling.py \
         --patient "$patient" \
         --well_fov "$well_fov" \
         --compartment "$compartment" \
         --window_size "$window_size"
 
-    python 4.reconstruct_3D_masks_copy.py \
+    python 3.reconstruct_3D_masks.py \
         --patient "$patient" \
         --well_fov "$well_fov" \
         --compartment "$compartment"
 
-    python 5.post-hoc_mask_refinement.py \
+    python 4.post-hoc_mask_refinement.py \
         --patient "$patient" \
         --well_fov "$well_fov" \
         --compartment "$compartment"
 done
 
-python 5.post-hoc_mask_refinement.py \
+python 5.segment_cells_watershed_method.py \
+    --patient "$patient" \
+    --well_fov "$well_fov" \
+    --clip_limit 0.05
+
+python 4.post-hoc_mask_refinement.py \
     --patient "$patient" \
     --well_fov "$well_fov" \
     --compartment "cell"
 
-python 6.post_hoc_reassignment.py \
+python 6.post-hoc_reassignment.py \
     --patient "$patient" \
     --well_fov "$well_fov"
 
