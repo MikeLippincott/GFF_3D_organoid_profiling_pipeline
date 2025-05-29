@@ -9,11 +9,12 @@ jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*
 
 cd scripts/ || exit
 patient="NF0014"
-well_fov="C2-2"
+well_fov="C4-2"
 
 
 # # get all input directories in specified directory
-compartments=( "nuclei" "cell" "organoid" )
+compartments=( "nuclei" "organoid" )
+# compartments=( "nuclei" )
 
 python 0.segment_nuclei_organoids.py \
     --patient "$patient" \
@@ -21,14 +22,17 @@ python 0.segment_nuclei_organoids.py \
     --window_size 3 \
     --clip_limit 0.05
 
-python 2.segment_whole_organoids.py --patient "$patient" --well_fov "$well_fov" --window_size 4 --clip_limit 0.1
-
-conda deactivate
-conda activate GFF_segmentation_cellpose4
-python 1.segment_cells_organoids.ipynb \
+python 2.segment_whole_organoids.py \
     --patient "$patient" \
     --well_fov "$well_fov" \
     --window_size 4 \
+    --clip_limit 0.1
+
+conda deactivate
+conda activate GFF_segmentation_cellpose4
+python 1.segment_cells_watershed_method.ipynb \
+    --patient "$patient" \
+    --well_fov "$well_fov" \
     --clip_limit 0.05
 
 
@@ -36,31 +40,48 @@ for compartment in "${compartments[@]}"; do
 
     if [ "$compartment" == "nuclei" ]; then
         window_size=3
-    elif [ "$compartment" == "cell" ]; then
-        window_size=4
     elif [ "$compartment" == "organoid" ]; then
-        window_size=3
+        window_size=4
     else
-        echo "Unknown compartment: $compartment"
-        exit 1
+        echo "Not specified compartment: $compartment"
+
     fi
     python 3.segmentation_decoupling.py \
         --patient "$patient" \
         --well_fov "$well_fov" \
         --compartment "$compartment" \
         --window_size "$window_size"
+
     python 4.reconstruct_3D_masks_copy.py \
         --patient "$patient" \
         --well_fov "$well_fov" \
         --compartment "$compartment"
 
-    python 8.post-hoc_correction_in_loop.py \
+    python 5.post-hoc_mask_refinement.py \
         --patient "$patient" \
         --well_fov "$well_fov" \
         --compartment "$compartment"
-
 done
 
+python 5.post-hoc_mask_refinement.py \
+    --patient "$patient" \
+    --well_fov "$well_fov" \
+    --compartment "cell"
+
+python 6.post_hoc_reassignment.py \
+    --patient "$patient" \
+    --well_fov "$well_fov"
+
+python 7.create_cytoplasm_masks.py \
+    --patient "$patient" \
+    --well_fov "$well_fov"
+
+python 8.animate_segmentation_and_raw_signal.py \
+    --patient "$patient" \
+    --well_fov "$well_fov"
+
+python 9.clean_up_segmentation.py\
+        --patient "$patient"
 
 conda deactivate
 
