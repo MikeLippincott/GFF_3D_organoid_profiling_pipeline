@@ -213,7 +213,7 @@ def mask_label_reassignment(
 # get the organoid masks
 # cell_mask_path = mask_dir / "cell_masks_reconstructed_corrected.tiff"
 cell_mask_path = mask_dir / "cell_masks_watershed.tiff"
-cell_mask_output_path = mask_dir / "cell_masks_reassigned.tiff"
+nuclei_mask_output_path = mask_dir / "nuclei_masks_reassigned.tiff"
 nuclei_mask_path = mask_dir / "nuclei_masks_reconstructed_corrected.tiff"
 cell_mask = tifffile.imread(cell_mask_path)
 nuclei_mask = tifffile.imread(nuclei_mask_path)
@@ -237,7 +237,6 @@ cell_df["label"] = cell_mask[
 ]
 # remove all 0 labels
 cell_df = cell_df[cell_df["label"] > 0].reset_index(drop=True)
-cell_df["new_label"] = cell_df["label"]
 
 
 # In[6]:
@@ -256,6 +255,7 @@ nuclei_df["label"] = nuclei_mask[
     nuclei_df["centroid-2"].astype(int),
 ]
 nuclei_df = nuclei_df[nuclei_df["label"] > 0].reset_index(drop=True)
+nuclei_df["new_label"] = nuclei_df["label"]
 
 
 # In[7]:
@@ -295,7 +295,7 @@ for i, row in nuclei_df.iterrows():
         if nuc_contained_in_cell_bool:
             # if the centroid of the nuclei is within the cell mask,
             # then make the cell retain the label of the nuclei
-            cell_df.at[j, "new_label"] = row["label"]
+            nuclei_df.at[i, "new_label"] = row2["label"]
             break
         else:
             pass
@@ -308,8 +308,8 @@ for i, row in nuclei_df.iterrows():
 nuclei_and_cell_df = pd.merge(
     nuclei_df,
     cell_df,
-    left_on="label",
-    right_on="new_label",
+    left_on="new_label",
+    right_on="label",
     suffixes=("_nuclei", "_cell"),
 )
 nuclei_and_cell_df.head()
@@ -333,18 +333,22 @@ cell_mask = remove_edge_cases(
     mask=cell_mask,
     border=10,
 )
+nuclei_mask = remove_edge_cases(
+    mask=nuclei_mask,
+    border=10,
+)
 
 
-# In[ ]:
+# In[14]:
 
 
 # reassign the labels of the cell mask
-cell_mask = mask_label_reassignment(
-    mask_df=cell_df,
-    mask_input=cell_mask,
+nuclei_mask = mask_label_reassignment(
+    mask_df=nuclei_df,
+    mask_input=nuclei_mask,
 )
 # save the cell mask
 tifffile.imwrite(
-    cell_mask_output_path,
-    cell_mask,
+    nuclei_mask_output_path,
+    nuclei_mask,
 )

@@ -48,7 +48,7 @@ if not in_notebook:
     well_fov = args.well_fov
 else:
     print("Running in a notebook")
-    well_fov = "G7-2"
+    well_fov = "C4-2"
 
 input_dir = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}/").resolve(
     strict=True
