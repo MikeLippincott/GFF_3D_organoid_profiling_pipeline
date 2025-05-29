@@ -5,7 +5,7 @@
 # The end goals is to segment cell and extract morphology features from cellprofiler.
 # These masks must be imported into cellprofiler to extract features.
 
-# In[1]:
+# In[2]:
 
 
 import argparse
@@ -40,7 +40,7 @@ except NameError:
 print(in_notebook)
 
 
-# In[2]:
+# In[8]:
 
 
 def segment_with_diameter(
@@ -49,7 +49,8 @@ def segment_with_diameter(
     diameter: int,
     z_axis: int = 0,
     channels: tuple = [1, 0],
-):
+    min_diameter: int = 250,  # in pixels, default is 250
+) -> tuple:
     """
     Recursively perform segmentation, stepping down through diameters by 250
     until a valid label is found or the minimum diameter is reached.
@@ -70,6 +71,10 @@ def segment_with_diameter(
     channels : tuple, optional
         The channels to use for segmentation. Default is (1, 0).
         Where 1 is the channel for the cytoplasm and 0 using no other channel.
+    min_diameter : int, optional
+        The minimum diameter to use for segmentation.
+        If the diameter is less than this, the function will return empty labels.
+        Default is 250 pixels.
 
     Returns
     -------
@@ -81,7 +86,7 @@ def segment_with_diameter(
         _ : None
             Placeholder for additional return values.
     """
-    if diameter < 250:
+    if diameter < min_diameter:
         print("Minimum diameter reached. Returning empty labels.")
         zero_labels = np.zeros_like(img)
         return zero_labels, None, None
@@ -97,7 +102,37 @@ def segment_with_diameter(
     return labels, details, _
 
 
-# In[3]:
+# test the function with three cylinders each with a different diameter
+def test_segment_with_diameter():
+    diameters = [100, 250, 400, 600, 800, 1000]
+    z_depth = 1  # No z-depth for 2D images
+    for diameter in diameters:
+        img = np.zeros((1500, 1500), dtype=np.uint8)
+        rr, cc = skimage.draw.disk((500, 500), diameter / 2)
+        img[rr, cc] = 255
+
+        labels, details, _ = segment_with_diameter(
+            img,
+            model=models.CellposeModel(gpu=use_GPU, model_type="cyto3"),
+            diameter=diameter,
+            z_axis=z_depth,
+            channels=(1, 0),
+        )
+        # 100 should return empty labels
+        if diameter == 100:
+            assert np.all(labels == 0), (
+                f"Labels should be empty for diameter {diameter}"
+            )
+        else:
+            assert np.any(labels > 0), (
+                f"Labels should not be empty for diameter {diameter}"
+            )
+
+
+test_segment_with_diameter()
+
+
+# In[ ]:
 
 
 if not in_notebook:
@@ -149,7 +184,7 @@ mask_path.mkdir(exist_ok=True, parents=True)
 
 # ## Set up images, paths and functions
 
-# In[4]:
+# In[ ]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -157,7 +192,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[5]:
+# In[ ]:
 
 
 # find the cytoplasmic channels in the image set
@@ -184,7 +219,7 @@ cyto = np.max(
     axis=0,
 )
 # pick which channels to use for cellpose
-# cyto = skimage.exposure.equalize_adapthist(cyto, clip_limit=clip_limit)
+cyto = skimage.exposure.equalize_adapthist(cyto, clip_limit=clip_limit)
 
 
 original_cyto_image = cyto.copy()
@@ -193,7 +228,7 @@ original_cyto_z_count = cyto.shape[0]
 print(f"Original cyto image shape: {original_cyto_image.shape}")
 
 
-# In[6]:
+# In[ ]:
 
 
 # make a 2.5 D max projection image stack with a sliding window of 3 slices
@@ -214,7 +249,7 @@ cyto = np.array(image_stack_2_5D)
 print("2.5D cyto image stack shape:", cyto.shape)
 
 
-# In[7]:
+# In[ ]:
 
 
 butterworth_optimization = True
