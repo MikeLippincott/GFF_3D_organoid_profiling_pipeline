@@ -7,7 +7,7 @@ conda activate nf1_image_based_profiling_env
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
-patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SACRO219" )
+patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SARCO219" "SARCO361" )
 
 for patient in "${patient_array[@]}"; do
     number_of_jobs=$(squeue -u $USER | wc -l)
