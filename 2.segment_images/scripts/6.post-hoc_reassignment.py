@@ -2,19 +2,7 @@
 # coding: utf-8
 
 # The goal of this notebook is to reassign segmentation labels based on the objects that they are contained in.
-# To do so, a hierarchy of objects must first be defined.
-# # The hierarchy of objects is defined as follows:
-# - **Cell**
-#     - **Nucleus**
-#     - **Cytoplasm**
-#
-# The index of a given cytoplasm should be the same as that of cell it came from.
-# The nucleus index should be the same as that of the cell it came from.
-#
-# There will also be rules implemented for sandwiched indexes.
-# This is when an object was not related properly and was assigned a different index while being surrounded (above and below in the z dimension) by the same object.
-# Such cases will be assigned the same index as the object that is above and below it.
-#
+# This will mean that the segmentation label id of the cell will match that of the nucleus that it is contained in.
 
 # In[1]:
 
@@ -24,19 +12,13 @@ import pathlib
 import sys
 
 import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
 import pandas as pd
 import skimage
-import skimage.io as io
 import tifffile
-from cellpose import core, models, utils
-from rich.pretty import pprint
 
 sys.path.append("../../utils")
-import nviz
-from nviz.image_meta import extract_z_slice_number_from_filename, generate_ome_xml
-from segmentation_decoupling import euclidian_2D_distance
+
 
 # check if in a jupyter notebook
 try:
@@ -86,69 +68,6 @@ mask_dir = pathlib.Path(f"../../data/{patient}/processed_data/{well_fov}").resol
 # In[3]:
 
 
-# get the organoid masks
-# cell_mask_path = mask_dir / "cell_masks_reconstructed_corrected.tiff"
-cell_mask_path = mask_dir / "cell_masks_watershed.tiff"
-cell_mask_output_path = mask_dir / "cell_masks_reassigned.tiff"
-nuclei_mask_path = mask_dir / "nuclei_masks_reconstructed_corrected.tiff"
-cell_mask = io.imread(cell_mask_path)
-nuclei_mask = io.imread(nuclei_mask_path)
-
-
-# In[4]:
-
-
-# get the centroid and bbox of the cell mask
-cell_df = pd.DataFrame.from_dict(
-    skimage.measure.regionprops_table(
-        cell_mask,
-        properties=["centroid", "bbox"],
-    )
-)
-cell_df["compartment"] = "cell"
-cell_df["label"] = cell_mask[
-    cell_df["centroid-0"].astype(int),
-    cell_df["centroid-1"].astype(int),
-    cell_df["centroid-2"].astype(int),
-]
-# remove all 0 labels
-cell_df = cell_df[cell_df["label"] > 0].reset_index(drop=True)
-cell_df["new_label"] = cell_df["label"]
-
-
-# In[5]:
-
-
-nuclei_df = pd.DataFrame.from_dict(
-    skimage.measure.regionprops_table(
-        nuclei_mask,
-        properties=["centroid", "bbox"],
-    )
-)
-nuclei_df["compartment"] = "nuclei"
-nuclei_df["label"] = nuclei_mask[
-    nuclei_df["centroid-0"].astype(int),
-    nuclei_df["centroid-1"].astype(int),
-    nuclei_df["centroid-2"].astype(int),
-]
-nuclei_df = nuclei_df[nuclei_df["label"] > 0].reset_index(drop=True)
-
-
-# In[6]:
-
-
-nuclei_df.head()
-
-
-# In[7]:
-
-
-cell_df.head()
-
-
-# In[8]:
-
-
 def remove_edge_cases(
     mask: np.ndarray,
     border: int = 10,
@@ -171,19 +90,14 @@ def remove_edge_cases(
 
     edge_pixels = np.concatenate(
         [
-            #
-            mask[
-                :, -border:, :
-            ].flatten(),  # all of z, last n rows (y), all columns (x) - bottom edge
-            mask[
-                :, 0:border, :
-            ].flatten(),  # all of z, first n rows (y), all columns (x) - top edge
-            mask[
-                :, :, 0:border:
-            ].flatten(),  # all of z, all rows (y), first n columns (x) - left edge
-            mask[
-                :, :, -border:
-            ].flatten(),  # all of z, all rows (y), last n columns (x) - right edge
+            # all of z, last n rows (y), all columns (x) - bottom edge
+            mask[:, -border:, :].flatten(),
+            # all of z, first n rows (y), all columns (x) - top edge
+            mask[:, 0:border, :].flatten(),
+            # all of z, all rows (y), first n columns (x) - left edge
+            mask[:, :, 0:border:].flatten(),
+            # all of z, all rows (y), last n columns (x) - right edge
+            mask[:, :, -border:].flatten(),
             # each are the edges stacked for the whole volume -> no need to specify every z slice or 3D edge
         ]
     )
@@ -196,9 +110,6 @@ def remove_edge_cases(
 
     # return the mask with edge cases removed
     return mask
-
-
-# In[9]:
 
 
 def centroid_within_bbox_detection(
@@ -238,9 +149,6 @@ def centroid_within_bbox_detection(
         return False
 
 
-# In[10]:
-
-
 def check_if_centroid_within_mask(
     centroid: tuple, mask: np.ndarray, label: int
 ) -> bool:
@@ -272,107 +180,6 @@ def check_if_centroid_within_mask(
         return False
 
 
-# In[11]:
-
-
-# nuclei_df = nuclei_df.head(10)
-# cell_df = cell_df.head(10)
-
-
-# In[12]:
-
-
-print(f"Number of nuclei: {len(nuclei_df)}\nNumber of cells: {len(cell_df)}\n")
-
-
-# In[13]:
-
-
-# if a centroid of the nuclei is inside the cell mask,
-# then make the cell retain the label of the nuclei
-for i, row in nuclei_df.iterrows():
-    for j, row2 in cell_df.iterrows():
-        # nuc_contained_in_cell_bool = check_if_centroid_within_mask(
-        #     centroid=(
-        #         row["centroid-0"],
-        #         row["centroid-1"],
-        #         row["centroid-2"],
-        #     ),
-        #     bbox=(
-        #         row2["bbox-0"],
-        #         row2["bbox-1"],
-        #         row2["bbox-2"],
-        #         row2["bbox-3"],
-        #         row2["bbox-4"],
-        #         row2["bbox-5"],
-        #     ),
-        # )
-        nuc_contained_in_cell_bool = check_if_centroid_within_mask(
-            centroid=(
-                row["centroid-0"],
-                row["centroid-1"],
-                row["centroid-2"],
-            ),
-            mask=cell_mask,
-            label=row2["label"],
-        )
-        if nuc_contained_in_cell_bool:
-            # if the centroid of the nuclei is within the cell mask,
-            # then make the cell retain the label of the nuclei
-            cell_df.at[j, "new_label"] = row["label"]
-            break
-        else:
-            # print(f"Cell {row2['label']} does not contain nuclei {row['label']}")
-            pass
-
-
-# In[14]:
-
-
-cell_df.head()
-
-
-# In[15]:
-
-
-nuclei_df.head()
-
-
-# In[16]:
-
-
-print(nuclei_df["label"].unique())
-print(cell_df["new_label"].unique())
-
-
-# In[17]:
-
-
-# merge the dataframes
-nuclei_and_cell_df = pd.merge(
-    nuclei_df,
-    cell_df,
-    left_on="label",
-    right_on="new_label",
-    suffixes=("_nuclei", "_cell"),
-)
-pd.options.display.max_columns = None
-nuclei_and_cell_df
-
-
-# In[18]:
-
-
-print(
-    f"Number of nuclei: {len(nuclei_df)}\n"
-    f"Number of cells: {len(cell_df)}\n"
-    f"Number of cells with nuclei: {len(nuclei_and_cell_df)}"
-)
-
-
-# In[19]:
-
-
 def mask_label_reassignment(
     mask_df: pd.DataFrame,
     mask_input: np.ndarray,
@@ -400,22 +207,143 @@ def mask_label_reassignment(
     return mask_input
 
 
-# In[20]:
+# In[4]:
 
 
+# get the organoid masks
+# cell_mask_path = mask_dir / "cell_masks_reconstructed_corrected.tiff"
+cell_mask_path = mask_dir / "cell_masks_watershed.tiff"
+cell_mask_output_path = mask_dir / "cell_masks_reassigned.tiff"
+nuclei_mask_path = mask_dir / "nuclei_masks_reconstructed_corrected.tiff"
+cell_mask = tifffile.imread(cell_mask_path)
+nuclei_mask = tifffile.imread(nuclei_mask_path)
+
+
+# In[5]:
+
+
+# get the centroid and bbox of the cell mask
+cell_df = pd.DataFrame.from_dict(
+    skimage.measure.regionprops_table(
+        cell_mask,
+        properties=["centroid", "bbox"],
+    )
+)
+cell_df["compartment"] = "cell"
+cell_df["label"] = cell_mask[
+    cell_df["centroid-0"].astype(int),
+    cell_df["centroid-1"].astype(int),
+    cell_df["centroid-2"].astype(int),
+]
+# remove all 0 labels
+cell_df = cell_df[cell_df["label"] > 0].reset_index(drop=True)
+cell_df["new_label"] = cell_df["label"]
+
+
+# In[6]:
+
+
+nuclei_df = pd.DataFrame.from_dict(
+    skimage.measure.regionprops_table(
+        nuclei_mask,
+        properties=["centroid", "bbox"],
+    )
+)
+nuclei_df["compartment"] = "nuclei"
+nuclei_df["label"] = nuclei_mask[
+    nuclei_df["centroid-0"].astype(int),
+    nuclei_df["centroid-1"].astype(int),
+    nuclei_df["centroid-2"].astype(int),
+]
+nuclei_df = nuclei_df[nuclei_df["label"] > 0].reset_index(drop=True)
+
+
+# In[7]:
+
+
+nuclei_df.head()
+
+
+# In[8]:
+
+
+cell_df.head()
+
+
+# In[9]:
+
+
+print(f"Number of nuclei: {len(nuclei_df)}\nNumber of cells: {len(cell_df)}\n")
+
+
+# In[10]:
+
+
+# if a centroid of the nuclei is inside the cell mask,
+# then make the cell retain the label of the nuclei
+for i, row in nuclei_df.iterrows():
+    for j, row2 in cell_df.iterrows():
+        nuc_contained_in_cell_bool = check_if_centroid_within_mask(
+            centroid=(
+                row["centroid-0"],
+                row["centroid-1"],
+                row["centroid-2"],
+            ),
+            mask=cell_mask,
+            label=row2["label"],
+        )
+        if nuc_contained_in_cell_bool:
+            # if the centroid of the nuclei is within the cell mask,
+            # then make the cell retain the label of the nuclei
+            cell_df.at[j, "new_label"] = row["label"]
+            break
+        else:
+            pass
+
+
+# In[11]:
+
+
+# merge the dataframes
+nuclei_and_cell_df = pd.merge(
+    nuclei_df,
+    cell_df,
+    left_on="label",
+    right_on="new_label",
+    suffixes=("_nuclei", "_cell"),
+)
+nuclei_and_cell_df.head()
+
+
+# In[12]:
+
+
+print(
+    f"Number of nuclei: {len(nuclei_df)}\n"
+    f"Number of cells: {len(cell_df)}\n"
+    f"Number of cells with nuclei: {len(nuclei_and_cell_df)}"
+)
+
+
+# In[13]:
+
+
+# remove the edge cases
 cell_mask = remove_edge_cases(
     mask=cell_mask,
     border=10,
 )
 
 
-# In[21]:
+# In[ ]:
 
 
+# reassign the labels of the cell mask
 cell_mask = mask_label_reassignment(
     mask_df=cell_df,
     mask_input=cell_mask,
 )
+# save the cell mask
 tifffile.imwrite(
     cell_mask_output_path,
     cell_mask,
