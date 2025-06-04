@@ -9,8 +9,7 @@ jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*
 cd scripts/ || exit
 # get all input directories in specified directory
 patient="NF0014"
-# z_stack_dir="../../data/$patient/zstack_images/"
-z_stack_dir="../../data/$patient/test_dir/"
+z_stack_dir="../../data/$patient/zstack_images/"
 
 mapfile -t well_fovs < <(ls -d "$z_stack_dir"/*)
 

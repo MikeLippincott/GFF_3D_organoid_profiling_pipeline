@@ -24,7 +24,7 @@ dependencies:
       - torch
       - torchvision
       - tensorflow
-      - cellpose<4.0
+      - cellpose<4.0 # do not want CP SAM version
       - tifffile
       - aicsimageio
       - torch_optimizer
