@@ -115,7 +115,7 @@ nuclei_mask = (nuclei_mask / nuclei_mask.max() * 255).astype(np.uint8)
 # In[ ]:
 
 
-# generat the elevation map using the Sobel filter
+# generate the elevation map using the Sobel filter
 elevation_map = sobel(cyto)
 
 
