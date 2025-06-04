@@ -122,8 +122,8 @@ elevation_map = sobel(cyto)
 # In[ ]:
 
 
-# set up seeded watersheding where the nuclei masks are used as seeds
-# the cytoplasm is signal
+# set up seeded watersheding where the nuclei masks are used as seeds.
+# note: the cytoplasm is used as the signal for this.
 
 labels = skimage.segmentation.watershed(
     image=elevation_map,
