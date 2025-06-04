@@ -15,6 +15,7 @@ well_fov=$1
 patient=$2
 echo "Processing well_fov $well_fov for patient $patient"
 compartments=( "nuclei" "organoid" ) # we do not do 2.5D segmentation for cells in this script
+# cells get segmented using a non 2.5D method rather a 3D method
 
 python 0.segment_nuclei.py \
     --patient "$patient" \
