@@ -12,7 +12,7 @@ process COLOCALIZATION_CPU {
     """
     cd ${projectDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    bash run_colocalization_child.sh ${patient} ${featurize_with_gpu} ${well_fov}
+    bash run_colocalization_child.sh ${well_fov} ${featurize_with_gpu} ${patient}
     cd ${projectDir}/ || exit 1
     """
 }
@@ -31,7 +31,7 @@ process COLOCALIZATION_GPU {
     """
     cd ${projectDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
-    bash run_colocalization_child.sh ${patient} ${featurize_with_gpu} ${well_fov}
+    bash run_colocalization_child.sh ${well_fov} ${featurize_with_gpu} ${patient}}
     cd ${projectDir}/ || exit 1
     """
 }
