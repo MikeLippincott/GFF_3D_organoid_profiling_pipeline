@@ -1,6 +1,6 @@
-process segmentation {
+process SEGMENTATION {
     // specify the conda environment to use for this process
-    conda 'conda_env_prefix + "GFF_segmentation"'
+    conda "${params.segmentation_env}"
 
     tag { "${patient}-${well_fov}" }
 
@@ -14,10 +14,10 @@ process segmentation {
     script:
     """
     # Set the base directory to the current working directory
-    cd ${baseDir}/../2.segment_images/ || exit 1
+    cd ${projectDir}/../2.segment_images/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
     # call the chile script to run segmentation for the given patient and well_fov
     source child_segmentation.sh ${well_fov} ${patient}
-    cd ${baseDir}/ || exit 1
+    cd ${projectDir}/ || exit 1
     """
 }
