@@ -10,7 +10,7 @@ process GRANULARITY_CPU {
 
     script:
     """
-    cd ${projectDir}/../3.cellprofiling/slurm_scripts/ || exit 1
+    cd ${projectDir}/../../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
     bash run_granularity_child.sh ${well_fov} ${featurize_with_gpu} ${patient}
     """
@@ -28,7 +28,7 @@ process GRANULARITY_GPU {
 
     script:
     """
-    cd ${projectDir}/../3.cellprofiling/slurm_scripts/ || exit 1
+    cd ${projectDir}/../../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}"
     bash run_granularity_child.sh ${well_fov} ${featurize_with_gpu} ${patient}
     cd ${projectDir}/ || exit 1

@@ -25,7 +25,15 @@ for patient in "${patient_array[@]}"; do
         number_of_jobs=$(squeue -u $USER | wc -l)
     done
     echo "Cleaning up segmentation files for patient: $patient"
-    python 9.clean_up_segmentation.py --patient "$patient"
+    sbatch \
+        --nodes=1 \
+        --ntasks=1 \
+        --partition=amilan\
+        --qos=normal \
+        --account=amc-general \
+        --time=1:00:00 \
+        --output=segmentation_child-%j.out \
+        clean_up_segmentation_intermediates_child.sh "$patient"
 
 done
 
