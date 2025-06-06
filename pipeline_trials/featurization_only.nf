@@ -42,18 +42,18 @@ workflow {
     def gpu_ch = full_ch.filter { patient, well_fov, featurize_with_gpu -> featurize_with_gpu }
     // Run GPU branches
     gpu_ch | AREASIZESHAPE_GPU
-    // gpu_ch | COLOCALIZATION_GPU
-    // gpu_ch | GRANULARITY_GPU
-    // gpu_ch | INTENSITY_GPU
+    gpu_ch | COLOCALIZATION_GPU
+    gpu_ch | GRANULARITY_GPU
+    gpu_ch | INTENSITY_GPU
 
     // // Run CPU branches
     cpu_ch | AREASIZESHAPE_CPU
-    // cpu_ch | COLOCALIZATION_CPU
-    // cpu_ch | GRANULARITY_CPU
-    // cpu_ch | INTENSITY_CPU
+    cpu_ch | COLOCALIZATION_CPU
+    cpu_ch | GRANULARITY_CPU
+    cpu_ch | INTENSITY_CPU
 
-    // // Run neighbors on CPU
-    // segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | NEIGHBORS_CPU
-    // // Always run texture on CPU
-    // segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | TEXTURE_CPU
+    // Run neighbors on CPU
+    segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | NEIGHBORS_CPU
+    // Always run texture on CPU
+    segmented_ch.map { patient, well_fov -> tuple(patient, well_fov, false) } | TEXTURE_CPU
 }
