@@ -9,7 +9,7 @@
 
 module load nextflow
 
-HPC_RUN=False
+HPC_RUN=True
 FEATS_ONLY=True
 
 
