@@ -1,6 +1,6 @@
 process GRANULARITY_CPU {
-
     tag { "granularity_cpu" }
+    conda "${params.featurization_env}"
 
     input:
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
@@ -18,8 +18,8 @@ process GRANULARITY_CPU {
 }
 
 process GRANULARITY_GPU {
-
     tag { "granularity_gpu" }
+    conda "${params.featurization_env}"
 
     input:
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
