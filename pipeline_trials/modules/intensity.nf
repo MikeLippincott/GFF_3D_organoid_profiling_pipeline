@@ -1,7 +1,7 @@
 
 process INTENSITY_CPU {
-
     tag { "intensity_cpu" }
+    conda "${params.featurization_env}"
 
     input:
     tuple val(patient), val(well_fov), val(featurize_with_gpu)
@@ -19,8 +19,8 @@ process INTENSITY_CPU {
 }
 
 process INTENSITY_GPU {
-
     tag { "intensity_gpu" }
+    conda "${params.featurization_env}"
 
     input:
     tuple val(patient), val(well_fov), val(featurize_with_gpu)

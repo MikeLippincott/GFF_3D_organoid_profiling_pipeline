@@ -1,6 +1,8 @@
 
 process TEXTURE_CPU {
     tag { "texture_cpu" }
+    conda "${params.featurization_env}"
+
 
     input:
     tuple val(patient), val(well_fov), val(featurize_with_gpu)

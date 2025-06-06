@@ -1,5 +1,5 @@
 process NEIGHBORS_CPU {
-
+    conda "${params.featurization_env}"
     tag { "neighbors_cpu" }
 
     input:
