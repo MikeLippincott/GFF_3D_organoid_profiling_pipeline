@@ -15,7 +15,7 @@ process AREASIZESHAPE_CPU {
     echo "Env to use: ${params.featurization_env}"
     cd  ${projectDir}/../3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}, use_gpu: ${featurize_with_gpu}"
-    bash run_area_shape_child.sh ${well_fov} ${featurize_with_gpu} ${patient} > areasizeshape_cpu.txt
+    bash run_area_shape_child.sh ${well_fov} ${featurize_with_gpu} ${patient}
     cd  ${workflow.projectDir}/ || exit 1
     """
 }
@@ -33,7 +33,7 @@ process AREASIZESHAPE_GPU {
 
     script:
     """
-    cd /home/lippincm/Documents/GFF_3D_organoid_profiling_pipeline/3.cellprofiling/slurm_scripts/ || exit 1
+    cd  ${projectDir}/..3.cellprofiling/slurm_scripts/ || exit 1
     echo "Processing patient: ${patient}, well_fov: ${well_fov}, use_gpu: ${featurize_with_gpu}"
     bash run_area_shape_child.sh ${well_fov} ${featurize_with_gpu} ${patient}
     cd  ${workflow.projectDir}/ || exit 1
