@@ -19,7 +19,6 @@ if [ "$HPC_RUN" = "True" ]; then
             featurization_only.nf \
             --fov_file "patient_well_fov.tsv" \
             --featurize_with_gpu false \
-            --conda_env_prefix "/projects/mlippincott@xsede.org/software/anaconda/envs/" \
             -c ./configs/nextflow.config \
             -profile SLURM_HPC
     else
@@ -27,7 +26,6 @@ if [ "$HPC_RUN" = "True" ]; then
             segmentation_through_featurization.nf \
             --fov_file "patient_well_fov.tsv" \
             --featurize_with_gpu false \
-            --conda_env_prefix "/projects/mlippincott@xsede.org/software/anaconda/envs/" \
             -c ./configs/nextflow.config \
             -profile SLURM_HPC
 
@@ -39,7 +37,6 @@ else
             --fov_file "patient_well_fov.tsv" \
             --featurize_with_gpu false \
             -c ./configs/nextflow.config \
-            --conda_env_prefix "/home/lippincm/miniforge3/envs/" \
             -profile local
 
     else
@@ -47,7 +44,6 @@ else
             segmentation_through_featurization.nf \
             --fov_file "patient_well_fov.tsv" \
             --featurize_with_gpu false \
-            --conda_env_prefix "/home/lippincm/miniforge3/envs/" \
             -c ./configs/nextflow.config \
             -profile local
     fi
