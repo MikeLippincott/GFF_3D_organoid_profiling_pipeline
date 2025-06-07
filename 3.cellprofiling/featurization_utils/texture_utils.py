@@ -93,7 +93,7 @@ def measure_3D_texture(
         for i, feature_name in enumerate(feature_names):
             output_texture_dict["object_id"].append(label)
             output_texture_dict["texture_name"].append(
-                f"Texture_{feature_name}_{grayscale}.{distance}"
+                f"{feature_name}_{grayscale}.{distance}"
             )
             output_texture_dict["texture_value"].append(haralick_mean[i])
         del haralick_mean
