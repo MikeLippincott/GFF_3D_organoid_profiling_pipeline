@@ -86,6 +86,14 @@ def process_combination(
         values="texture_value",
     )
     final_df.reset_index(inplace=True)
+    for col in final_df.columns:
+        if col == "object_id":
+            continue
+        else:
+            final_df.rename(
+                columns={col: f"Texture_{compartment}_{channel}_{col}"},
+                inplace=True,
+            )
     final_df.insert(0, "image_set", image_set_loader.image_set_name)
     final_df.columns.name = None
 
@@ -134,7 +142,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[3]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -158,7 +166,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
