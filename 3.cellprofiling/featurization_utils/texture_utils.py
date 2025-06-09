@@ -54,7 +54,7 @@ def measure_3D_texture(
     dict
         A dictionary containing the object ID, texture name, and texture value.
     """
-    label_object = object_loader.objects
+    label_object = object_loader.label_image
     labels = object_loader.object_ids
     feature_names = [
         "Angular.Second.Moment",
