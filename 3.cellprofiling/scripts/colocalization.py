@@ -41,7 +41,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-# In[ ]:
+# In[2]:
 
 
 def process_combination(
@@ -85,10 +85,8 @@ def process_combination(
     )
     output_dir = pathlib.Path(
         output_parent_path
-        / f"Colocalization_{compartment}_{channel1}.{channel2}_features"
+        / f"Colocalization_{compartment}_{channel1}.{channel2}_features.parquet"
     )
-
-    output_dir.mkdir(parents=True, exist_ok=True)
     list_of_dfs = []
     for object_id in coloc_loader.object_ids:
         cropped_image1, cropped_image2 = prepare_two_images_for_colocalization(
@@ -114,7 +112,7 @@ def process_combination(
         coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
         list_of_dfs.append(coloc_df)
     coloc_df = pd.concat(list_of_dfs, ignore_index=True)
-    coloc_df.to_parquet(output_dir / f"object_{object_id}.parquet")
+    coloc_df.to_parquet(output_dir)
 
     return f"Processed {compartment} - {channel1}.{channel2}"
 
@@ -199,7 +197,7 @@ channel_combinations = list(itertools.combinations(image_set_loader.image_names,
 
 # runs upon converted script execution
 
-# In[10]:
+# In[8]:
 
 
 combinations = [
@@ -210,7 +208,7 @@ combinations = [
 ]
 
 
-# In[ ]:
+# In[9]:
 
 
 # Specify the number of cores to use
@@ -236,7 +234,7 @@ with multiprocessing.Pool(processes=cores_to_use) as pool:
 print("Processing complete.")
 
 
-# In[ ]:
+# In[10]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
