@@ -78,7 +78,7 @@ def measure_3D_area_size_shape_gpu(
     dict
         A dictionary containing the area, size, and shape of the objects in the image.
     """
-    label_object = cupy.asarray(object_loader.objects)
+    label_object = cupy.asarray(object_loader.label_image)
     spacing = image_set_loader.anisotropy_spacing
     unique_objects = object_loader.object_ids
 
@@ -119,25 +119,21 @@ def measure_3D_area_size_shape_gpu(
         props = cucim.skimage.measure.regionprops_table(
             subset_lab_object, properties=desired_properties
         )
-        (features_to_record["object_id"].append(label),)
-        (features_to_record["VOLUME"].append(props["area"]),)
-        (features_to_record["CENTER.X"].append(props["centroid-2"]),)
-        (features_to_record["CENTER.Y"].append(props["centroid-1"]),)
-        (features_to_record["CENTER.Z"].append(props["centroid-0"]),)
-        (features_to_record["BBOX.VOLUME"].append(props["bbox_area"]),)
-        (features_to_record["MIN.X"].append(props["bbox-2"]),)
-        (features_to_record["MAX.X"].append(props["bbox-5"]),)
-        (features_to_record["MIN.Y"].append(props["bbox-1"]),)
-        (features_to_record["MAX.Y"].append(props["bbox-4"]),)
-        (features_to_record["MIN.Z"].append(props["bbox-0"]),)
-        (features_to_record["MAX.Z"].append(props["bbox-3"]),)
-        (features_to_record["EXTENT"].append(props["extent"]),)
-        (features_to_record["EULER.NUMBER"].append(props["euler_number"]),)
-        (
-            features_to_record["EQUIVALENT.DIAMETER"].append(
-                props["equivalent_diameter"]
-            ),
-        )
+        features_to_record["object_id"].append(label)
+        features_to_record["VOLUME"].append(props["area"])
+        features_to_record["CENTER.X"].append(props["centroid-2"])
+        features_to_record["CENTER.Y"].append(props["centroid-1"])
+        features_to_record["CENTER.Z"].append(props["centroid-0"])
+        features_to_record["BBOX.VOLUME"].append(props["bbox_area"])
+        features_to_record["MIN.X"].append(props["bbox-2"])
+        features_to_record["MAX.X"].append(props["bbox-5"])
+        features_to_record["MIN.Y"].append(props["bbox-1"])
+        features_to_record["MAX.Y"].append(props["bbox-4"])
+        features_to_record["MIN.Z"].append(props["bbox-0"])
+        features_to_record["MAX.Z"].append(props["bbox-3"])
+        features_to_record["EXTENT"].append(props["extent"])
+        features_to_record["EULER.NUMBER"].append(props["euler_number"])
+        features_to_record["EQUIVALENT.DIAMETER"].append(props["equivalent_diameter"])
 
         try:
             features_to_record["SURFACE.AREA"].append(
@@ -145,7 +141,7 @@ def measure_3D_area_size_shape_gpu(
                     label_object=label_object,
                     props=props,
                     spacing=spacing,
-                )
+                ).get()
             )
         except:
             features_to_record["SURFACE.AREA"].append(numpy.nan)
