@@ -75,7 +75,7 @@ else
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=10:00 \
+        --time=1:00:00 \
         --output=area_shape_cpu_child-%j.out \
         run_area_shape_child.sh "$WELLFOV" "$USEGPU" "$PATIENT"
 
@@ -101,6 +101,7 @@ else
 
     sbatch \
         --nodes=1 \
+        --ntasks=20 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
