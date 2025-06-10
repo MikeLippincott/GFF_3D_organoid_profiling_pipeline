@@ -102,7 +102,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 for compartment in tqdm(
@@ -120,7 +120,6 @@ for compartment in tqdm(
             channel,
             compartment,
         )
-
         # area, size, shape
         size_shape_dict = measure_3D_area_size_shape(
             image_set_loader=image_set_loader,
@@ -145,7 +144,7 @@ for compartment in tqdm(
         final_df.head()
 
 
-# In[ ]:
+# In[8]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

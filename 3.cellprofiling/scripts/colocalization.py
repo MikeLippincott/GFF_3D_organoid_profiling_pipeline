@@ -83,6 +83,7 @@ def process_combination(
         channel1=channel1,
         channel2=channel2,
     )
+
     output_dir = pathlib.Path(
         output_parent_path
         / f"Colocalization_{compartment}_{channel1}.{channel2}_features.parquet"
@@ -235,6 +236,12 @@ print("Processing complete.")
 
 
 # In[10]:
+
+
+results
+
+
+# In[11]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

@@ -5,7 +5,7 @@
 # The end goals is to segment cell and extract morphology features from cellprofiler.
 # These masks must be imported into cellprofiler to extract features.
 
-# In[2]:
+# In[1]:
 
 
 import argparse
@@ -38,7 +38,7 @@ except NameError:
 print(in_notebook)
 
 
-# In[8]:
+# In[2]:
 
 
 def segment_with_diameter(
@@ -130,7 +130,7 @@ def test_segment_with_diameter():
 test_segment_with_diameter()
 
 
-# In[ ]:
+# In[3]:
 
 
 if not in_notebook:
@@ -164,7 +164,7 @@ if not in_notebook:
     patient = args.patient
 
 else:
-    well_fov = "G11-2"
+    well_fov = "C6-1"
     window_size = 4
     clip_limit = 0.05
     patient = "NF0014"
@@ -182,7 +182,7 @@ mask_path.mkdir(exist_ok=True, parents=True)
 
 # ## Set up images, paths and functions
 
-# In[ ]:
+# In[4]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -190,7 +190,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[ ]:
+# In[5]:
 
 
 # find the cytoplasmic channels in the image set
@@ -210,23 +210,22 @@ for f in files:
 
 cyto = np.max(
     [
-        # cyto1, # ER
-        cyto2,  # AGP
-        # cyto3, # Mito
+        # cyto1,
+        cyto2,
+        # cyto3,
     ],
     axis=0,
 )
 # pick which channels to use for cellpose
-cyto = skimage.exposure.equalize_adapthist(cyto, clip_limit=clip_limit)
+# cyto = skimage.exposure.equalize_adapthist(cyto, clip_limit=clip_limit)
 
 
 original_cyto_image = cyto.copy()
 
 original_cyto_z_count = cyto.shape[0]
-print(f"Original cyto image shape: {original_cyto_image.shape}")
 
 
-# In[ ]:
+# In[6]:
 
 
 # make a 2.5 D max projection image stack with a sliding window of 3 slices
@@ -247,7 +246,7 @@ cyto = np.array(image_stack_2_5D)
 print("2.5D cyto image stack shape:", cyto.shape)
 
 
-# In[ ]:
+# In[7]:
 
 
 butterworth_optimization = True
