@@ -26,7 +26,7 @@ except NameError:
 print(in_notebook)
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -58,7 +58,7 @@ if not in_notebook:
     patient = args.patient
 
 else:
-    well_fov = "C2-2"
+    well_fov = "C5-2"
     patient = "NF0014"
     clip_limit = 0.03
 
@@ -69,6 +69,11 @@ input_dir = pathlib.Path(f"../../data/{patient}/zstack_images/{well_fov}").resol
 mask_path = pathlib.Path(f"../../data/{patient}/processed_data/{well_fov}").resolve()
 mask_output = mask_path / "cell_masks_watershed.tiff"
 mask_path.mkdir(exist_ok=True, parents=True)
+nuclei_mask = tifffile.imread(
+    pathlib.Path(
+        f"../../data/{patient}/processed_data/{well_fov}/nuclei_masks_reconstructed_corrected.tiff"
+    )
+)
 
 
 # ## Set up images, paths and functions
@@ -93,36 +98,31 @@ for f in files:
 cyto = skimage.exposure.equalize_adapthist(cyto2, clip_limit=clip_limit)
 
 
-# In[ ]:
+# In[5]:
 
 
 # gaussian filter to smooth the image
 cyto = skimage.filters.gaussian(cyto, sigma=1.0)
 
 
-# In[6]:
+# In[ ]:
 
 
-nuclei_mask = tifffile.imread(
-    pathlib.Path(
-        f"../../data/NF0014/processed_data/{well_fov}/nuclei_masks_reconstructed_corrected.tiff"
-    )
-)
 # scale the pixels to max 255
 nuclei_mask = (nuclei_mask / nuclei_mask.max() * 255).astype(np.uint8)
 
 
-# In[ ]:
+# In[7]:
 
 
 # generate the elevation map using the Sobel filter
 elevation_map = sobel(cyto)
 
 
-# In[ ]:
+# In[8]:
 
 
-# set up seeded watersheding where the nuclei masks are used as seeds.
+# set up seeded watersheding where the nuclei masks are used as seeds
 # note: the cytoplasm is used as the signal for this.
 
 labels = skimage.segmentation.watershed(
@@ -131,7 +131,7 @@ labels = skimage.segmentation.watershed(
 )
 
 
-# In[10]:
+# In[9]:
 
 
 # change the largest label (by area) to 0
@@ -140,21 +140,21 @@ largest_label = unique[np.argmax(counts)]
 labels[labels == largest_label] = 0
 
 
-# In[11]:
+# In[10]:
 
 
 print(f"There are {len(np.unique(nuclei_mask))} nuclei in the mask")
 print(f"There are {len(np.unique(labels))} cell masks in the watershed segmentation")
 
 
-# In[12]:
+# In[11]:
 
 
 # save the labels as a tiff file
 tifffile.imwrite(mask_output, labels)
 
 
-# In[13]:
+# In[12]:
 
 
 if in_notebook:

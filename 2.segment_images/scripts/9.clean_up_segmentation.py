@@ -79,19 +79,7 @@ print(
       """
 )
 for file in processed_data_dir_directories:
-    check_number_of_files(file, 10)
-
-
-print(
-    f"""
-      #################################################################################\n
-      ## Checking the number of files in each subdirectory of:\n
-      ## {raw_input_dir.absolute()}\n
-      #################################################################################
-      """
-)
-for file in normalized_data_dir_directories:
-    check_number_of_files(file, 5)
+    check_number_of_files(file, 11)
 
 
 # ## Copy the normalized images to the cellprofiler images dir
@@ -118,6 +106,17 @@ for norm_dir in tqdm.tqdm(norm_dirs):
 # In[6]:
 
 
+masks_names_to_copy_over = [
+    "cell_masks_watershed.tiff",
+    "cytoplasm_mask.tiff",
+    "nuclei_masks_reassigned.tiff",
+    "organoid_masks_reconstructed.tiff",
+]
+
+
+# In[7]:
+
+
 # get a list of dirs in processed_data
 dirs = [x for x in processed_data_dir.iterdir() if x.is_dir()]
 file_extensions = {".tif", ".tiff"}
@@ -126,14 +125,17 @@ for well_dir in tqdm.tqdm(dirs):
     files = [x for x in well_dir.iterdir() if x.is_file()]
     for file in files:
         if file.suffix in file_extensions:
-            # copy each of the raw files to the cellprofiler_dir for feature extraction
-            new_file_dir = pathlib.Path(
-                cellprofiler_dir, well_dir.name, file.stem + file.suffix
-            )
-            shutil.copy(file, new_file_dir)
+            for mask_name in masks_names_to_copy_over:
+                # check if the file is one of the masks
+                if mask_name in file.name:
+                    # copy the mask to the cellprofiler_dir
+                    new_file_dir = pathlib.Path(
+                        cellprofiler_dir, well_dir.name, file.name
+                    )
+                    shutil.copy(file, new_file_dir)
 
 
-# In[7]:
+# In[8]:
 
 
 jobs_to_rerun_path = pathlib.Path("../rerun_jobs.txt").resolve()
@@ -141,7 +143,7 @@ if jobs_to_rerun_path.exists():
     jobs_to_rerun_path.unlink()
 
 
-# In[8]:
+# In[9]:
 
 
 dirs_in_cellprofiler_dir = [x for x in cellprofiler_dir.iterdir() if x.is_dir()]
@@ -152,7 +154,7 @@ for dir in tqdm.tqdm(dirs_in_cellprofiler_dir):
             f.write(f"{dir.name}\n")
 
 
-# In[9]:
+# In[10]:
 
 
 # move an example to the example dir

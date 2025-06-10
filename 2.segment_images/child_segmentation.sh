@@ -23,7 +23,7 @@ python 0.segment_nuclei.py \
     --window_size 3 \
     --clip_limit 0.05
 
-python 2.segment_whole_organoids.py \
+python 1.segment_whole_organoids.py \
     --patient "$patient" \
     --well_fov "$well_fov" \
     --window_size 4 \
