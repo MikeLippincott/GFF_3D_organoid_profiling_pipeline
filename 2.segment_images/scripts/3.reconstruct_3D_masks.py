@@ -82,8 +82,8 @@ if not in_notebook:
     patient = args.patient
 else:
     print("Running in a notebook")
-    well_fov = "G11-2"
-    compartment = "organoid"
+    well_fov = "C4-2"
+    compartment = "cell"
     patient = "NF0014"
 
 input_dir = pathlib.Path(f"../../data/{patient}/processed_data/{well_fov}").resolve()
@@ -338,44 +338,40 @@ distance_pairs = {
     "original_label2": [],
 }
 
-for i in tqdm.tqdm(range(coordinates_df.shape[0])):
-    for j in range(coordinates_df.shape[0]):
-        if i != j:
-            coordinate_pair1 = coordinates_df.loc[
-                i, ["centroid-0", "centroid-1"]
-            ].values
-            coordinate_pair2 = coordinates_df.loc[
-                j, ["centroid-0", "centroid-1"]
-            ].values
-            distance = euclidian_2D_distance(coordinate_pair1, coordinate_pair2)
+distance_pairs_list = [
+    {
+        "slice1": coordinates_df.loc[i, "slice"],
+        "slice2": coordinates_df.loc[j, "slice"],
+        "index1": i,
+        "index2": j,
+        "distance": euclidian_2D_distance(
+            coordinates_df.loc[i, ["centroid-0", "centroid-1"]].values,
+            coordinates_df.loc[j, ["centroid-0", "centroid-1"]].values,
+        ),
+        "coordinates1": tuple(
+            coordinates_df.loc[i, ["centroid-0", "centroid-1"]].values
+        ),
+        "coordinates2": tuple(
+            coordinates_df.loc[j, ["centroid-0", "centroid-1"]].values
+        ),
+        "pass": True,
+        "original_label1": coordinates_df.loc[i, "original_label"],
+        "original_label2": coordinates_df.loc[j, "original_label"],
+    }
+    for i in range(coordinates_df.shape[0])
+    for j in range(coordinates_df.shape[0])
+    if i != j
+    and euclidian_2D_distance(
+        coordinates_df.loc[i, ["centroid-0", "centroid-1"]].values,
+        coordinates_df.loc[j, ["centroid-0", "centroid-1"]].values,
+    )
+    < x_y_vector_radius_max_constraint
+]
 
-            # mask1 = np.zeros_like(image[0, :, :], dtype=bool)
-            # mask2 = np.zeros_like(image[0, :, :], dtype=bool)
-            # mask1[image[0, :, :] == coordinates_df.loc[i, "original_label"]] = True
-            # mask2[image[0, :, :] == coordinates_df.loc[j, "original_label"]] = True
+# Convert to DataFrame (if needed)
+df = pd.DataFrame(distance_pairs_list)
 
-            if distance < x_y_vector_radius_max_constraint:
-                distance_pairs["slice1"].append(coordinates_df.loc[i, "slice"])
-                distance_pairs["slice2"].append(coordinates_df.loc[j, "slice"])
-                distance_pairs["index1"].append(i)
-                distance_pairs["index2"].append(j)
-                distance_pairs["distance"].append(distance)
-                distance_pairs["coordinates1"].append(
-                    (coordinate_pair1[0], coordinate_pair1[1])
-                )
-                distance_pairs["coordinates2"].append(
-                    (coordinate_pair2[0], coordinate_pair2[1])
-                )
-                distance_pairs["pass"].append(True)
-                distance_pairs["original_label1"].append(
-                    coordinates_df.loc[i, "original_label"]
-                )
-                distance_pairs["original_label2"].append(
-                    coordinates_df.loc[j, "original_label"]
-                )
-
-
-df = pd.DataFrame.from_dict(distance_pairs)
+# df = pd.DataFrame.from_dict(distance_pairs)
 df["indexes"] = df["index1"].astype(str) + "-" + df["index2"].astype(str)
 df = df[df["pass"] == True]
 df["index_comparison"] = df["index1"].astype(str) + "," + df["index2"].astype(str)
@@ -409,16 +405,7 @@ pos = nx.spring_layout(G)
 edge_labels = nx.get_edge_attributes(G, "weight")
 
 
-# In[ ]:
-
-
-# solve the graph to find the longest path with the shortest distance between nodes
-# also we need a constraint of about 10 um of total path length (a path length of 10 slices)
-# solve the graph to group the nodes into clusters based on the distance between them and their coordinates
-# longest_paths = nx.algorithms.community.greedy_modularity_communities(G)
-
-
-# In[ ]:
+# In[11]:
 
 
 # solve the the shortest path problem
@@ -426,7 +413,7 @@ edge_labels = nx.get_edge_attributes(G, "weight")
 # this will find the longest paths between centroids closest to each other
 # the longest path is the path with the most edges
 longest_paths = []
-for path in nx.all_pairs_shortest_path(G, cutoff=10):  #
+for path in nx.all_pairs_shortest_path(G, cutoff=10):
     longest_path = []
     for key in path[1].keys():
         if len(path[1][key]) > len(longest_path):
@@ -434,7 +421,7 @@ for path in nx.all_pairs_shortest_path(G, cutoff=10):  #
     longest_paths.append(longest_path)
 
 
-# In[13]:
+# In[12]:
 
 
 def merge_sets(list_of_sets: list) -> list:
@@ -445,14 +432,14 @@ def merge_sets(list_of_sets: list) -> list:
     return list_of_sets
 
 
-# In[14]:
+# In[13]:
 
 
 list_of_sets = [set(x) for x in longest_paths]
 merged_sets = merge_sets(list_of_sets)
 
 
-# In[15]:
+# In[14]:
 
 
 merged_sets_dict = {}
@@ -460,13 +447,13 @@ for i in range(len(list_of_sets)):
     merged_sets_dict[i] = list_of_sets[i]
 
 
-# In[16]:
+# In[15]:
 
 
 coordinates_df.head()
 
 
-# In[17]:
+# In[16]:
 
 
 for row in coordinates_df.iterrows():
@@ -478,7 +465,7 @@ coordinates_df = coordinates_df.dropna()
 coordinates_df
 
 
-# In[18]:
+# In[17]:
 
 
 new_mask_image = np.zeros_like(image)
@@ -494,7 +481,7 @@ for slice in range(image.shape[0]):
 tifffile.imwrite(output_image_dir, new_mask_image)
 
 
-# In[19]:
+# In[18]:
 
 
 if in_notebook:

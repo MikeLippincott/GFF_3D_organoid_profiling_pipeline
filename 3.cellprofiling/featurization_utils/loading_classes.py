@@ -193,7 +193,6 @@ class ObjectLoader:
         self.object_ids = numpy.unique(label_image)
         # drop the 0 label
         self.object_ids = [x for x in self.object_ids if x != 0]
-        print(self.object_ids)
 
 
 class TwoObjectLoader:
