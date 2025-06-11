@@ -6,6 +6,8 @@
 
 import argparse
 import pathlib
+import sqlite3
+from contextlib import closing
 
 import duckdb
 import pandas as pd
@@ -311,28 +313,19 @@ for compartment in final_df_dict.keys():
                 on=["object_id", "image_set"],
                 how="outer",
             )
-pd.set_option("display.max_columns", None)
-# pd.set_option("display.max_rows", 100)
-compartment_merged_dict["Nuclei"]
 
 
 # In[12]:
 
 
-# with closing(sqlite3.connect(sqlite_path)) as cx:
-#     # with cx:
-#     # conn = sqlite3.connect(sqlite_path)
-#     # merge all the feature types into one dataframe
-#     for compartment in compartment_merged_dict.keys():
-#         compartment_merged_dict[compartment].to_sql(
-#             f"{compartment}",
-#             cx,
-#             if_exists="replace",
-#             index=False,
-#         )
-
-
-# In[ ]:
-
-
-# In[ ]:
+with closing(sqlite3.connect(sqlite_path)) as cx:
+    # with cx:
+    # conn = sqlite3.connect(sqlite_path)
+    # merge all the feature types into one dataframe
+    for compartment in compartment_merged_dict.keys():
+        compartment_merged_dict[compartment].to_sql(
+            f"{compartment}",
+            cx,
+            if_exists="replace",
+            index=False,
+        )
