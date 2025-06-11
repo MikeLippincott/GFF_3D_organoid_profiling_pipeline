@@ -154,15 +154,15 @@ for dir in tqdm.tqdm(dirs_in_cellprofiler_dir):
             f.write(f"{dir.name}\n")
 
 
-# In[10]:
+# In[ ]:
 
 
-# move an example to the example dir
-example_dir = pathlib.Path("../animations/gif/C4-2").resolve(strict=True)
-final_example_dir = pathlib.Path("../examples/segmentation_output/C4-2/gifs").resolve()
-if final_example_dir.exists():
-    shutil.rmtree(final_example_dir)
+# # move an example to the example dir
+# example_dir = pathlib.Path("../animations/gif/C4-2").resolve(strict=True)
+# final_example_dir = pathlib.Path("../examples/segmentation_output/C4-2/gifs").resolve()
+# if final_example_dir.exists():
+#     shutil.rmtree(final_example_dir)
 
 
-if example_dir.exists():
-    shutil.copytree(example_dir, final_example_dir)
+# if example_dir.exists():
+#     shutil.copytree(example_dir, final_example_dir)
