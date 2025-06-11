@@ -81,7 +81,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=20 \
+        --ntasks=25 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -101,7 +101,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=20 \
+        --ntasks=25 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -125,7 +125,6 @@ sbatch \
 
 sbatch \
     --nodes=1 \
-    --mem=100G \
     --ntasks=20 \
     --partition=amilan \
     --qos=normal \
