@@ -45,7 +45,9 @@ else:
 result_path = pathlib.Path(
     f"../../data/{patient}/extracted_features/{well_fov}"
 ).resolve(strict=True)
-database_path = pathlib.Path(f"../../data/{patient}/converted_profiles/").resolve()
+database_path = pathlib.Path(
+    f"../../data/{patient}/converted_profiles/{well_fov}"
+).resolve()
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
 sqlite_path = database_path / f"{well_fov}.duckdb"
