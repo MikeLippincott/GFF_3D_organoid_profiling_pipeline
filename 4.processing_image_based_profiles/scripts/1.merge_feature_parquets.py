@@ -6,8 +6,6 @@
 
 import argparse
 import pathlib
-import sqlite3
-from contextlib import closing
 
 import duckdb
 import pandas as pd
@@ -50,7 +48,7 @@ result_path = pathlib.Path(
 database_path = pathlib.Path(f"../../data/{patient}/converted_profiles/").resolve()
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
-sqlite_path = database_path / f"{well_fov}.sqlite"
+sqlite_path = database_path / f"{well_fov}.duckdb"
 
 
 # get a list of all parquets in the directory recursively
@@ -283,17 +281,6 @@ compartment_merged_dict = {
 # In[10]:
 
 
-final_df_dict["Nuclei"]["AreaSize_Shape"]
-final_df_dict["Nuclei"]["Colocalization"]
-final_df_dict["Nuclei"]["Granularity"]
-final_df_dict["Nuclei"]["Intensity"]
-final_df_dict["Nuclei"]["Neighbor"]
-final_df_dict["Nuclei"]["Texture"]
-
-
-# In[11]:
-
-
 for compartment in final_df_dict.keys():
     print(f"Processing compartment: {compartment}")
     for feature_type in final_df_dict[compartment].keys():
@@ -315,17 +302,11 @@ for compartment in final_df_dict.keys():
             )
 
 
-# In[12]:
+# In[11]:
 
 
-with closing(sqlite3.connect(sqlite_path)) as cx:
-    # with cx:
-    # conn = sqlite3.connect(sqlite_path)
-    # merge all the feature types into one dataframe
-    for compartment in compartment_merged_dict.keys():
-        compartment_merged_dict[compartment].to_sql(
-            f"{compartment}",
-            cx,
-            if_exists="replace",
-            index=False,
-        )
+with duckdb.connect(sqlite_path) as cx:
+    for compartment, df in compartment_merged_dict.items():
+        cx.register("temp_df", df)
+        cx.execute(f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df")
+        cx.unregister("temp_df")
