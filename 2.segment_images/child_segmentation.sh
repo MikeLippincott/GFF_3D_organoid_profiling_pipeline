@@ -5,9 +5,7 @@
 # The following environment activation commands are commented out.
 # Ensure the required environment is activated manually before running this script,
 # or confirm that activation is handled by a parent script or workflow.
-module load anaconda
-conda init bash
-conda activate GFF_segmentation
+
 
 cd scripts/ || exit
 
@@ -23,7 +21,7 @@ python 0.segment_nuclei.py \
     --window_size 3 \
     --clip_limit 0.05
 
-python 2.segment_whole_organoids.py \
+python 1.segment_whole_organoids.py \
     --patient "$patient" \
     --well_fov "$well_fov" \
     --window_size 4 \
