@@ -37,12 +37,17 @@ if not in_notebook:
         help="patient name, e.g. 'P01'",
     )
 
+    argparser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="overwrite existing directories",
+    )
+
     args = argparser.parse_args()
     patient = args.patient
 else:
     patient = "NF0014"
-
-overwrite = True
+    overwrite = False
 
 
 # In[3]:
@@ -52,13 +57,11 @@ overwrite = True
 processed_data_dir = pathlib.Path(f"../../data/{patient}/processed_data").resolve(
     strict=True
 )
-raw_input_dir = pathlib.Path(f"../../data/{patient}/zstack_images").resolve(strict=True)
-
+zstack_dir = pathlib.Path(f"../../data/{patient}/zstack_images/").resolve(strict=True)
 cellprofiler_dir = pathlib.Path(f"../../data/{patient}/cellprofiler").resolve()
-if cellprofiler_dir.exists():
-    shutil.rmtree(cellprofiler_dir)
-    cellprofiler_dir.mkdir(parents=True, exist_ok=True)
-else:
+if overwrite:
+    if cellprofiler_dir.exists():
+        shutil.rmtree(cellprofiler_dir)
     cellprofiler_dir.mkdir(parents=True, exist_ok=True)
 
 
@@ -67,19 +70,7 @@ else:
 
 # perform checks for each directory
 processed_data_dir_directories = list(processed_data_dir.glob("*"))
-normalized_data_dir_directories = list(raw_input_dir.glob("*"))
 cellprofiler_dir_directories = list(cellprofiler_dir.glob("*"))
-
-print(
-    f"""
-      #################################################################################\n
-      ## Checking the number of files in each subdirectory of:\n
-      ## {processed_data_dir.absolute()}\n
-      #################################################################################
-      """
-)
-for file in processed_data_dir_directories:
-    check_number_of_files(file, 11)
 
 
 # ## Copy the normalized images to the cellprofiler images dir
@@ -88,7 +79,7 @@ for file in processed_data_dir_directories:
 
 
 # get the list of dirs in the normalized_data_dir
-norm_dirs = [x for x in raw_input_dir.iterdir() if x.is_dir()]
+norm_dirs = [x for x in zstack_dir.iterdir() if x.is_dir()]
 # copy each dir and files to cellprofiler_dir
 for norm_dir in tqdm.tqdm(norm_dirs):
     dest_dir = pathlib.Path(cellprofiler_dir, norm_dir.name)
@@ -132,7 +123,10 @@ for well_dir in tqdm.tqdm(dirs):
                     new_file_dir = pathlib.Path(
                         cellprofiler_dir, well_dir.name, file.name
                     )
-                    shutil.copy(file, new_file_dir)
+                    if new_file_dir.exists() and overwrite:
+                        shutil.copy(file, new_file_dir)
+                    elif not new_file_dir.exists():
+                        shutil.copy(file, new_file_dir)
 
 
 # In[8]:
@@ -149,20 +143,21 @@ if jobs_to_rerun_path.exists():
 dirs_in_cellprofiler_dir = [x for x in cellprofiler_dir.iterdir() if x.is_dir()]
 dirs_in_cellprofiler_dir = sorted(dirs_in_cellprofiler_dir)
 for dir in tqdm.tqdm(dirs_in_cellprofiler_dir):
-    if not check_number_of_files(dir, 12):
+    if not check_number_of_files(dir, 9):  # 5 raw images, 4 masks
+        pass
         with open(jobs_to_rerun_path, "a") as f:
-            f.write(f"{dir.name}\n")
+            f.write(f"{patient}_{dir.name}\n")
 
 
-# In[ ]:
+# In[10]:
 
 
-# # move an example to the example dir
-# example_dir = pathlib.Path("../animations/gif/C4-2").resolve(strict=True)
-# final_example_dir = pathlib.Path("../examples/segmentation_output/C4-2/gifs").resolve()
-# if final_example_dir.exists():
-#     shutil.rmtree(final_example_dir)
-
-
-# if example_dir.exists():
-#     shutil.copytree(example_dir, final_example_dir)
+# move an example to the example dir
+example_dir = pathlib.Path("../animations/gif/C4-2").resolve()
+if example_dir.exists():
+    final_example_dir = pathlib.Path(
+        "../examples/segmentation_output/C4-2/gifs"
+    ).resolve()
+    if final_example_dir.exists():
+        shutil.rmtree(final_example_dir)
+    shutil.copytree(example_dir, final_example_dir)
