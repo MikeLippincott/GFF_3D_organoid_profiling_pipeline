@@ -9,13 +9,14 @@ nextflow.enable.dsl = 2
 
 params.fov_file = 'patient_well_fov.tsv'
 params.featurize_with_gpu = false
+// params.conda_env_prefix = '/projects/mlippincott@xsede.org/software/anaconda/envs/' // prefix for conda environments
 
-include { AREASIZESHAPE_CPU; AREASIZESHAPE_GPU } from './modules/areasizeshape.nf'
-include { COLOCALIZATION_CPU; COLOCALIZATION_GPU } from './modules/colocalization.nf'
-include { GRANULARITY_CPU; GRANULARITY_GPU } from './modules/granularity.nf'
-include { INTENSITY_CPU; INTENSITY_GPU } from './modules/intensity.nf'
-include { NEIGHBORS_CPU } from './modules/neighbors.nf'
-include { TEXTURE_CPU } from './modules/texture.nf'
+include { AREASIZESHAPE_CPU; AREASIZESHAPE_GPU } from '../modules/areasizeshape.nf'
+include { COLOCALIZATION_CPU; COLOCALIZATION_GPU } from '../modules/colocalization.nf'
+include { GRANULARITY_CPU; GRANULARITY_GPU } from '../modules/granularity.nf'
+include { INTENSITY_CPU; INTENSITY_GPU } from '../modules/intensity.nf'
+include { NEIGHBORS_CPU } from '../modules/neighbors.nf'
+include { TEXTURE_CPU } from '../modules/texture.nf'
 
 
 workflow {
@@ -45,7 +46,7 @@ workflow {
     gpu_ch | GRANULARITY_GPU
     gpu_ch | INTENSITY_GPU
 
-    // Run CPU branches
+    // // Run CPU branches
     cpu_ch | AREASIZESHAPE_CPU
     cpu_ch | COLOCALIZATION_CPU
     cpu_ch | GRANULARITY_CPU
