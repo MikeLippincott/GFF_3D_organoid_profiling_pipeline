@@ -78,7 +78,7 @@ nuclei_mask = tifffile.imread(
 
 # ## Set up images, paths and functions
 
-# In[3]:
+# In[ ]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -86,7 +86,7 @@ files = sorted(input_dir.glob("*"))
 files = [str(x) for x in files if x.suffix in image_extensions]
 
 
-# In[4]:
+# In[ ]:
 
 
 # find the cytoplasmic channels in the image set
@@ -98,7 +98,7 @@ for f in files:
 cyto = skimage.exposure.equalize_adapthist(cyto2, clip_limit=clip_limit)
 
 
-# In[5]:
+# In[ ]:
 
 
 # gaussian filter to smooth the image
@@ -112,14 +112,14 @@ cyto = skimage.filters.gaussian(cyto, sigma=1.0)
 nuclei_mask = (nuclei_mask / nuclei_mask.max() * 255).astype(np.uint8)
 
 
-# In[7]:
+# In[ ]:
 
 
 # generate the elevation map using the Sobel filter
 elevation_map = sobel(cyto)
 
 
-# In[8]:
+# In[ ]:
 
 
 # set up seeded watersheding where the nuclei masks are used as seeds
@@ -131,7 +131,7 @@ labels = skimage.segmentation.watershed(
 )
 
 
-# In[9]:
+# In[ ]:
 
 
 # change the largest label (by area) to 0
@@ -140,21 +140,21 @@ largest_label = unique[np.argmax(counts)]
 labels[labels == largest_label] = 0
 
 
-# In[10]:
+# In[ ]:
 
 
 print(f"There are {len(np.unique(nuclei_mask))} nuclei in the mask")
 print(f"There are {len(np.unique(labels))} cell masks in the watershed segmentation")
 
 
-# In[11]:
+# In[ ]:
 
 
 # save the labels as a tiff file
 tifffile.imwrite(mask_output, labels)
 
 
-# In[12]:
+# In[ ]:
 
 
 if in_notebook:

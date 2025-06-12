@@ -65,7 +65,6 @@ def measure_3D_area_size_shape(
     dict
         A dictionary containing the area, size, and shape of the objects in the image.
     """
-    # label_object = object_loader.objects
     label_object = object_loader.label_image
     spacing = image_set_loader.anisotropy_spacing
     unique_objects = object_loader.object_ids

@@ -47,10 +47,11 @@ def segment_with_diameter(
     diameter: int,
     z_axis: int = 0,
     channels: tuple = [1, 0],
-    min_diameter: int = 250,  # in pixels, default is 250
+    min_diameter: int = 200,  # in pixels, default is 250
+    diameter_step: int = 200,
 ) -> tuple:
     """
-    Recursively perform segmentation, stepping down through diameters by 250
+    Recursively perform segmentation, stepping down through diameters by 200
     until a valid label is found or the minimum diameter is reached.
     This effectively performs a dynamic search for the largest detectable object
     in the image.
@@ -72,7 +73,10 @@ def segment_with_diameter(
     min_diameter : int, optional
         The minimum diameter to use for segmentation.
         If the diameter is less than this, the function will return empty labels.
-        Default is 250 pixels.
+        Default is 200 pixels.
+    diameter_step : int, optional
+        The step size to decrease the diameter by when no labels are found.
+        Default is 200 pixels.
 
     Returns
     -------
@@ -95,7 +99,9 @@ def segment_with_diameter(
 
     if labels is None:
         print(f"Labels are empty for diameter {diameter}. Trying smaller diameter...")
-        return segment_with_diameter(img, model, channels, z_axis, diameter - 250)
+        return segment_with_diameter(
+            img, model, channels, z_axis, diameter - diameter_step
+        )
 
     return labels, details, _
 
@@ -164,7 +170,7 @@ if not in_notebook:
     patient = args.patient
 
 else:
-    well_fov = "C6-1"
+    well_fov = "C2-1"
     window_size = 4
     clip_limit = 0.05
     patient = "NF0014"
