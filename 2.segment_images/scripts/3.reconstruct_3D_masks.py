@@ -82,8 +82,8 @@ if not in_notebook:
     patient = args.patient
 else:
     print("Running in a notebook")
-    well_fov = "C4-2"
-    compartment = "cell"
+    well_fov = "C2-1"
+    compartment = "organoid"
     patient = "NF0014"
 
 input_dir = pathlib.Path(f"../../data/{patient}/processed_data/{well_fov}").resolve()
@@ -320,7 +320,7 @@ def calculate_mask_iou(mask1: np.ndarray, mask2: np.ndarray) -> bool:
     return iou
 
 
-# In[ ]:
+# In[10]:
 
 
 # generate distance pairs for each slice
@@ -370,15 +370,14 @@ distance_pairs_list = [
 
 # Convert to DataFrame (if needed)
 df = pd.DataFrame(distance_pairs_list)
+if not df.empty:
+    df["indexes"] = df["index1"].astype(str) + "-" + df["index2"].astype(str)
+    df = df[df["pass"] == True]
+    df["index_comparison"] = df["index1"].astype(str) + "," + df["index2"].astype(str)
+    df.head()
 
-# df = pd.DataFrame.from_dict(distance_pairs)
-df["indexes"] = df["index1"].astype(str) + "-" + df["index2"].astype(str)
-df = df[df["pass"] == True]
-df["index_comparison"] = df["index1"].astype(str) + "," + df["index2"].astype(str)
-df.head()
 
-
-# In[10]:
+# In[11]:
 
 
 # create a graph where each node is a unique centroid and each edge is a distance between centroids
@@ -405,7 +404,7 @@ pos = nx.spring_layout(G)
 edge_labels = nx.get_edge_attributes(G, "weight")
 
 
-# In[11]:
+# In[12]:
 
 
 # solve the the shortest path problem
@@ -421,7 +420,7 @@ for path in nx.all_pairs_shortest_path(G, cutoff=10):
     longest_paths.append(longest_path)
 
 
-# In[12]:
+# In[13]:
 
 
 def merge_sets(list_of_sets: list) -> list:
@@ -432,14 +431,14 @@ def merge_sets(list_of_sets: list) -> list:
     return list_of_sets
 
 
-# In[13]:
+# In[14]:
 
 
 list_of_sets = [set(x) for x in longest_paths]
 merged_sets = merge_sets(list_of_sets)
 
 
-# In[14]:
+# In[15]:
 
 
 merged_sets_dict = {}
@@ -447,13 +446,13 @@ for i in range(len(list_of_sets)):
     merged_sets_dict[i] = list_of_sets[i]
 
 
-# In[15]:
+# In[16]:
 
 
 coordinates_df.head()
 
 
-# In[16]:
+# In[17]:
 
 
 for row in coordinates_df.iterrows():
@@ -465,7 +464,7 @@ coordinates_df = coordinates_df.dropna()
 coordinates_df
 
 
-# In[17]:
+# In[18]:
 
 
 new_mask_image = np.zeros_like(image)
@@ -481,7 +480,7 @@ for slice in range(image.shape[0]):
 tifffile.imwrite(output_image_dir, new_mask_image)
 
 
-# In[18]:
+# In[19]:
 
 
 if in_notebook:
