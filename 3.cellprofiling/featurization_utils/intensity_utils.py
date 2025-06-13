@@ -194,6 +194,10 @@ def measure_3D_intensity_gpu(
     image_object = cupy.asarray(image_object)
     label_object = cupy.asarray(label_object)
     labels = cupy.asarray(labels)
+    # ensure the dtype is uint32 for GPU processing
+    label_object = label_object.astype(cupy.uint32)
+    image_object = image_object.astype(cupy.float32)
+
     ranges = len(labels)
 
     output_dict = {
@@ -215,11 +219,16 @@ def measure_3D_intensity_gpu(
         mask_outlines = get_outline(selected_label_object)
         selected_label_object = cupy.asarray(selected_label_object)
         mask_outlines = cupy.asarray(mask_outlines)
+        # ensure the dtype is float32 for GPU processing
+        mask_outlines = mask_outlines.astype(cupy.float32)
         mesh_z, mesh_y, mesh_x = cupy.mgrid[
             0 : selected_image_object.shape[0],
             0 : selected_image_object.shape[1],
             0 : selected_image_object.shape[2],
         ]
+        mesh_z = cupy.asarray(mesh_z, dtype=cupy.float32)
+        mesh_y = cupy.asarray(mesh_y, dtype=cupy.float32)
+        mesh_x = cupy.asarray(mesh_x, dtype=cupy.float32)
 
         ranges = len(cupy.unique(selected_label_object))
 
