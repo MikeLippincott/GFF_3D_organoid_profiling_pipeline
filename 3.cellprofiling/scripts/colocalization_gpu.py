@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -45,7 +45,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -71,7 +71,7 @@ if not in_notebook:
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 else:
-    well_fov = "C4-2"
+    well_fov = "E10-2"
     patient = "NF0014"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
@@ -81,7 +81,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[3]:
 
 
 channel_mapping = {
@@ -97,7 +97,7 @@ channel_mapping = {
 }
 
 
-# In[ ]:
+# In[4]:
 
 
 start_time = time.time()
@@ -105,7 +105,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[5]:
 
 
 image_set_loader = ImageSetLoader(
@@ -115,14 +115,14 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 # get all channel combinations
 channel_combinations = list(itertools.combinations(image_set_loader.image_names, 2))
 
 
-# In[ ]:
+# In[7]:
 
 
 for compartment in tqdm(
@@ -136,9 +136,8 @@ for compartment in tqdm(
     ):
         output_dir = pathlib.Path(
             output_parent_path
-            / f"Colocalization_{compartment}_{channel1}.{channel2}_features"
+            / f"Colocalization_{compartment}_{channel1}.{channel2}_features.parquet"
         )
-        output_dir.mkdir(parents=True, exist_ok=True)
         coloc_loader = TwoObjectLoader(
             image_set_loader=image_set_loader,
             compartment=compartment,
@@ -174,11 +173,14 @@ for compartment in tqdm(
             coloc_df.insert(0, "object_id", object_id)
             coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
             list_of_dfs.append(coloc_df)
-        coloc_df = pd.concat(list_of_dfs, ignore_index=True)
-        coloc_df.to_parquet(output_dir / f"object_{object_id}.parquet")
+        if not len(list_of_dfs) == 0:
+            coloc_df = pd.concat(list_of_dfs, ignore_index=True)
+        else:
+            coloc_df = pd.DataFrame()
+        coloc_df.to_parquet(output_dir)
 
 
-# In[ ]:
+# In[8]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

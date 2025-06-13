@@ -35,7 +35,7 @@ if [ "$USEGPU" = "TRUE" ]; then
 
     sbatch \
         --nodes=1 \
-        --ntasks=2 \
+        --ntasks=4 \
         --partition=aa100 \
         --qos=normal \
         --gres=gpu:1 \
