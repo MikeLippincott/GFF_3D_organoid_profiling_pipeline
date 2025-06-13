@@ -36,7 +36,7 @@ else:
     from tqdm import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -62,7 +62,7 @@ if not in_notebook:
         )
 
 else:
-    well_fov = "C4-2"
+    well_fov = "C6-2"
     patient = "NF0014"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")

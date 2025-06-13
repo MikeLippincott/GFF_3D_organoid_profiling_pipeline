@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
@@ -41,7 +41,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-# In[2]:
+# In[ ]:
 
 
 def process_combination(
@@ -112,13 +112,16 @@ def process_combination(
         coloc_df.insert(0, "object_id", object_id)
         coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
         list_of_dfs.append(coloc_df)
-    coloc_df = pd.concat(list_of_dfs, ignore_index=True)
+    if not len(list_of_dfs) == 0:
+        coloc_df = pd.concat(list_of_dfs, ignore_index=True)
+    else:
+        coloc_df = pd.DataFrame()
     coloc_df.to_parquet(output_dir)
 
     return f"Processed {compartment} - {channel1}.{channel2}"
 
 
-# In[3]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -144,7 +147,7 @@ if not in_notebook:
         )
 
 else:
-    well_fov = "C4-2"
+    well_fov = "E8-2"
     patient = "NF0014"
 
 
@@ -155,7 +158,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[4]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -171,7 +174,7 @@ channel_mapping = {
 }
 
 
-# In[5]:
+# In[ ]:
 
 
 start_time = time.time()
@@ -179,7 +182,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[6]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
@@ -189,7 +192,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[7]:
+# In[ ]:
 
 
 # get all channel combinations
@@ -198,7 +201,7 @@ channel_combinations = list(itertools.combinations(image_set_loader.image_names,
 
 # runs upon converted script execution
 
-# In[8]:
+# In[ ]:
 
 
 combinations = [
@@ -209,7 +212,7 @@ combinations = [
 ]
 
 
-# In[9]:
+# In[ ]:
 
 
 # Specify the number of cores to use
@@ -235,13 +238,7 @@ with multiprocessing.Pool(processes=cores_to_use) as pool:
 print("Processing complete.")
 
 
-# In[10]:
-
-
-results
-
-
-# In[11]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
