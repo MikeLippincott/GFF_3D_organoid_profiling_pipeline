@@ -53,17 +53,32 @@ if not in_notebook:
         help="Patient ID, e.g. 'NF0014'",
     )
 
+    argparser.add_argument(
+        "--compartment",
+        type=str,
+        default="Cytoplasm",
+        help="Compartment to process, e.g. 'Cytoplasm'",
+    )
+    argparser.add_argument(
+        "--channel",
+        type=str,
+        default="ER",
+        help="Channel to process, e.g. 'ER'",
+    )
+
     args = argparser.parse_args()
     well_fov = args.well_fov
     patient = args.patient
+    compartment = args.compartment
+    channel = args.channel
     if well_fov == "None":
         raise ValueError(
             "Please provide a well and field of view to process, e.g. 'A01_1'"
         )
 
 else:
-    well_fov = "C6-2"
     patient = "NF0014"
+    well_fov = "F4-3"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 output_parent_path = pathlib.Path(
@@ -157,7 +172,7 @@ for compartment in tqdm(
         final_df.to_parquet(output_file)
 
 
-# In[ ]:
+# In[8]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
