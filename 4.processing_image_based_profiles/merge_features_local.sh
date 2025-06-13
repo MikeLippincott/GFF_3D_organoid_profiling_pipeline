@@ -1,13 +1,12 @@
 #!/bin/bash
 
-module load anaconda
 conda init bash
 conda activate nf1_image_based_profiling_env
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
-patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SARCO219" "SARCO361" )
-
+# patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SARCO219" "SARCO361" )
+patient_array=( "NF0014" )
 cd scripts/ || exit
 
 for patient in "${patient_array[@]}"; do

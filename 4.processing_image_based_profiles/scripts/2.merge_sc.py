@@ -69,22 +69,16 @@ dest_datatype = "parquet"
 
 
 # show the tables
-con = duckdb.connect(input_sqlite_file)
-tables = con.execute("SHOW TABLES").fetchdf()
-tables["name"].to_list()
+with duckdb.connect(input_sqlite_file) as con:
+    tables = con.execute("SHOW TABLES").fetchdf()
+    print(tables)
+    nuclei_table = con.sql("SELECT * FROM Nuclei").df()
+    cells_table = con.sql("SELECT * FROM Cell").df()
+    cytoplasm_table = con.sql("SELECT * FROM Cytoplasm").df()
+    organoid_table = con.sql("SELECT * FROM Organoid").df()
 
 
 # In[5]:
-
-
-nuclei_table = con.sql("SELECT * FROM Nuclei").df()
-cells_table = con.sql("SELECT * FROM Cell").df()
-cytoplasm_table = con.sql("SELECT * FROM Cytoplasm").df()
-organoid_table = con.sql("SELECT * FROM Organoid").df()
-con.close()
-
-
-# In[6]:
 
 
 nuclei_id_set = set(nuclei_table["object_id"].to_list())
@@ -98,24 +92,25 @@ cells_table = cells_table[cells_table["object_id"].isin(intersection_set)]
 cytoplasm_table = cytoplasm_table[cytoplasm_table["object_id"].isin(intersection_set)]
 
 
+# In[6]:
+
+
+# connect to DuckDB and register the tables
+with duckdb.connect() as con:
+    con.register("df1", nuclei_table)
+    con.register("df2", cells_table)
+    con.register("df3", cytoplasm_table)
+    # Merge them with SQL
+    merged_df = con.execute("""
+        SELECT *
+        FROM df1
+        LEFT JOIN df2 USING (object_id)
+        LEFT JOIN df3 USING (object_id)
+    """).df()
+merged_df.drop(columns=["image_set_1", "image_set_2"], inplace=True)
+
+
 # In[7]:
-
-
-con = duckdb.connect()
-con.register("df1", nuclei_table)
-con.register("df2", cells_table)
-con.register("df3", cytoplasm_table)
-# Merge them with SQL
-merged_df = con.execute("""
-    SELECT *
-    FROM df1
-    LEFT JOIN df2 USING (object_id)
-    LEFT JOIN df3 USING (object_id)
-""").df()
-con.close()
-
-
-# In[8]:
 
 
 # save the organoid data as parquet
@@ -124,10 +119,10 @@ organoid_table.to_parquet(destination_organoid_parquet_file, index=False)
 organoid_table.head()
 
 
-# In[9]:
+# In[8]:
 
 
-print(f"Final merged dataframe shape: {merged_df.shape}")
+print(f"Final merged single cell dataframe shape: {merged_df.shape}")
 # save the sc data as parquet
 merged_df.to_parquet(destination_sc_parquet_file, index=False)
 merged_df.head()
