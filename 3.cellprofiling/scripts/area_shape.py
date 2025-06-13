@@ -58,7 +58,7 @@ if not in_notebook:
         )
 
 else:
-    well_fov = "C4-2"
+    well_fov = "E6-1"
     patient = "NF0014"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")

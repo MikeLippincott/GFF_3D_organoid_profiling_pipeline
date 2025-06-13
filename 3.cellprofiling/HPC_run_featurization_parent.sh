@@ -81,7 +81,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=25 \
+        --ntasks=30 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -91,7 +91,7 @@ else
 
     sbatch \
         --nodes=1 \
-        --ntasks=20 \
+        --ntasks=25 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
