@@ -47,7 +47,7 @@ else:
     well_fov = "C4-2"
     patient = "NF0014"
     compartment = "Nuclei"
-    processor_type = "cpu"
+    processor_type = "CPU"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 output_parent_path = pathlib.Path(
