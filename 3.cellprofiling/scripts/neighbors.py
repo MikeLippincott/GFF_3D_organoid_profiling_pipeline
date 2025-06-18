@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
-import argparse
 import os
 import pathlib
 import sys
@@ -17,6 +16,7 @@ import numpy as np
 import pandas as pd
 import scipy
 import skimage
+from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, ObjectLoader
 from neighbors_utils import measure_3D_number_of_neighbors
 from resource_profiling_util import get_mem_and_time_profiling
@@ -32,34 +32,20 @@ else:
     from tqdm import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--well_fov",
-        type=str,
-        default="None",
-        help="Well and field of view to process, e.g. 'A01_1'",
-    )
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        help="Patient ID, e.g. 'NF0014'",
-    )
-
-    args = argparser.parse_args()
-    well_fov = args.well_fov
-    patient = args.patient
-    if well_fov == "None":
-        raise ValueError(
-            "Please provide a well and field of view to process, e.g. 'A01_1'"
-        )
-
+    arguments_dict = parse_featurization_args()
+    patient = arguments_dict["patient"]
+    well_fov = arguments_dict["well_fov"]
+    channel = arguments_dict["channel"]
+    compartment = arguments_dict["compartment"]
 else:
     well_fov = "C4-2"
     patient = "NF0014"
+    channel = "DNA"
+    compartment = "Nuclei"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 output_parent_path = pathlib.Path(
