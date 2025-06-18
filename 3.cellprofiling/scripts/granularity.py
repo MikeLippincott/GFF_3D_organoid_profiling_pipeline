@@ -4,7 +4,6 @@
 # In[ ]:
 
 
-import argparse
 import os
 import pathlib
 import sys
@@ -13,9 +12,7 @@ import time
 import psutil
 
 sys.path.append("../featurization_utils")
-import multiprocessing
 import os
-from functools import partial
 from itertools import product
 
 import cucim
@@ -26,7 +23,8 @@ import pandas as pd
 import psutil
 import scipy
 import skimage
-from granularity_utils import measure_3D_granularity
+from featurization_parsable_arguments import parse_featurization_args
+from granularity_utils import measure_3D_granularity, measure_3D_granularity_gpu
 
 # from granularity import measure_3D_granularity
 from loading_classes import ImageSetLoader, ObjectLoader
@@ -46,104 +44,20 @@ else:
 # In[ ]:
 
 
-def process_combination(
-    args: tuple[str, str],
-    image_set_loader: ImageSetLoader,
-    output_parent_path: pathlib.Path,
-):
-    """
-    Process a single combination of compartment and channel.
-
-    Parameters
-    ----------
-    args : tuple
-        Args that contain the compartment and channel.
-        Ordered as (compartment, channel).
-        Yes, order matters here.
-        channel : str
-            The channel name.
-        compartment : str
-            The compartment name.
-    image_set_loader : Class ImageSetLoader
-        This contains the image information needed to retreive the objects.
-    output_parent_path : pathlib.Path
-        The parent path to save the output files to.
-        This is used to create the output directory if it doesn't exist.
-    Returns
-    -------
-    str
-        A string indicating the compartment and channel that was processed.
-    """
-    compartment, channel = args
-    object_loader = ObjectLoader(
-        image_set_loader.image_set_dict[channel],
-        image_set_loader.image_set_dict[compartment],
-        channel,
-        compartment,
-    )
-    object_measurements = measure_3D_granularity(
-        object_loader=object_loader,
-        radius=10,  # radius of the sphere to use for granularity measurement
-        granular_spectrum_length=16,  # usually 16 but 2 is used for testing for now
-        subsample_size=0.25,  # subsample to 25% of the image to reduce computation time
-        image_name=channel,
-    )
-    final_df = pd.DataFrame(object_measurements)
-    # get the mean of each value in the array
-    # melt the dataframe to wide format
-    final_df = final_df.pivot_table(
-        index=["object_id"], columns=["feature"], values=["value"]
-    )
-    final_df.columns = final_df.columns.droplevel()
-    final_df = final_df.reset_index()
-    # prepend compartment and channel to column names
-    for col in final_df.columns:
-        if col == "object_id":
-            continue
-        else:
-            final_df.rename(
-                columns={col: f"Granularity_{compartment}_{channel}_{col}"},
-                inplace=True,
-            )
-    final_df.insert(0, "image_set", image_set_loader.image_set_name)
-    output_file = pathlib.Path(
-        output_parent_path / f"Granularity_{compartment}_{channel}_features.parquet"
-    )
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    final_df.to_parquet(output_file)
-
-    return f"Processed {compartment} - {channel}"
-
-
-# In[ ]:
-
-
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--well_fov",
-        type=str,
-        default="None",
-        help="Well and field of view to process, e.g. 'A01_1'",
-    )
-
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        help="Patient ID, e.g. 'NF0014'",
-    )
-
-    args = argparser.parse_args()
-    well_fov = args.well_fov
-    patient = args.patient
-    if well_fov == "None":
-        raise ValueError(
-            "Please provide a well and field of view to process, e.g. 'A01_1'"
-        )
+    arguments_dict = parse_featurization_args()
+    patient = arguments_dict["patient"]
+    well_fov = arguments_dict["well_fov"]
+    channel = arguments_dict["channel"]
+    compartment = arguments_dict["compartment"]
+    processor_type = arguments_dict["processor_type"]
 
 else:
     well_fov = "C4-2"
     patient = "NF0014"
+    channel = "DNA"
+    compartment = "Nuclei"
+    processor_type = "CPU"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 output_parent_path = pathlib.Path(
@@ -189,30 +103,55 @@ image_set_loader = ImageSetLoader(
 # In[ ]:
 
 
-# Generate all combinations of compartments and channels
-combinations = list(
-    product(image_set_loader.compartments, image_set_loader.image_names)
+object_loader = ObjectLoader(
+    image_set_loader.image_set_dict[channel],
+    image_set_loader.image_set_dict[compartment],
+    channel,
+    compartment,
 )
-# cores = multiprocessing.cpu_count()
-cores = 4
-print(f"Using {cores} cores for processing.")
-# Use multiprocessing to process combinations in parallel
-with multiprocessing.Pool(processes=cores) as pool:
-    results = list(
-        tqdm(
-            pool.imap(
-                partial(
-                    process_combination,
-                    image_set_loader=image_set_loader,
-                    output_parent_path=output_parent_path,
-                ),
-                combinations,
-            ),
-            desc="Processing combinations",
-        )
+if processor_type == "GPU":
+    object_measurements = measure_3D_granularity_gpu(
+        object_loader=object_loader,
+        radius=10,  # radius of the sphere to use for granularity measurement
+        granular_spectrum_length=16,  # usually 16 but 2 is used for testing for now
+        subsample_size=0.25,  # subsample to 25% of the image to reduce computation time
+        image_name=channel,
     )
-
-print("Processing complete.")
+elif processor_type == "CPU":
+    object_measurements = measure_3D_granularity(
+        object_loader=object_loader,
+        radius=10,  # radius of the sphere to use for granularity measurement
+        granular_spectrum_length=16,  # usually 16 but 2 is used for testing for now
+        subsample_size=0.25,  # subsample to 25% of the image to reduce computation time
+        image_name=channel,
+    )
+else:
+    raise ValueError(
+        f"Processor type {processor_type} is not supported. Use 'CPU' or 'GPU'."
+    )
+final_df = pd.DataFrame(object_measurements)
+# get the mean of each value in the array
+# melt the dataframe to wide format
+final_df = final_df.pivot_table(
+    index=["object_id"], columns=["feature"], values=["value"]
+)
+final_df.columns = final_df.columns.droplevel()
+final_df = final_df.reset_index()
+# prepend compartment and channel to column names
+for col in final_df.columns:
+    if col == "object_id":
+        continue
+    else:
+        final_df.rename(
+            columns={col: f"Granularity_{compartment}_{channel}_{col}"},
+            inplace=True,
+        )
+final_df.insert(0, "image_set", image_set_loader.image_set_name)
+output_file = pathlib.Path(
+    output_parent_path / f"Granularity_{compartment}_{channel}_features.parquet"
+)
+output_file.parent.mkdir(parents=True, exist_ok=True)
+final_df.to_parquet(output_file)
 
 
 # In[ ]:

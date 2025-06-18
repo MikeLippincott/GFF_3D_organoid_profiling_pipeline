@@ -50,8 +50,13 @@ def get_mem_and_time_profiling(
 
     end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
     end_time = time.time()
+    print("Memory and time profiling for the run:")
+    print(f"Patient ID: {patient_id}")
+    print(f"Well and FOV: {well_fov}")
+    print(f"Feature type: {feature_type}")
+    print(f"CPU/GPU: {CPU_GPU}")
     print(f"Memory usage: {end_mem - start_mem:.2f} MB")
-    print("Texture time:")
+    print("Time:")
     print("--- %s seconds ---" % (end_time - start_time))
     print("--- %s minutes ---" % ((end_time - start_time) / 60))
     print("--- %s hours ---" % ((end_time - start_time) / 3600))
