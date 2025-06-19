@@ -103,6 +103,22 @@ dir_mapping = {
         ).resolve(strict=True),
         "destination": pathlib.Path("../../data/NF0021/raw_images").resolve(),
     },
+    "NF0030": {
+        "parent": pathlib.Path(
+            f"{raw_image_dir_local}/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined/"
+            if not HPC
+            else f"{raw_image_dir_hpc}/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined/"
+        ).resolve(strict=True),
+        "destination": pathlib.Path("../../data/NF0030/raw_images").resolve(),
+    },
+    "NF0040": {
+        "parent": pathlib.Path(
+            f"{raw_image_dir_local}/SARC0376 (NF0040) Cell Painting(1)/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined/"
+            if not HPC
+            else f"{raw_image_dir_local}/SARC0376 (NF0040) Cell Painting(1)/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined/"
+        ).resolve(strict=True),
+        "destination": pathlib.Path("../../data/NF0040/raw_images").resolve(),
+    },
     "SACRO219": {
         "parent": pathlib.Path(
             f"{raw_image_dir_local}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
