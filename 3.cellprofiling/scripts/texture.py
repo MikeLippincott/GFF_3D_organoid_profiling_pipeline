@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -35,7 +35,7 @@ else:
     from tqdm import tqdm
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -59,7 +59,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[4]:
+# In[3]:
 
 
 channel_mapping = {
@@ -75,7 +75,7 @@ channel_mapping = {
 }
 
 
-# In[5]:
+# In[4]:
 
 
 start_time = time.time()
@@ -83,7 +83,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[6]:
+# In[5]:
 
 
 image_set_loader = ImageSetLoader(
@@ -93,7 +93,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 object_loader = ObjectLoader(
@@ -104,7 +104,7 @@ object_loader = ObjectLoader(
 )
 output_texture_dict = measure_3D_texture(
     object_loader=object_loader,
-    distance=1,
+    distance=3,  # distance in pixels 3 is what CP uses
 )
 final_df = pd.DataFrame(output_texture_dict)
 
@@ -132,7 +132,7 @@ output_file.parent.mkdir(parents=True, exist_ok=True)
 final_df.to_parquet(output_file)
 
 
-# In[8]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -145,8 +145,10 @@ get_mem_and_time_profiling(
     feature_type="Texture",
     well_fov=well_fov,
     patient_id=patient,
+    channel=channel,
+    compartment=compartment,
     CPU_GPU="CPU",
     output_file_dir=pathlib.Path(
-        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Texture_CPU.parquet"
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_{channel}_{compartment}_Texture_CPU.parquet"
     ),
 )

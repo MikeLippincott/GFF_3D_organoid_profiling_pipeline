@@ -9,6 +9,8 @@ import pathlib
 import sys
 from itertools import product
 
+import pandas as pd
+
 sys.path.append("../featurization_utils")
 from loading_classes import ImageSetLoader
 
@@ -23,7 +25,7 @@ processor_type = "CPU"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 output_channel_combinations_path = pathlib.Path(
-    "../load_data/output_channel_combinations.csv"
+    "../load_data/output_channel_combinations.parquet"
 )
 output_channel_combinations_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -70,7 +72,11 @@ combinations = [
         image_set_loader.compartments, channel_combinations
     )
 ]
-with open(output_channel_combinations_path, "w") as f:
-    f.write("compartment,channel1,channel2\n")
-    for compartment, channel1, channel2 in combinations:
-        f.write(f"{compartment},{channel1},{channel2}\n")
+channel_combinations_df = pd.DataFrame(
+    combinations, columns=["compartment", "channel1", "channel2"]
+)
+channel_combinations_df.to_parquet(
+    output_channel_combinations_path,
+    index=False,
+    engine="pyarrow",
+)

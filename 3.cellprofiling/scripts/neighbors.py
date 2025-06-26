@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -32,7 +32,7 @@ else:
     from tqdm import tqdm
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -133,8 +133,10 @@ get_mem_and_time_profiling(
     feature_type="Neighbors",
     well_fov=well_fov,
     patient_id=patient,
+    channel=channel,
+    compartment=compartment,
     CPU_GPU="CPU",
     output_file_dir=pathlib.Path(
-        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Neighbors_CPU.parquet"
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_{channel}_{compartment}_Neighbors_CPU.parquet"
     ),
 )

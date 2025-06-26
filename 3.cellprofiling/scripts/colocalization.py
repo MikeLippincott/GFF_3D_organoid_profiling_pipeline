@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -43,7 +43,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -61,7 +61,7 @@ else:
     channel1 = "DNA"
     channel2 = "ER"
     compartment = "Nuclei"
-    processor_type = "CPU"
+    processor_type = "GPU"
 
 image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
 output_parent_path = pathlib.Path(
@@ -70,7 +70,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[4]:
+# In[3]:
 
 
 channel_mapping = {
@@ -86,7 +86,7 @@ channel_mapping = {
 }
 
 
-# In[ ]:
+# In[4]:
 
 
 image_set_loader = ImageSetLoader(
@@ -104,7 +104,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[6]:
 
 
 coloc_loader = TwoObjectLoader(
@@ -120,15 +120,15 @@ output_dir = pathlib.Path(
 )
 list_of_dfs = []
 for object_id in coloc_loader.object_ids:
-    cropped_image1, cropped_image2 = prepare_two_images_for_colocalization(
-        label_object1=coloc_loader.label_image,
-        label_object2=coloc_loader.label_image,
-        image_object1=coloc_loader.image1,
-        image_object2=coloc_loader.image2,
-        object_id1=object_id,
-        object_id2=object_id,
-    )
     if processor_type == "CPU":
+        cropped_image1, cropped_image2 = prepare_two_images_for_colocalization(
+            label_object1=coloc_loader.label_image,
+            label_object2=coloc_loader.label_image,
+            image_object1=coloc_loader.image1,
+            image_object2=coloc_loader.image2,
+            object_id1=object_id,
+            object_id2=object_id,
+        )
         colocalization_features = measure_3D_colocalization(
             cropped_image_1=cropped_image1,
             cropped_image_2=cropped_image2,
@@ -136,6 +136,14 @@ for object_id in coloc_loader.object_ids:
             fast_costes="Accurate",
         )
     elif processor_type == "GPU":
+        cropped_image1, cropped_image2 = prepare_two_images_for_colocalization_gpu(
+            label_object1=coloc_loader.label_image,
+            label_object2=coloc_loader.label_image,
+            image_object1=coloc_loader.image1,
+            image_object2=coloc_loader.image2,
+            object_id1=object_id,
+            object_id2=object_id,
+        )
         colocalization_features = measure_3D_colocalization_gpu(
             cropped_image_1=cropped_image1,
             cropped_image_2=cropped_image2,
@@ -158,7 +166,7 @@ coloc_df = pd.concat(list_of_dfs, ignore_index=True)
 coloc_df.to_parquet(output_dir)
 
 
-# In[11]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -171,8 +179,10 @@ get_mem_and_time_profiling(
     feature_type="Colocalization",
     well_fov=well_fov,
     patient_id=patient,
-    CPU_GPU="CPU",
+    channel=f"{channel1}.{channel2}",
+    compartment=compartment,
+    CPU_GPU=processor_type,
     output_file_dir=pathlib.Path(
-        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Colocalization_CPU.parquet"
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Colocalization_{channel1}.{channel2}_{compartment}_{processor_type}.parquet"
     ),
 )
