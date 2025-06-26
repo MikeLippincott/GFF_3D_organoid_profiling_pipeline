@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
+# In[1]:
 
 
 import os
@@ -33,7 +33,7 @@ else:
 
 import gc
 
-# In[5]:
+# In[2]:
 
 
 if not in_notebook:
@@ -90,7 +90,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 object_loader = ObjectLoader(
@@ -134,7 +134,7 @@ final_df.to_parquet(output_file)
 final_df.head()
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -147,8 +147,10 @@ get_mem_and_time_profiling(
     feature_type="AreaSizeShape",
     well_fov=well_fov,
     patient_id=patient,
+    channel="DNA",
+    compartment=compartment,
     CPU_GPU=processor_type,
     output_file_dir=pathlib.Path(
-        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_AreaSizeShape_{processor_type}.parquet"
+        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_AreaSizeShape_DNA_{compartment}_{processor_type}.parquet"
     ),
 )
