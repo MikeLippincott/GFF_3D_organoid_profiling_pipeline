@@ -19,5 +19,4 @@ dependencies:
   - conda-forge::pyarrow
   - conda-forge::umap-learn
   - conda-forge::scikit-image
-  - pip:
-      - tqdm
+  - conda-forge::tqdm

@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import umap
 
-# In[2]:
+# In[ ]:
 
 
 # paths to data
@@ -24,30 +24,30 @@ data_dict = {
                 "../results/NF0014/3.organoid_fs_profiles_umap.parquet"
             ),
         },
-        # "sc_feature_selection": {
-        #     "input_path": pathlib.Path(
-        #         "../../data/NF0014/image_based_profiles/3.sc_fs_profiles.parquet"
-        #     ),
-        #     "output_path": pathlib.Path(
-        #         "../results/NF0014/3.sc_fs_profiles_umap.parquet"
-        #     ),
-        # },
-        # "sc_consensus_profiles": {
-        #     "input_path": pathlib.Path(
-        #         "../../data/NF0014/image_based_profiles/4.sc_consensus_profiles.parquet"
-        #     ),
-        #     "output_path": pathlib.Path(
-        #         "../results/NF0014/4.sc_consensus_profiles_umap.parquet"
-        #     ),
-        # },
-        # "organoid_consensus_profiles": {
-        #     "input_path": pathlib.Path(
-        #         "../../data/NF0014/image_based_profiles/4.organoid_consensus_profiles.parquet"
-        #     ),
-        #     "output_path": pathlib.Path(
-        #         "../results/NF0014/4.organoid_consensus_profiles_umap.parquet"
-        #     ),
-        # },
+        "sc_feature_selection": {
+            "input_path": pathlib.Path(
+                "../../data/NF0014/image_based_profiles/3.sc_fs_profiles.parquet"
+            ),
+            "output_path": pathlib.Path(
+                "../results/NF0014/3.sc_fs_profiles_umap.parquet"
+            ),
+        },
+        "sc_consensus_profiles": {
+            "input_path": pathlib.Path(
+                "../../data/NF0014/image_based_profiles/4.sc_consensus_profiles.parquet"
+            ),
+            "output_path": pathlib.Path(
+                "../results/NF0014/4.sc_consensus_profiles_umap.parquet"
+            ),
+        },
+        "organoid_consensus_profiles": {
+            "input_path": pathlib.Path(
+                "../../data/NF0014/image_based_profiles/4.organoid_consensus_profiles.parquet"
+            ),
+            "output_path": pathlib.Path(
+                "../results/NF0014/4.organoid_consensus_profiles_umap.parquet"
+            ),
+        },
     }
 }
 pathlib.Path("../results/NF0014").mkdir(parents=True, exist_ok=True)
