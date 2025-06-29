@@ -53,8 +53,12 @@ repos:
     hooks:
       - id: prettier
 
-  - repo: https://github.com/koalaman/shellcheck-precommit
-    rev: v0.10.0
+  - repo: local
     hooks:
       - id: shellcheck
-#       args: ["--severity=warning"]  # Optionally only show errors and warnings
+        name: shellcheck
+        description: Test shell scripts with shellcheck
+        entry: shellcheck
+        language: python
+        types: [shell]
+        require_serial: true # shellcheck can detect sourcing this way

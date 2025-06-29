@@ -36,11 +36,6 @@ import skimage
 import tifffile
 import tqdm
 
-sys.path.append("../../utils")
-
-
-from segmentation_decoupling import euclidian_2D_distance
-
 # check if in a jupyter notebook
 try:
     cfg = get_ipython().config
@@ -48,8 +43,28 @@ try:
 except NameError:
     in_notebook = False
 
+# Get the current working directory
+cwd = pathlib.Path.cwd()
 
-# In[2]:
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+# Check if a Git root directory was found
+if root_dir is None:
+    raise FileNotFoundError("No Git root directory found.")
+
+
+sys.path.append(f"{root_dir}/utils")
+from segmentation_decoupling import euclidian_2D_distance
+
+# In[ ]:
 
 
 if not in_notebook:
@@ -86,8 +101,12 @@ else:
     compartment = "organoid"
     patient = "NF0014"
 
-input_dir = pathlib.Path(f"../../data/{patient}/processed_data/{well_fov}").resolve()
-mask_dir = pathlib.Path(f"../../data/{patient}/processed_data/{well_fov}").resolve()
+input_dir = pathlib.Path(
+    f"{root_dir}/data/{patient}/segmentation_masks/{well_fov}"
+).resolve()
+mask_dir = pathlib.Path(
+    f"{root_dir}/data/{patient}/segmentation_masks/{well_fov}"
+).resolve()
 if compartment == "nuclei":
     input_image_dir = pathlib.Path(mask_dir / "nuclei_masks_decoupled.tiff").resolve(
         strict=True

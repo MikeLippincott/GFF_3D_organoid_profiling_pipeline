@@ -25,7 +25,7 @@ HPC = args.HPC
 print(f"HPC: {HPC}")
 
 
-# In[3]:
+# In[ ]:
 
 
 if HPC:
@@ -36,7 +36,7 @@ else:
     # comment out depending on whose computer you are on
     # mike's computer
     raw_image_dir_local = pathlib.Path(
-        "/home/lippincm/Desktop/18TB/NF1_Patient_organoids/"
+        "/home/lippincm/Desktop/20TB_A/NF1_Patient_organoids/"
     ).resolve(strict=True)
     # Jenna's computer
     # raw_image_dir_local = pathlib.Path("/media/18tbdrive/GFF_organoid_data/Cell Painting-NF0014 Thawed3-Pilot Drug Screening")
