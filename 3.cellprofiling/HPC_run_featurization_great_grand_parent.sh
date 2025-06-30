@@ -14,13 +14,20 @@ conda activate GFF_featurization
 
 jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
 
-patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SARCO219" "SARCO361" )
+
+git_root=$(git rev-parse --show-toplevel)
+if [ -z "$git_root" ]; then
+    echo "Error: Could not find the git root directory."
+    exit 1
+fi
+
+patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "NF0030" "NF0040" "SARCO219" "SARCO361" )
 
 for patient in "${patient_array[@]}"; do
-    number_of_jobs=$(squeue -u $USER | wc -l)
-    while [ $number_of_jobs -gt 990 ]; do
+    number_of_jobs=$(squeue -u "$USER" | wc -l)
+    while [ "$number_of_jobs" -gt 990 ]; do
         sleep 1s
-        number_of_jobs=$(squeue -u $USER | wc -l)
+        number_of_jobs=$(squeue -u "$USER" | wc -l)
     done
 
     sbatch \
@@ -31,7 +38,7 @@ for patient in "${patient_array[@]}"; do
     --account=amc-general \
     --time=1:00:00 \
     --output=featurization_sc_grand_parent-%j.out \
-    HPC_run_featurization_grand_parent.sh "$patient"
+    "$git_root"/3.cellprofiling/HPC_run_featurization_grand_parent.sh "$patient"
 done
 
 conda deactivate
