@@ -79,7 +79,7 @@ python "$git_root"/2.segment_images/scripts/7.create_cytoplasm_masks.py \
     --patient "$patient" \
     --well_fov "$well_fov"
 
-python "$git_root"/2.segment_images/notebooks/9.clean_up_segmentation.py \
+python "$git_root"/2.segment_images/scripts/9.clean_up_segmentation.py \
     --patient "$patient" \
     --well_fov "$well_fov"
 
