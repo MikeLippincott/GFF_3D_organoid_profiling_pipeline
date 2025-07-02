@@ -64,7 +64,7 @@ if root_dir is None:
 sys.path.append(f"{root_dir}/utils")
 from segmentation_decoupling import euclidian_2D_distance
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -97,9 +97,9 @@ if not in_notebook:
     patient = args.patient
 else:
     print("Running in a notebook")
-    well_fov = "C2-1"
-    compartment = "organoid"
-    patient = "NF0014"
+    well_fov = "C10-1"
+    compartment = "nuclei"
+    patient = "NF0021"
 
 input_dir = pathlib.Path(
     f"{root_dir}/data/{patient}/segmentation_masks/{well_fov}"
@@ -339,7 +339,7 @@ def calculate_mask_iou(mask1: np.ndarray, mask2: np.ndarray) -> bool:
     return iou
 
 
-# In[10]:
+# In[9]:
 
 
 # generate distance pairs for each slice
@@ -396,7 +396,7 @@ if not df.empty:
     df.head()
 
 
-# In[11]:
+# In[10]:
 
 
 # create a graph where each node is a unique centroid and each edge is a distance between centroids
@@ -423,7 +423,7 @@ pos = nx.spring_layout(G)
 edge_labels = nx.get_edge_attributes(G, "weight")
 
 
-# In[12]:
+# In[11]:
 
 
 # solve the the shortest path problem
@@ -439,7 +439,7 @@ for path in nx.all_pairs_shortest_path(G, cutoff=10):
     longest_paths.append(longest_path)
 
 
-# In[13]:
+# In[12]:
 
 
 def merge_sets(list_of_sets: list) -> list:
@@ -450,14 +450,14 @@ def merge_sets(list_of_sets: list) -> list:
     return list_of_sets
 
 
-# In[14]:
+# In[13]:
 
 
 list_of_sets = [set(x) for x in longest_paths]
 merged_sets = merge_sets(list_of_sets)
 
 
-# In[15]:
+# In[14]:
 
 
 merged_sets_dict = {}
@@ -465,13 +465,7 @@ for i in range(len(list_of_sets)):
     merged_sets_dict[i] = list_of_sets[i]
 
 
-# In[16]:
-
-
-coordinates_df.head()
-
-
-# In[17]:
+# In[15]:
 
 
 for row in coordinates_df.iterrows():
@@ -483,7 +477,7 @@ coordinates_df = coordinates_df.dropna()
 coordinates_df
 
 
-# In[18]:
+# In[16]:
 
 
 new_mask_image = np.zeros_like(image)
@@ -491,6 +485,11 @@ new_mask_image = np.zeros_like(image)
 for slice in range(image.shape[0]):
     mask = image[slice, :, :]
     tmp_df = coordinates_df[coordinates_df["slice"] == slice]
+    if tmp_df.empty:
+        continue
+    # check if label is present or if reassignment is needed
+    if "label" not in tmp_df.columns:
+        continue
     for i in range(tmp_df.shape[0]):
         mask[mask == tmp_df.iloc[i]["original_label"]] = tmp_df.iloc[i]["label"]
 
@@ -499,7 +498,7 @@ for slice in range(image.shape[0]):
 tifffile.imwrite(output_image_dir, new_mask_image)
 
 
-# In[19]:
+# In[17]:
 
 
 if in_notebook:

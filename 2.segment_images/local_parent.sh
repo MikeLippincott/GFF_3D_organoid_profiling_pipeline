@@ -1,5 +1,6 @@
 #!/bin/bash
 
+conda init bash
 conda activate GFF_segmentation
 
 git_root=$(git rev-parse --show-toplevel)
@@ -8,7 +9,9 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "NF0030" "NF0040" "SARCO219" "SARCO361" )
+# patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "NF0030" "NF0040" "SARCO219" "SARCO361" )
+patient_array=( "NF0021" "NF0030" "NF0040" "SARCO219" "SARCO361" )
+
 
 for patient in "${patient_array[@]}"; do
 
