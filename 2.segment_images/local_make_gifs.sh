@@ -3,20 +3,20 @@
 # activate  cellprofiler environment
 conda activate viz_env
 
-jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ notebooks/*.ipynb
+git_root=$(git rev-parse --show-toplevel)
+if [ -z "$git_root" ]; then
+    echo "Error: Could not find the git root directory."
+    exit 1
+fi
 
-
-cd scripts/ || exit
 # get all input directories in specified directory
-# z_stack_dir="../../data/NF0014/z-stack_images"
-z_stack_dir="../../data/NF0014/test_dir/"
+z_stack_dir="${git_root}/data/NF0014/z-stack_images"
 mapfile -t input_dirs < <(ls -d "$z_stack_dir"/*)
 
 total_dirs=$(echo "${input_dirs[@]}" | wc -w)
 echo "Total directories: $total_dirs"
 current_dir=0
 
-touch segmentation.log
 # loop through all input directories
 for dir in "${input_dirs[@]}"; do
     dir=${dir%*/}
@@ -24,11 +24,8 @@ for dir in "${input_dirs[@]}"; do
     well_fov=$(basename "$dir")
     current_dir=$((current_dir + 1))
     echo -ne "Processing directory $current_dir of $total_dirs\r"
-    python 6.animate_segmentation_and_raw_signal.py --well_fov "$well_fov" >> segmentation.log
+    python "$git_root"/2.segment_images/scripts/8.animate_segmentation_and_raw_signal.py --well_fov "$well_fov"
 done
-
-cd ../ || exit
-
 
 # deactivate cellprofiler environment
 conda deactivate
