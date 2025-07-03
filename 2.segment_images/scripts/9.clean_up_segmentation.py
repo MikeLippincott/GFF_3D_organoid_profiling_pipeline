@@ -69,7 +69,7 @@ if not in_notebook:
     well_fov = args.well_fov
 else:
     patient = "NF0014"
-    well_fov = "C4-2"
+    well_fov = "D2-3"
 
 
 # In[3]:
@@ -84,12 +84,11 @@ zstack_dir = pathlib.Path(
 ).resolve(strict=True)
 
 
-# In[4]:
+# In[ ]:
 
 
 # perform checks for each directory
 segmentation_data_files = list(segmentation_data_dir.glob("*"))
-segmentation_data_files
 
 
 # ## Copy files from processed dir to cellprofiler images dir
@@ -97,12 +96,12 @@ segmentation_data_files
 # In[5]:
 
 
-masks_names_to_keep = [
-    "cell_masks_watershed.tiff",
-    "cytoplasm_mask.tiff",
-    "nuclei_masks_reassigned.tiff",
-    "organoid_masks_reconstructed.tiff",
-]
+masks_names_to_keep_dict = {
+    "cell_masks_watershed.tiff": "cell_masks.tiff",
+    "cytoplasm_mask.tiff": "cytoplasm_masks.tiff",
+    "nuclei_masks_reassigned.tiff": "nuclei_masks.tiff",
+    "organoid_masks_reconstructed.tiff": "organoid_masks.tiff",
+}
 
 
 # In[6]:
@@ -110,20 +109,42 @@ masks_names_to_keep = [
 
 # remove files that are not in the list of masks to keep
 for file in tqdm.tqdm(segmentation_data_files):
-    if file.name not in masks_names_to_keep:
+    # check if the file is in the masks_names_to_keep_dict as a key or value
+    if (
+        file.name not in masks_names_to_keep_dict.keys()
+        and file.name not in masks_names_to_keep_dict.values()
+    ):
+        # if not, remove the file
         file.unlink()
         print(f"Removed file: {file.name}")
+    else:
+        # rename the file to the new name
+        if file.name in masks_names_to_keep_dict.keys():
+            new_name = masks_names_to_keep_dict[file.name]
+            new_file_path = segmentation_data_dir / new_name
+            if not new_file_path.exists():
+                file.rename(new_file_path)
+                print(f"Renamed file: {file.name} to {new_name}")
+            else:
+                print(f"File {new_name} already exists, skipping rename.")
+        else:
+            print(f"File {file.name} already exists, skipping rename.")
 
 
-# In[7]:
+# In[ ]:
+
+
+# regrab the segmentation data files after renaming
+segmentation_data_files = list(segmentation_data_dir.glob("*"))
+
+
+# In[8]:
 
 
 # copy the masks to the zstack directory
 for file in tqdm.tqdm(segmentation_data_files):
-    if file.name in masks_names_to_keep:
-        destination = zstack_dir / file.name
-        if not destination.exists():
+    for original_name, new_name in masks_names_to_keep_dict.items():
+        if file.name == new_name:
+            destination = zstack_dir / new_name
             shutil.copy(file, destination)
-            print(f"Copied file: {file.name} to {destination}")
-        else:
-            print(f"File {file.name} already exists in {zstack_dir}, skipping copy.")
+            print(f"Copied file: {file} to {destination}")
