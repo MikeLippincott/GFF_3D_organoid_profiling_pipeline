@@ -4,29 +4,15 @@
 # In[1]:
 
 
+import itertools
 import os
 import pathlib
 import sys
 import time
-
-import psutil
-
-sys.path.append("../featurization_utils")
-import itertools
 from itertools import product
 
 import pandas as pd
-from colocalization_utils import (
-    measure_3D_colocalization,
-    prepare_two_images_for_colocalization,
-)
-from colocalization_utils_gpu import (
-    measure_3D_colocalization_gpu,
-    prepare_two_images_for_colocalization_gpu,
-)
-from featurization_parsable_arguments import parse_featurization_args_colocalization
-from loading_classes import ImageSetLoader, TwoObjectLoader
-from resource_profiling_util import get_mem_and_time_profiling
+import psutil
 
 try:
     cfg = get_ipython().config
@@ -41,31 +27,60 @@ else:
 import warnings
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
+# Get the current working directory
+cwd = pathlib.Path.cwd()
 
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+# Check if a Git root directory was found
+if root_dir is None:
+    raise FileNotFoundError("No Git root directory found.")
+
+sys.path.append(f"{root_dir}/3.cellprofiling/featurization_utils/")
+from colocalization_utils import (
+    measure_3D_colocalization,
+    prepare_two_images_for_colocalization,
+)
+from colocalization_utils_gpu import (
+    measure_3D_colocalization_gpu,
+    prepare_two_images_for_colocalization_gpu,
+)
+from featurization_parsable_arguments import parse_featurization_args
+from loading_classes import ImageSetLoader, TwoObjectLoader
+from resource_profiling_util import get_mem_and_time_profiling
 
 # In[2]:
 
 
 if not in_notebook:
-    arguments_dict = parse_featurization_args_colocalization()
+    arguments_dict = parse_featurization_args()
     patient = arguments_dict["patient"]
     well_fov = arguments_dict["well_fov"]
-    channel1 = arguments_dict["channel1"]
-    channel2 = arguments_dict["channel2"]
+    channel = arguments_dict["channel"]
     compartment = arguments_dict["compartment"]
     processor_type = arguments_dict["processor_type"]
 
 else:
     well_fov = "C4-2"
     patient = "NF0014"
-    channel1 = "DNA"
-    channel2 = "ER"
+    channel = "ER.AGP"
     compartment = "Nuclei"
     processor_type = "GPU"
 
-image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+channel1 = channel.split(".")[0] if "." in channel else channel
+channel2 = channel.split(".")[1] if "." in channel else None
+image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+
 output_parent_path = pathlib.Path(
-    f"../../data/{patient}/extracted_features/{well_fov}/"
+    f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
 )
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
@@ -116,7 +131,7 @@ coloc_loader = TwoObjectLoader(
 
 output_dir = pathlib.Path(
     output_parent_path
-    / f"Colocalization_{compartment}_{channel1}.{channel2}_features.parquet"
+    / f"Colocalization_{compartment}_{channel1}.{channel2}_{processor_type}_features.parquet"
 )
 list_of_dfs = []
 for object_id in coloc_loader.object_ids:
@@ -183,6 +198,6 @@ get_mem_and_time_profiling(
     compartment=compartment,
     CPU_GPU=processor_type,
     output_file_dir=pathlib.Path(
-        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_Colocalization_{channel1}.{channel2}_{compartment}_{processor_type}.parquet"
+        f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_Colocalization_{channel1}.{channel2}_{compartment}_{processor_type}.parquet"
     ),
 )

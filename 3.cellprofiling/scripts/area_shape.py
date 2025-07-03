@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import os
@@ -9,17 +9,10 @@ import pathlib
 import sys
 import time
 
-import psutil
-
-sys.path.append("../featurization_utils")
 import numpy as np
 import pandas as pd
+import psutil
 import skimage
-from area_size_shape_utils import measure_3D_area_size_shape
-from area_size_shape_utils_gpu import measure_3D_area_size_shape_gpu
-from featurization_parsable_arguments import parse_featurization_args_area_size_shape
-from loading_classes import ImageSetLoader, ObjectLoader
-from resource_profiling_util import get_mem_and_time_profiling
 
 try:
     cfg = get_ipython().config
@@ -33,25 +26,52 @@ else:
 
 import gc
 
-# In[2]:
+# Get the current working directory
+cwd = pathlib.Path.cwd()
+
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+# Check if a Git root directory was found
+if root_dir is None:
+    raise FileNotFoundError("No Git root directory found.")
+
+sys.path.append(f"{root_dir}/3.cellprofiling/featurization_utils/")
+from area_size_shape_utils import measure_3D_area_size_shape
+from area_size_shape_utils_gpu import measure_3D_area_size_shape_gpu
+from featurization_parsable_arguments import parse_featurization_args
+from loading_classes import ImageSetLoader, ObjectLoader
+from resource_profiling_util import get_mem_and_time_profiling
+
+# In[ ]:
 
 
 if not in_notebook:
-    arguments_dict = parse_featurization_args_area_size_shape()
+    arguments_dict = parse_featurization_args()
     patient = arguments_dict["patient"]
     well_fov = arguments_dict["well_fov"]
     compartment = arguments_dict["compartment"]
+    channel = arguments_dict["channel"]
     processor_type = arguments_dict["processor_type"]
 
 else:
     well_fov = "C4-2"
     patient = "NF0014"
     compartment = "Nuclei"
+    channel = "DNA"
     processor_type = "CPU"
 
-image_set_path = pathlib.Path(f"../../data/{patient}/cellprofiler/{well_fov}/")
+image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+
 output_parent_path = pathlib.Path(
-    f"../../data/{patient}/extracted_features/{well_fov}/"
+    f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
 )
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
@@ -90,7 +110,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[6]:
+# In[ ]:
 
 
 object_loader = ObjectLoader(
@@ -128,13 +148,14 @@ for col in final_df.columns:
 final_df.insert(1, "image_set", image_set_loader.image_set_name)
 
 output_file = pathlib.Path(
-    output_parent_path / f"AreaSize_Shape_{compartment}_features.parquet"
+    output_parent_path
+    / f"AreaSize_Shape_{compartment}_{processor_type}_features.parquet"
 )
 final_df.to_parquet(output_file)
 final_df.head()
 
 
-# In[7]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -151,6 +172,6 @@ get_mem_and_time_profiling(
     compartment=compartment,
     CPU_GPU=processor_type,
     output_file_dir=pathlib.Path(
-        f"../../data/{patient}/extracted_features/run_stats/{well_fov}_AreaSizeShape_DNA_{compartment}_{processor_type}.parquet"
+        f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_AreaSizeShape_DNA_{compartment}_{processor_type}.parquet"
     ),
 )
