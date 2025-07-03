@@ -1,30 +1,44 @@
 #!/bin/bash
-well_fov=$1
-use_GPU=$2
-patient=$3
+patient=$1
+well_fov=$2
+compartment=$3
+channel=$4
+use_GPU=$5
 
-echo "Running featurization for $patient $well_fov"
+echo "Granularity feature extraction for patient: $patient, WellFOV: $well_fov, Compartment: $compartment, Channel: $channel, UseGPU: $use_GPU"
 echo "Using GPU: $use_GPU"
 
 module load miniforge
 conda init bash
 conda activate GFF_featurization
 
-cd ../scripts/ || exit
+git_root=$(git rev-parse --show-toplevel)
+if [ -z "$git_root" ]; then
+    echo "Error: Could not find the git root directory."
+    exit 1
+fi
 
 # start the timer
 start_timestamp=$(date +%s)
 if [ "$use_GPU" = "TRUE" ]; then
     echo "Running GPU version"
-    python granularity_gpu.py --well_fov $well_fov --patient $patient
+    python "$git_root"/3.cellprofiling/scripts/granularity.py \
+        --patient "$patient" \
+        --well_fov "$well_fov" \
+        --compartment "$compartment" \
+        --channel "$channel" \
+        --processor_type "GPU"
 else
     echo "Running CPU version"
-    python granularity.py --well_fov $well_fov --patient $patient
+    python "$git_root"/3.cellprofiling/scripts/granularity.py \
+        --patient "$patient" \
+        --well_fov "$well_fov" \
+        --compartment "$compartment" \
+        --channel "$channel" \
+        --processor_type "CPU"
 fi
 
 end=$(date +%s)
-echo "Time taken to run the featurization: $(($end-$start_timestamp))"
+echo "Time taken to run the featurization: (($end-$start_timestamp))"
 
-cd ../ || exit
-
-# conda deactivate
+conda deactivate

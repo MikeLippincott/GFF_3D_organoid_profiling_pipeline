@@ -4,14 +4,17 @@ module load anaconda
 conda init bash
 conda activate nf1_image_based_profiling_env
 
-well_fov=$1
-patient=$2
+patient=$1
+well_fov=$2
 
-cd scripts/ || exit
+git_root=$(git rev-parse --show-toplevel)
+if [ -z "$git_root" ]; then
+    echo "Error: Could not find the git root directory."
+    exit 1
+fi
 
-python 1.merge_feature_parquets.py --well_fov "$well_fov" --patient "$patient"
+python "$git_root"/4.processing_image_based_profiles/scripts/1.merge_feature_parquets.py --patient "$patient" --well_fov "$well_fov"
 
-cd ../ || exit
 
 conda deactivate
 
