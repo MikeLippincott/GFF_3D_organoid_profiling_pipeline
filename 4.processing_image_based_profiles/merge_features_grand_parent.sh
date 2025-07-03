@@ -10,7 +10,14 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SARCO219" "SARCO361" )
+patient_array_file_path="$git_root/data/patient_IDs.txt"
+# read the patient IDs from the file into an array
+if [[ -f "$patient_array_file_path" ]]; then
+    readarray -t patient_array < "$patient_array_file_path"
+else
+    echo "Error: File $patient_array_file_path does not exist."
+    exit 1
+fi
 
 for patient in "${patient_array[@]}"; do
     number_of_jobs=$(squeue -u "$USER" | wc -l)
