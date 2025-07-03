@@ -3,7 +3,7 @@
 
 # ## Imports
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
@@ -30,8 +30,25 @@ try:
 except NameError:
     in_notebook = False
 
+# Get the current working directory
+cwd = pathlib.Path.cwd()
 
-# In[2]:
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+# Check if a Git root directory was found
+if root_dir is None:
+    raise FileNotFoundError("No Git root directory found.")
+
+
+# In[ ]:
 
 
 if not in_notebook:
@@ -44,16 +61,23 @@ if not in_notebook:
         type=str,
         help="Path to the input directory containing the tiff images",
     )
+    parser.add_argument(
+        "--patient",
+        type=str,
+        help="Patient ID, used to determine the input directory",
+    )
 
     args = parser.parse_args()
+    patient = args.patient
     well_fov = args.well_fov
 else:
     print("Running in a notebook")
+    patient = "NF0014"
     well_fov = "C4-2"
 
-input_dir = pathlib.Path(f"../../data/NF0014/processed_data/{well_fov}/").resolve(
-    strict=True
-)
+image_dir = pathlib.Path(
+    f"{root_dir}/data/{patient}/processed_data/{well_fov}/"
+).resolve(strict=True)
 
 
 # In[3]:
@@ -65,11 +89,10 @@ vispy.use("pyqt5")
 print(vispy.sys_info())
 
 
-# In[4]:
+# In[ ]:
 
 
-image_dir = f"../../data/NF0014/zstack_images/{well_fov}"
-label_dir = input_dir
+label_dir = image_dir
 output_path = "output.zarr"
 channel_map = {
     "405": "Nuclei",

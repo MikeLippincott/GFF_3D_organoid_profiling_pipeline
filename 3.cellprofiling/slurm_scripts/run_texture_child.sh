@@ -1,23 +1,32 @@
 #!/bin/bash
 
+patient=$1
+well_fov=$2
+compartment=$3
+channel=$4
+
+echo "Texture feature extraction for patient: $patient, WellFOV: $well_fov, Compartment: $compartment, Channel: $channel, UseGPU: CPU"
 module load miniforge
 conda init bash
 conda activate GFF_featurization
 
-well_fov=$1
-use_GPU=$2
-patient=$3
+git_root=$(git rev-parse --show-toplevel)
+if [ -z "$git_root" ]; then
+    echo "Error: Could not find the git root directory."
+    exit 1
+fi
 
 echo "Running featurization for $patient $well_fov"
 
-cd ../scripts/ || exit
-
 # start the timer
 start_timestamp=$(date +%s)
-python texture.py --well_fov $well_fov --patient $patient
+python "$git_root"/3.cellprofiling/scripts/texture.py \
+    --patient "$patient" \
+    --well_fov "$well_fov" \
+    --compartment "$compartment" \
+    --channel "$channel" \
+    --processor_type "CPU"
 end=$(date +%s)
-echo "Time taken to run the featurization: $(($end-$start_timestamp))"
+echo "Time taken to run the featurization: (($end-$start_timestamp))"
 
-cd ../ || exit
-
-# conda deactivate
+conda deactivate
