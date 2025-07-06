@@ -7,7 +7,7 @@
 
 # ## import libraries
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -66,7 +66,7 @@ from segmentation_decoupling import (
 
 # ## parse args and set paths
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -105,8 +105,7 @@ if not in_notebook:
     patient = args.patient
 else:
     print("Running in a notebook")
-    print("Running in a notebook")
-    well_fov = "C2-1"
+    well_fov = "D5-1"
     compartment = "organoid"
     window_size = 4
     patient = "NF0014"

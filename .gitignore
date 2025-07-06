@@ -173,6 +173,7 @@ data/*
 2.segment_images/animations/gif/*
 2.segment_images/rerun_jobs.txt
 
+
 # Ignore experiment files from QC results
 *Experiment*.csv
 3.cellprofiling/analysis_output/*

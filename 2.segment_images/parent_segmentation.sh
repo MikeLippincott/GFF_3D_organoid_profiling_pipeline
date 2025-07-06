@@ -1,5 +1,5 @@
 #!/bin/bash
-# activate  cellprofiler environment
+# activate segmentation environment
 module load anaconda
 conda init bash
 conda activate GFF_segmentation
@@ -13,7 +13,10 @@ fi
 patient=$1
 
 echo "Processing patient $patient"
-
+if [ -z "$patient" ]; then
+    echo "Error: Patient argument is required."
+    exit 1
+fi
 
 # get all input directories in specified directory
 z_stack_dir="$git_root/data/$patient/zstack_images"
@@ -35,12 +38,12 @@ for well_fov in "${input_dirs[@]}"; do
     echo "Beginning segmentation for $well_fov"
     sbatch \
         --nodes=1 \
-        --ntasks=6 \
+        --ntasks=3 \
         --partition=aa100 \
         --gres=gpu:1 \
         --qos=normal \
         --account=amc-general \
-        --time=1:00:00 \
+        --time=20:00 \
         --output=segmentation_child-%j.out \
         "${git_root}"/2.segment_images/child_segmentation.sh "$patient" "$well_fov"
 
