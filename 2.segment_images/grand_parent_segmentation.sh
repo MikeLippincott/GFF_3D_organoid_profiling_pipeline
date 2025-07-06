@@ -4,7 +4,7 @@
 #SBATCH --partition=amilan
 #SBATCH --qos=normal
 #SBATCH --account=amc-general
-#SBATCH --time=1:00:00
+#SBATCH --time=10:00
 #SBATCH --output=segmentation_grandparent-%j.out
 
 # activate  cellprofiler environment
@@ -18,9 +18,17 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-patient_array=( "NF0014" "NF0016" "NF0018" "NF0021" "SARCO219" "SARCO361" )
+# read in the patient IDs
+patient_id_file="$git_root/data/patient_IDs.txt"
+if [ ! -f "$patient_id_file" ]; then
+    echo "Error: Patient ID file $patient_id_file does not exist."
+    exit 1
+fi
+# read the patient IDs into an array
+mapfile -t patient_array < "$patient_id_file"
 
 for patient in "${patient_array[@]}"; do
+    echo "Submitting parent segmentation for patient $patient"
     number_of_jobs=$(squeue -u "$USER" | wc -l)
     while [ "$number_of_jobs" -gt 990 ]; do
         sleep 1s
