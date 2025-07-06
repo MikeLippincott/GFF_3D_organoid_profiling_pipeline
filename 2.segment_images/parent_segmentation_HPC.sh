@@ -28,7 +28,7 @@ current_dir=0
 # loop through all input directories
 for well_fov in "${input_dirs[@]}"; do
     number_of_jobs=$(squeue -u "$USER" | wc -l)
-    while [ "$number_of_jobs" -gt 990 ]; do
+    while [ "$number_of_jobs" -gt 950 ]; do
         sleep 1s
         number_of_jobs=$(squeue -u "$USER" | wc -l)
     done
