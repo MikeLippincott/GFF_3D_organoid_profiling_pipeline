@@ -69,7 +69,7 @@ if not in_notebook:
     well_fov = args.well_fov
 else:
     patient = "NF0014"
-    well_fov = "D2-3"
+    well_fov = "C4-2"
 
 
 # In[3]:
@@ -83,8 +83,13 @@ zstack_dir = pathlib.Path(
     f"{root_dir}/data/{patient}/zstack_images/{well_fov}"
 ).resolve(strict=True)
 
+profiling_input_images_dir = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}"
+).resolve()
+profiling_input_images_dir.mkdir(parents=True, exist_ok=True)
 
-# In[ ]:
+
+# In[4]:
 
 
 # perform checks for each directory
@@ -114,9 +119,7 @@ for file in tqdm.tqdm(segmentation_data_files):
         file.name not in masks_names_to_keep_dict.keys()
         and file.name not in masks_names_to_keep_dict.values()
     ):
-        # if not, remove the file
-        file.unlink()
-        print(f"Removed file: {file.name}")
+        pass
     else:
         # rename the file to the new name
         if file.name in masks_names_to_keep_dict.keys():
@@ -131,7 +134,7 @@ for file in tqdm.tqdm(segmentation_data_files):
             print(f"File {file.name} already exists, skipping rename.")
 
 
-# In[ ]:
+# In[7]:
 
 
 # regrab the segmentation data files after renaming
@@ -141,10 +144,20 @@ segmentation_data_files = list(segmentation_data_dir.glob("*"))
 # In[8]:
 
 
-# copy the masks to the zstack directory
+# copy the masks to the profiling directory
 for file in tqdm.tqdm(segmentation_data_files):
     for original_name, new_name in masks_names_to_keep_dict.items():
         if file.name == new_name:
-            destination = zstack_dir / new_name
+            destination = profiling_input_images_dir / new_name
             shutil.copy(file, destination)
             print(f"Copied file: {file} to {destination}")
+
+
+# In[9]:
+
+
+# copy the zstack images to the profiling directory
+for file in tqdm.tqdm(zstack_dir.glob("*.tif")):
+    destination = profiling_input_images_dir / file.name
+    if not destination.exists():
+        shutil.copy(file, destination)
