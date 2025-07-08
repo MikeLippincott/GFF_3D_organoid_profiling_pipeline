@@ -142,8 +142,9 @@ for patient in patientIDS:
 
 rerun_df = pd.DataFrame(rerun_dict)
 rerun_df["rerun_boolean"] = np.where(
-    (rerun_df["segmentation_counts"] != n_files["segmentation_data"])
-    | (rerun_df["zstack_counts"] != n_files["zstack_data"])
+    # (rerun_df["segmentation_counts"] != n_files["segmentation_data"])
+    # |
+    (rerun_df["zstack_counts"] != n_files["zstack_data"])
     | (rerun_df["profiling_input_images_counts"] != n_files["profiling_input_images"]),
     True,
     False,
@@ -152,6 +153,13 @@ rerun_df.head()
 
 
 # In[6]:
+
+
+rerun_df = rerun_df.loc[rerun_df["rerun_boolean"] == True]
+rerun_df.head()
+
+
+# In[7]:
 
 
 # write the patient and well_fov to a file to be pared by a shell script
@@ -163,7 +171,7 @@ with open(rerun_file, "w") as f:
             f.write(f"{row['patient']}\t{row['well_fov']}\n")
 
 
-# In[7]:
+# In[8]:
 
 
 print(f"""
@@ -173,3 +181,12 @@ For {len((rerun_df["patient"].unique()))} patients,
 This is determined by the number of files in the segmentation,
 zstack and profiling input images directories.
 """)
+
+
+# In[9]:
+
+
+for patient in rerun_df["patient"].unique():
+    print(f"""
+    Patient: {patient}
+    {len(rerun_df.loc[rerun_df["patient"] == patient])} wells/fovs need to be rerun.""")

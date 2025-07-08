@@ -1,7 +1,6 @@
 #!/bin/bash
 # activate segmentation environment
-module load anaconda
-conda init bash
+
 conda activate GFF_segmentation
 
 
