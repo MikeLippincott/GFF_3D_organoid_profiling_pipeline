@@ -22,7 +22,7 @@ else
 fi
 
 # regardless of the processor type, texture and neighbors features are run on CPU
-if [ "$feature" == "Neighbors" ] || [ "$feature" == "Texture" ]; then
+if [ "$feature" == "Neighbors" ]; then
 
     sbatch \
     --nodes=1 \
@@ -30,7 +30,7 @@ if [ "$feature" == "Neighbors" ] || [ "$feature" == "Texture" ]; then
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
-    --time=10:00 \
+    --time=5:00 \
     --output=neighbors_child-%j.out \
     "$git_root"/3.cellprofiling/slurm_scripts/run_neighbors_child.sh \
         "$patient" \
@@ -43,11 +43,11 @@ if [ "$feature" == "Texture" ] ; then
     echo "Running texture feature extraction"
     sbatch \
         --nodes=1 \
-        --ntasks=2 \
+        --ntasks=1 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=24:00:00 \
+        --time=2:00:00 \
         --output=texture_child-%j.out \
         "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
             "$patient" \
@@ -65,11 +65,11 @@ for processor_type in "${processor_array[@]}"; do
             echo "Running CPU version for AreaSizeShape"
             sbatch \
                 --nodes=1 \
-                --ntasks=2 \
+                --ntasks=1 \
                 --partition=amilan \
                 --qos=normal \
                 --account=amc-general \
-                --time=1:00:00 \
+                --time=5:00 \
                 --output=area_shape_cpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
                 "$patient" \
@@ -101,11 +101,11 @@ for processor_type in "${processor_array[@]}"; do
             echo "Running CPU version for Colocalization"
             sbatch \
                 --nodes=1 \
-                --ntasks=25 \
+                --ntasks=1 \
                 --partition=amilan \
                 --qos=normal \
                 --account=amc-general \
-                --time=1:00:00 \
+                --time=5:00 \
                 --output=colocalization_cpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
                 "$patient" \
@@ -122,7 +122,7 @@ for processor_type in "${processor_array[@]}"; do
                 --qos=normal \
                 --gres=gpu:1 \
                 --account=amc-general \
-                --time=30:00 \
+                --time=5:00 \
                 --output=colocalization_gpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
                 "$patient" \
@@ -141,7 +141,7 @@ for processor_type in "${processor_array[@]}"; do
                 --partition=amilan \
                 --qos=normal \
                 --account=amc-general \
-                --time=8:00:00 \
+                --time=20:00 \
                 --output=granularity_cpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
                 "$patient" \
@@ -158,7 +158,7 @@ for processor_type in "${processor_array[@]}"; do
                 --qos=normal \
                 --gres=gpu:1 \
                 --account=amc-general \
-                --time=1:30:00 \
+                --time=20:00 \
                 --output=granularity_gpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
                 "$patient" \
@@ -178,7 +178,7 @@ for processor_type in "${processor_array[@]}"; do
                 --partition=amilan \
                 --qos=normal \
                 --account=amc-general \
-                --time=6:00:00 \
+                --time=5:00 \
                 --output=intensity_cpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
                 "$patient" \
@@ -195,7 +195,7 @@ for processor_type in "${processor_array[@]}"; do
                 --qos=normal \
                 --gres=gpu:1 \
                 --account=amc-general \
-                --time=3:00:00 \
+                --time=5:00 \
                 --output=intensity_gpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
                     "$patient" \
