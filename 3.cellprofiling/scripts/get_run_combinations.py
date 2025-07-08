@@ -31,7 +31,7 @@ if root_dir is None:
 sys.path.append(f"{root_dir}/3.cellprofiling/featurization_utils/")
 from loading_classes import ImageSetLoader
 
-# In[2]:
+# In[ ]:
 
 
 well_fov = "C4-2"
@@ -40,7 +40,9 @@ channel = "DNA"
 compartment = "Nuclei"
 processor_type = "CPU"
 
-image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+image_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
+)
 input_combinations_path = pathlib.Path(
     f"{root_dir}/3.cellprofiling/load_data/input_combinations.json"
 )

@@ -72,7 +72,9 @@ else:
     compartment = "Nuclei"
     processor_type = "CPU"
 
-image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+image_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
+)
 output_parent_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
 )

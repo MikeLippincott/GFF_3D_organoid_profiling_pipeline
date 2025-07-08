@@ -40,7 +40,7 @@ jq -r '.[] | "\(.feature) \(.compartment) \(.channel)"' "$json_file" | while rea
             --partition=amilan \
             --qos=long \
             --account=amc-general \
-            --time=7-00:00:00 \
+            --time=1:00:00 \
             --output=parent_featurize-%j.out \
             "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
             "$patient" \

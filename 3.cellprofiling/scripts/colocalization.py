@@ -57,7 +57,7 @@ from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, TwoObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -77,7 +77,9 @@ else:
 
 channel1 = channel.split(".")[0] if "." in channel else channel
 channel2 = channel.split(".")[1] if "." in channel else None
-image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+image_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
+)
 
 output_parent_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
