@@ -16,7 +16,6 @@ def calulate_surface_area(
 ) -> list:
     """
     This function calculates the surface area of each object in a 3D image using the marching cubes algorithm.
-    Also obviously implemented in numpy.
     Parameters
     ----------
     label_object : numpy.array
@@ -31,31 +30,28 @@ def calulate_surface_area(
     list
         A list of surface areas for each object in the image.
     """
+    label_object = label_object.get()
+    volume = label_object[
+        max(props["bbox-0"].get().item(), 0) : min(
+            props["bbox-3"].get().item(), label_object.shape[0]
+        ),
+        max(props["bbox-1"].get().item(), 0) : min(
+            props["bbox-4"].get().item(), label_object.shape[1]
+        ),
+        max(props["bbox-2"].get().item(), 0) : min(
+            props["bbox-5"].get().item(), label_object.shape[2]
+        ),
+    ]
+    volume_truths = volume > 0
+    verts, faces, _normals, _values = skimage.measure.marching_cubes(
+        volume_truths,
+        method="lewiner",
+        spacing=spacing,
+        level=0,
+    )
+    surface_area = skimage.measure.mesh_surface_area(verts, faces)
 
-    # this seems less elegant than you might wish, given that regionprops returns a slice,
-    # but we need to expand the slice out by one voxel in each direction, or surface area freaks out
-    surface_areas = []
-    for index, label in enumerate(props["label"]):
-        volume = label_object[
-            max(props["bbox-0"][index] - 1, 0) : min(
-                props["bbox-3"][index] + 1, label_object.shape[0]
-            ),
-            max(props["bbox-1"][index] - 1, 0) : min(
-                props["bbox-4"][index] + 1, label_object.shape[1]
-            ),
-            max(props["bbox-2"][index] - 1, 0) : min(
-                props["bbox-5"][index] + 1, label_object.shape[2]
-            ),
-        ]
-        volume_truths = volume > 0
-        verts, faces, _normals, _values = skimage.measure.marching_cubes(
-            volume_truths,
-            method="lewiner",
-            spacing=spacing,
-            level=0,
-        )
-        surface_areas.append(skimage.measure.mesh_surface_area(verts, faces))
-    return surface_areas
+    return surface_area
 
 
 def measure_3D_area_size_shape_gpu(
@@ -143,7 +139,7 @@ def measure_3D_area_size_shape_gpu(
                     label_object=label_object,
                     props=props,
                     spacing=spacing,
-                ).get()
+                )
             )
         except:
             features_to_record["SURFACE.AREA"].append(numpy.nan)

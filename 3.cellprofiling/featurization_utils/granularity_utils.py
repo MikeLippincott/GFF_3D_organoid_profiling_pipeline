@@ -204,7 +204,6 @@ def measure_3D_granularity(
 
 def measure_3D_granularity_gpu(
     object_loader: ObjectLoader,
-    image_set_loader: ImageSetLoader,
     radius: int = 10,
     granular_spectrum_length: int = 16,
     subsample_size: float = 0.25,
@@ -219,8 +218,6 @@ def measure_3D_granularity_gpu(
     ----------
     object_loader : ObjectLoader
         The object loader that contains the image and label image.
-    image_set_loader : ImageSetLoader
-        The image set loader object that contains the image and label image.
     radius : int, optional
         The radius of the ball used for morphological operations, by default 10
     granular_spectrum_length : int, optional
