@@ -3,10 +3,9 @@ patient=$1
 well_fov=$2
 compartment=$3
 channel=$4
-use_GPU=$5
+processor_type=$5
 
-echo "Granularity feature extraction for patient: $patient, WellFOV: $well_fov, Compartment: $compartment, Channel: $channel, UseGPU: $use_GPU"
-echo "Using GPU: $use_GPU"
+echo "Granularity feature extraction for patient: $patient, WellFOV: $well_fov, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 
 module load miniforge
 conda init bash
@@ -20,7 +19,7 @@ fi
 
 # start the timer
 start_timestamp=$(date +%s)
-if [ "$use_GPU" = "TRUE" ]; then
+if [ "$processor_type" = "GPU" ]; then
     echo "Running GPU version"
     python "$git_root"/3.cellprofiling/scripts/granularity.py \
         --patient "$patient" \
