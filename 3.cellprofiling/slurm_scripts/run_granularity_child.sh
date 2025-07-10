@@ -19,23 +19,15 @@ fi
 
 # start the timer
 start_timestamp=$(date +%s)
-if [ "$processor_type" = "GPU" ]; then
-    echo "Running GPU version"
-    python "$git_root"/3.cellprofiling/scripts/granularity.py \
-        --patient "$patient" \
-        --well_fov "$well_fov" \
-        --compartment "$compartment" \
-        --channel "$channel" \
-        --processor_type "GPU"
-else
-    echo "Running CPU version"
-    python "$git_root"/3.cellprofiling/scripts/granularity.py \
-        --patient "$patient" \
-        --well_fov "$well_fov" \
-        --compartment "$compartment" \
-        --channel "$channel" \
-        --processor_type "CPU"
-fi
+
+echo "Running GPU version"
+python "$git_root"/3.cellprofiling/scripts/granularity.py \
+    --patient "$patient" \
+    --well_fov "$well_fov" \
+    --compartment "$compartment" \
+    --channel "$channel" \
+    --processor_type "CPU"
+
 
 end=$(date +%s)
 echo "Time taken to run the featurization: (($end-$start_timestamp))"
