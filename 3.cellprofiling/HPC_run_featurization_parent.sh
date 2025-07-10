@@ -47,7 +47,7 @@ if [ "$feature" == "Texture" ] ; then
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=2:00:00 \
+        --time=10:00 \
         --output=texture_child-%j.out \
         "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
             "$patient" \
@@ -86,7 +86,7 @@ for processor_type in "${processor_array[@]}"; do
                 --qos=normal \
                 --gres=gpu:1 \
                 --account=amc-general \
-                --time=10:00 \
+                --time=5:00 \
                 --output=area_shape_gpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
                 "$patient" \
@@ -141,7 +141,7 @@ for processor_type in "${processor_array[@]}"; do
                 --partition=amilan \
                 --qos=normal \
                 --account=amc-general \
-                --time=20:00 \
+                --time=30:00 \
                 --output=granularity_cpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
                 "$patient" \
@@ -178,7 +178,7 @@ for processor_type in "${processor_array[@]}"; do
                 --partition=amilan \
                 --qos=normal \
                 --account=amc-general \
-                --time=5:00 \
+                --time=10:00 \
                 --output=intensity_cpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
                 "$patient" \
