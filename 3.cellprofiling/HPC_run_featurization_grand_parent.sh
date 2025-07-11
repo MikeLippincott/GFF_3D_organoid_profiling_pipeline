@@ -1,6 +1,6 @@
 #!/bin/bash
 
-USE_GPU="FALSE"
+USE_GPU="both"
 patient=$1
 
 git_root=$(git rev-parse --show-toplevel)

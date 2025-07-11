@@ -57,7 +57,7 @@ from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, TwoObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -176,6 +176,10 @@ for object_id in coloc_loader.object_ids:
         f"Colocalization_{compartment}_{channel1}.{channel2}_{col}"
         for col in coloc_df.columns
     ]
+    # retype the columns to float32
+    for col in coloc_df.columns:
+        if col not in ["object_id", "image_set"]:
+            coloc_df[col] = coloc_df[col].astype("float32")
     coloc_df.insert(0, "object_id", object_id)
     coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
     list_of_dfs.append(coloc_df)

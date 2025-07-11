@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -50,7 +50,7 @@ from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -112,7 +112,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 object_loader = ObjectLoader(
@@ -138,15 +138,22 @@ else:
     raise ValueError(
         f"Processor type {processor_type} is not supported. Use 'CPU' or 'GPU'."
     )
+
+
+# In[7]:
+
+
 final_df = pd.DataFrame(size_shape_dict)
 
 # prepend compartment and channel to column names
 for col in final_df.columns:
     if col not in ["object_id"]:
+        final_df[col] = final_df[col].astype(np.float32)
         final_df.rename(
             columns={col: f"Area.Size.Shape_{compartment}_{col}"},
             inplace=True,
         )
+
 final_df.insert(1, "image_set", image_set_loader.image_set_name)
 
 output_file = pathlib.Path(
@@ -157,7 +164,7 @@ final_df.to_parquet(output_file)
 final_df.head()
 
 
-# In[ ]:
+# In[8]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

@@ -14,7 +14,7 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-jupyter nbconvert --to=script --FilesWriter.build_directory=scripts/ "$git_root"/3.cellprofiling/notebooks/*.ipynb
+jupyter nbconvert --to=script --FilesWriter.build_directory="$git_root"/3.cellprofiling/scripts/ "$git_root"/3.cellprofiling/notebooks/*.ipynb
 
 patient_array_file_path="$git_root/data/patient_IDs.txt"
 # read the patient IDs from the file into an array
