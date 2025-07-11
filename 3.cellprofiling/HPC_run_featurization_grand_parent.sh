@@ -1,7 +1,8 @@
 #!/bin/bash
 
-USE_GPU="both"
+
 patient=$1
+USE_GPU=$2
 
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
@@ -21,7 +22,13 @@ parent_dir="${git_root}/data/$patient/zstack_images"
 # get the list of all dirs in the parent_dir
 dirs=$(ls -d "$parent_dir"/*)
 
-jq -r '.[] | "\(.feature) \(.compartment) \(.channel)"' "$json_file" | while read -r feature compartment channel; do
+# Parse JSON using pure bash (no jq or python required)
+# Extract combinations using grep and sed
+grep -E '"feature"|"compartment"|"channel"' "$json_file" | \
+sed -E 's/.*"(feature|compartment|channel)":[[:space:]]*"([^"]+)".*/\1:\2/' | \
+paste - - - | \
+sed 's/feature:\([^[:space:]]*\)[[:space:]]*compartment:\([^[:space:]]*\)[[:space:]]*channel:\([^[:space:]]*\)/\1 \2 \3/' | \
+while read -r feature compartment channel; do
 
     # loop through each dir and submit a job
     for dir in $dirs; do
