@@ -45,7 +45,7 @@ while read -r feature compartment channel processor_type; do
             --nodes=1 \
             --ntasks=1 \
             --partition=amilan \
-            --qos=long \
+            --qos=normal \
             --account=amc-general \
             --time=5:00 \
             --output="featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
