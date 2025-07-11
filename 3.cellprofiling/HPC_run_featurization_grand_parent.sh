@@ -47,8 +47,8 @@ while read -r feature compartment channel processor_type; do
             --partition=amilan \
             --qos=long \
             --account=amc-general \
-            --time=1:00:00 \
-            --output_filename="featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
+            --time=5:00 \
+            --output="featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
             "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
             "$patient" \
             "$well_fov" \

@@ -27,7 +27,9 @@ fi
 
 for patient in "${patient_array[@]}"; do
     number_of_jobs=$(squeue -u "$USER" | wc -l)
-    while [ "$number_of_jobs" -gt 990 ]; do
+    while [ "$number_of_jobs" -gt 500 ]; do
+        sleep 120s # wait for 2 minutes
+        # Recheck the number of jobs
         number_of_jobs=$(squeue -u "$USER" | wc -l)
     done
     # arg 1 is patient ID
@@ -37,12 +39,17 @@ for patient in "${patient_array[@]}"; do
     --nodes=1 \
     --ntasks=1 \
     --partition=amilan \
-    --qos=normal \
+    --qos=long \
     --account=amc-general \
-    --time=1:00:00 \
+    --time=7-00:00:00 \
     --output=featurization_sc_grand_parent-%j.out \
     "$git_root"/3.cellprofiling/HPC_run_featurization_grand_parent.sh \
     "$patient"
+
+    sleep 240s # wait for 4 minutes before submitting the next job
+    # this gives time for the parent jobs to be submitted and processed
+    # from the grand parent job
+    # and to avoid overwhelming the queue with too many jobs at once
 done
 
 echo "All patients submitted for segmentation"
