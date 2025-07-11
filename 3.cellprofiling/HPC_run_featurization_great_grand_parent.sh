@@ -42,8 +42,7 @@ for patient in "${patient_array[@]}"; do
     --time=1:00:00 \
     --output=featurization_sc_grand_parent-%j.out \
     "$git_root"/3.cellprofiling/HPC_run_featurization_grand_parent.sh \
-    "$patient" \
-    "both"
+    "$patient"
 done
 
 echo "All patients submitted for segmentation"

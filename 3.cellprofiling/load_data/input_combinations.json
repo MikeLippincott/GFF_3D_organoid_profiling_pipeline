@@ -2,526 +2,1015 @@
   {
     "feature": "AreaSizeShape",
     "compartment": "Cell",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "AreaSizeShape",
+    "compartment": "Cell",
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "AreaSizeShape",
     "compartment": "Cytoplasm",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "AreaSizeShape",
+    "compartment": "Cytoplasm",
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "AreaSizeShape",
     "compartment": "Nuclei",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "AreaSizeShape",
+    "compartment": "Nuclei",
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "AreaSizeShape",
     "compartment": "Organoid",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "AreaSizeShape",
+    "compartment": "Organoid",
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cell",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cell",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cell",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cell",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cell",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cell",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cell",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cell",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cell",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cell",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cytoplasm",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cytoplasm",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cytoplasm",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cytoplasm",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Cytoplasm",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cytoplasm",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cytoplasm",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cytoplasm",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cytoplasm",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Cytoplasm",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Nuclei",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Nuclei",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Nuclei",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Nuclei",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Nuclei",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Nuclei",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Nuclei",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Nuclei",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Nuclei",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Nuclei",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Organoid",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Organoid",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Organoid",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Organoid",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Granularity",
     "compartment": "Organoid",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Organoid",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Organoid",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Organoid",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Organoid",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Granularity",
+    "compartment": "Organoid",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cell",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cell",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cell",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cell",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cell",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cell",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cell",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cell",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cell",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cell",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cytoplasm",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cytoplasm",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cytoplasm",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cytoplasm",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Cytoplasm",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cytoplasm",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cytoplasm",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cytoplasm",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cytoplasm",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Cytoplasm",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Nuclei",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Nuclei",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Nuclei",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Nuclei",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Nuclei",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Nuclei",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Nuclei",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Nuclei",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Nuclei",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Nuclei",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Organoid",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Organoid",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Organoid",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Organoid",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Intensity",
     "compartment": "Organoid",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Organoid",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Organoid",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Organoid",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Organoid",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Intensity",
+    "compartment": "Organoid",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Neighbors",
     "compartment": "Nuclei",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cell",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cell",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cell",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cell",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cell",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cell",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cell",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cell",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cell",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cell",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cytoplasm",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cytoplasm",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cytoplasm",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cytoplasm",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Cytoplasm",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cytoplasm",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cytoplasm",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cytoplasm",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cytoplasm",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Cytoplasm",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Nuclei",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Nuclei",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Nuclei",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Nuclei",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Nuclei",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Nuclei",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Nuclei",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Nuclei",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Nuclei",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Nuclei",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Organoid",
-    "channel": "DNA"
+    "channel": "DNA",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Organoid",
-    "channel": "AGP"
+    "channel": "DNA",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Organoid",
-    "channel": "ER"
+    "channel": "AGP",
+    "processor_type": "CPU"
   },
   {
     "feature": "Texture",
     "compartment": "Organoid",
-    "channel": "Mito"
+    "channel": "AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Texture",
     "compartment": "Organoid",
-    "channel": "BF"
+    "channel": "ER",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Organoid",
+    "channel": "ER",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Organoid",
+    "channel": "Mito",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Organoid",
+    "channel": "Mito",
+    "processor_type": "GPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Organoid",
+    "channel": "BF",
+    "processor_type": "CPU"
+  },
+  {
+    "feature": "Texture",
+    "compartment": "Organoid",
+    "channel": "BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "DNA.AGP"
+    "channel": "DNA.AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "DNA.ER"
+    "channel": "DNA.ER",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "DNA.Mito"
+    "channel": "DNA.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "DNA.BF"
+    "channel": "DNA.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "AGP.ER"
+    "channel": "AGP.ER",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "AGP.Mito"
+    "channel": "AGP.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "AGP.BF"
+    "channel": "AGP.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "ER.Mito"
+    "channel": "ER.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "ER.BF"
+    "channel": "ER.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cell",
-    "channel": "Mito.BF"
+    "channel": "Mito.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "DNA.AGP"
+    "channel": "DNA.AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "DNA.ER"
+    "channel": "DNA.ER",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "DNA.Mito"
+    "channel": "DNA.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "DNA.BF"
+    "channel": "DNA.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "AGP.ER"
+    "channel": "AGP.ER",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "AGP.Mito"
+    "channel": "AGP.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "AGP.BF"
+    "channel": "AGP.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "ER.Mito"
+    "channel": "ER.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "ER.BF"
+    "channel": "ER.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Cytoplasm",
-    "channel": "Mito.BF"
+    "channel": "Mito.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "DNA.AGP"
+    "channel": "DNA.AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "DNA.ER"
+    "channel": "DNA.ER",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "DNA.Mito"
+    "channel": "DNA.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "DNA.BF"
+    "channel": "DNA.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "AGP.ER"
+    "channel": "AGP.ER",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "AGP.Mito"
+    "channel": "AGP.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "AGP.BF"
+    "channel": "AGP.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "ER.Mito"
+    "channel": "ER.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "ER.BF"
+    "channel": "ER.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Nuclei",
-    "channel": "Mito.BF"
+    "channel": "Mito.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "DNA.AGP"
+    "channel": "DNA.AGP",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "DNA.ER"
+    "channel": "DNA.ER",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "DNA.Mito"
+    "channel": "DNA.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "DNA.BF"
+    "channel": "DNA.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "AGP.ER"
+    "channel": "AGP.ER",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "AGP.Mito"
+    "channel": "AGP.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "AGP.BF"
+    "channel": "AGP.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "ER.Mito"
+    "channel": "ER.Mito",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "ER.BF"
+    "channel": "ER.BF",
+    "processor_type": "GPU"
   },
   {
     "feature": "Colocalization",
     "compartment": "Organoid",
-    "channel": "Mito.BF"
+    "channel": "Mito.BF",
+    "processor_type": "GPU"
   }
 ]
