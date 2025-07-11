@@ -2,7 +2,6 @@
 
 
 patient=$1
-USE_GPU=$2
 
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
@@ -24,11 +23,12 @@ dirs=$(ls -d "$parent_dir"/*)
 
 # Parse JSON using pure bash (no jq or python required)
 # Extract combinations using grep and sed
-grep -E '"feature"|"compartment"|"channel"' "$json_file" | \
-sed -E 's/.*"(feature|compartment|channel)":[[:space:]]*"([^"]+)".*/\1:\2/' | \
-paste - - - | \
-sed 's/feature:\([^[:space:]]*\)[[:space:]]*compartment:\([^[:space:]]*\)[[:space:]]*channel:\([^[:space:]]*\)/\1 \2 \3/' | \
-while read -r feature compartment channel; do
+# Alternative: Using awk for better JSON parsing
+# Extract all four fields using grep and sed
+grep -E '"(feature|compartment|channel|processor_type)"[[:space:]]*:[[:space:]]*"[^"]*"' "$json_file" | \
+sed -E 's/.*"(feature|compartment|channel|processor_type)"[[:space:]]*:[[:space:]]*"([^"]+)".*/\2/' | \
+paste - - - - | \
+while read -r feature compartment channel processor_type; do
 
     # loop through each dir and submit a job
     for dir in $dirs; do
@@ -48,14 +48,14 @@ while read -r feature compartment channel; do
             --qos=long \
             --account=amc-general \
             --time=1:00:00 \
-            --output=parent_featurize-%j.out \
+            --output_filename="featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
             "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
             "$patient" \
             "$well_fov" \
             "$compartment" \
             "$channel" \
             "$feature" \
-            "$USE_GPU"
+            "$processor_type"
     done
 done
 
