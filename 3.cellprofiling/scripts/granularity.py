@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -48,13 +48,13 @@ if root_dir is None:
 
 sys.path.append(f"{root_dir}/3.cellprofiling/featurization_utils/")
 from featurization_parsable_arguments import parse_featurization_args
-from granularity_utils import measure_3D_granularity, measure_3D_granularity_gpu
+from granularity_utils import measure_3D_granularity
 
 # from granularity import measure_3D_granularity
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -115,7 +115,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 object_loader = ObjectLoader(
@@ -124,25 +124,15 @@ object_loader = ObjectLoader(
     channel,
     compartment,
 )
-if processor_type == "GPU":
-    object_measurements = measure_3D_granularity_gpu(
-        object_loader=object_loader,
-        radius=10,  # radius of the sphere to use for granularity measurement
-        granular_spectrum_length=16,  # usually 16 but 2 is used for testing for now
-        subsample_size=0.25,  # subsample to 25% of the image to reduce computation time
-        image_name=channel,
-    )
-elif processor_type == "CPU":
+if processor_type == "CPU":
     object_measurements = measure_3D_granularity(
         object_loader=object_loader,
-        radius=10,  # radius of the sphere to use for granularity measurement
+        radius=1,  # radius of the sphere to use for granularity measurement in pixels
         granular_spectrum_length=16,  # usually 16 but 2 is used for testing for now
-        subsample_size=0.25,  # subsample to 25% of the image to reduce computation time
-        image_name=channel,
     )
 else:
     raise ValueError(
-        f"Processor type {processor_type} is not supported. Use 'CPU' or 'GPU'."
+        f"Processor type {processor_type} is not supported. Use 'CPU' only."
     )
 final_df = pd.DataFrame(object_measurements)
 # get the mean of each value in the array
@@ -170,7 +160,7 @@ output_file.parent.mkdir(parents=True, exist_ok=True)
 final_df.to_parquet(output_file)
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

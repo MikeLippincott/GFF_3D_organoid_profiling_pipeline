@@ -39,6 +39,24 @@ if [ "$feature" == "Neighbors" ]; then
         "$channel"
 fi
 
+if [ "$feature" == "Granularity" ] ; then
+    echo "Running CPU version for Granularity"
+    sbatch \
+        --nodes=1 \
+        --ntasks=2 \
+        --partition=amilan \
+        --qos=normal \
+        --account=amc-general \
+        --time=60:00 \
+        --output=granularity_cpu_child-%j.out \
+        "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
+        "$patient" \
+        "$well_fov" \
+        "$compartment" \
+        "$channel" \
+        "CPU"
+fi
+
 if [ "$feature" == "Texture" ] ; then
     echo "Running texture feature extraction"
     sbatch \
@@ -125,42 +143,6 @@ for processor_type in "${processor_array[@]}"; do
                 --time=5:00 \
                 --output=colocalization_gpu_child-%j.out \
                 "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
-                "$patient" \
-                "$well_fov" \
-                "$compartment" \
-                "$channel" \
-                "$processor_type"
-        fi
-    fi
-    if [ "$feature" == "Granularity" ] ; then
-        if [ "$processor_type" == "CPU" ]; then
-            echo "Running CPU version for Granularity"
-            sbatch \
-                --nodes=1 \
-                --ntasks=2 \
-                --partition=amilan \
-                --qos=normal \
-                --account=amc-general \
-                --time=30:00 \
-                --output=granularity_cpu_child-%j.out \
-                "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
-                "$patient" \
-                "$well_fov" \
-                "$compartment" \
-                "$channel" \
-                "$processor_type"
-        else
-            echo "Running GPU version for Granularity"
-            sbatch \
-                --nodes=1 \
-                --ntasks=2 \
-                --partition=aa100 \
-                --qos=normal \
-                --gres=gpu:1 \
-                --account=amc-general \
-                --time=20:00 \
-                --output=granularity_gpu_child-%j.out \
-                "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
                 "$patient" \
                 "$well_fov" \
                 "$compartment" \
