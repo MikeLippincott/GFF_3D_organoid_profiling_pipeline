@@ -1,63 +1,61 @@
 #!/bin/bash
 
-
-patient=$1
-
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
     echo "Error: Could not find the git root directory."
     exit 1
 fi
 
-json_file="${git_root}/3.cellprofiling/load_data/input_combinations.json"
+txt_file="${git_root}/3.cellprofiling/load_data/input_combinations.txt"
 
-# Check if JSON file exists
-if [ ! -f "$json_file" ]; then
-    echo "Error: JSON file not found at $json_file"
+# Check if TXT file exists
+if [ ! -f "$txt_file" ]; then
+    echo "Error: TXT file not found at $txt_file"
     exit 1
 fi
 
-parent_dir="${git_root}/data/$patient/zstack_images"
-# get the list of all dirs in the parent_dir
-dirs=$(ls -d "$parent_dir"/*)
 
-# Parse JSON using pure bash (no jq or python required)
-# Extract combinations using grep and sed
-# Alternative: Using awk for better JSON parsing
-# Extract all four fields using grep and sed
-grep -E '"(feature|compartment|channel|processor_type)"[[:space:]]*:[[:space:]]*"[^"]*"' "$json_file" | \
-sed -E 's/.*"(feature|compartment|channel|processor_type)"[[:space:]]*:[[:space:]]*"([^"]+)".*/\2/' | \
-paste - - - - | \
-while read -r feature compartment channel processor_type; do
+# parse the txt_file where each line contains
+# patient, well_fov, feature, compartment, channel, processor_type
+while IFS= read -r line; do
 
-    # loop through each dir and submit a job
-    for dir in $dirs; do
-        well_fov=$(basename "$dir")
-        echo "$well_fov"
-        # check that the number of jobs is less than 990
-        # prior to submitting a job
+    # split the line into an array
+    IFS=$'\t' read -r -a parts <<< "$line"
+    # assign the parts to variables
+    patient="${parts[0]}"
+    well_fov="${parts[1]}"
+    feature="${parts[2]}"
+    compartment="${parts[3]}"
+    channel="${parts[4]}"
+    processor_type="${parts[5]}"
+
+    echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
+
+
+    # check that the number of jobs is less than 990
+    # prior to submitting a job
+    number_of_jobs=$(squeue -u "$USER" | wc -l)
+    while [ "$number_of_jobs" -gt 990 ]; do
+        sleep 1s
         number_of_jobs=$(squeue -u "$USER" | wc -l)
-        while [ "$number_of_jobs" -gt 990 ]; do
-            sleep 1s
-            number_of_jobs=$(squeue -u "$USER" | wc -l)
-        done
-        sbatch \
-            --nodes=1 \
-            --ntasks=1 \
-            --partition=amilan \
-            --qos=normal \
-            --account=amc-general \
-            --time=5:00 \
-            --output="featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
-            "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
-            "$patient" \
-            "$well_fov" \
-            "$compartment" \
-            "$channel" \
-            "$feature" \
-            "$processor_type"
     done
-done
+    sbatch \
+        --nodes=1 \
+        --ntasks=1 \
+        --partition=amilan \
+        --qos=normal \
+        --account=amc-general \
+        --time=5:00 \
+        --output="featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
+        "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
+        "$patient" \
+        "$well_fov" \
+        "$compartment" \
+        "$channel" \
+        "$feature" \
+        "$processor_type"
+
+done < "$txt_file"
 
 
 echo "Featurization done"
