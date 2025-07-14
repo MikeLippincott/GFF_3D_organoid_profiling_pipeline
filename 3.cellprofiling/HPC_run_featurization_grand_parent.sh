@@ -46,7 +46,7 @@ while IFS= read -r line; do
         --qos=normal \
         --account=amc-general \
         --time=5:00 \
-        --output="featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
+        --output="logs/parents/featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
         "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
         "$patient" \
         "$well_fov" \
