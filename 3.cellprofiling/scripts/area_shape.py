@@ -158,9 +158,9 @@ final_df.insert(1, "image_set", image_set_loader.image_set_name)
 
 output_file = pathlib.Path(
     output_parent_path
-    / f"AreaSize_Shape_{compartment}_{processor_type}_features.parquet"
+    / f"AreaSizeShape_{compartment}_{processor_type}_features.parquet"
 )
-final_df.to_parquet(output_file)
+final_df.to_parquet(output_file, index=False)
 final_df.head()
 
 

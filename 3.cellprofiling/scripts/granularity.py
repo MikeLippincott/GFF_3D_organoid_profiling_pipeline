@@ -68,8 +68,8 @@ if not in_notebook:
 else:
     well_fov = "C4-2"
     patient = "NF0014"
-    channel = "DNA"
-    compartment = "Nuclei"
+    channel = "Mito"
+    compartment = "Cell"
     processor_type = "CPU"
 
 image_set_path = pathlib.Path(
@@ -115,7 +115,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[6]:
+# In[ ]:
 
 
 object_loader = ObjectLoader(
@@ -160,7 +160,7 @@ output_file.parent.mkdir(parents=True, exist_ok=True)
 final_df.to_parquet(output_file)
 
 
-# In[7]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
