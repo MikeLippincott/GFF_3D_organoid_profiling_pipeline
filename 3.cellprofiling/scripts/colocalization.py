@@ -69,10 +69,10 @@ if not in_notebook:
     processor_type = arguments_dict["processor_type"]
 
 else:
-    well_fov = "E10-2"
+    well_fov = "G8-1"
     patient = "NF0014"
-    channel = "ER.Mito"
-    compartment = "Cytoplasm"
+    channel = "DNA.BF"
+    compartment = "Nuclei"
     processor_type = "GPU"
 
 channel1 = channel.split(".")[0] if "." in channel else channel
@@ -119,15 +119,6 @@ image_set_loader = ImageSetLoader(
 start_time = time.time()
 # get starting memory (cpu)
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
-
-
-# In[7]:
-
-
-coloc_loader.object_ids
-
-
-# In[ ]:
 
 
 # In[6]:
@@ -196,7 +187,7 @@ coloc_df = pd.concat(list_of_dfs, ignore_index=True)
 coloc_df.to_parquet(output_dir)
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
