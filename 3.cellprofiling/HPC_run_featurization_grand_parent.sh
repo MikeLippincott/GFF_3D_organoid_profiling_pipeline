@@ -6,7 +6,14 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-txt_file="${git_root}/3.cellprofiling/load_data/input_combinations.txt"
+rerun=$1
+
+
+if [ "$rerun" == "rerun" ]; then
+    txt_file="${git_root}/3.cellprofiling/load_data/rerun_combinations.txt"
+else
+    txt_file="${git_root}/3.cellprofiling/load_data/input_combinations.txt"
+fi
 
 # Check if TXT file exists
 if [ ! -f "$txt_file" ]; then
