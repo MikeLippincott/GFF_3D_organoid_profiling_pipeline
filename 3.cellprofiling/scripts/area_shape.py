@@ -62,9 +62,9 @@ if not in_notebook:
     processor_type = arguments_dict["processor_type"]
 
 else:
-    well_fov = "C4-2"
+    well_fov = "F3-1"
     patient = "NF0014"
-    compartment = "Nuclei"
+    compartment = "Organoid"
     channel = "DNA"
     processor_type = "CPU"
 
@@ -112,7 +112,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[6]:
+# In[ ]:
 
 
 object_loader = ObjectLoader(
@@ -140,7 +140,7 @@ else:
     )
 
 
-# In[7]:
+# In[ ]:
 
 
 final_df = pd.DataFrame(size_shape_dict)
@@ -164,7 +164,7 @@ final_df.to_parquet(output_file, index=False)
 final_df.head()
 
 
-# In[8]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
