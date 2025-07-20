@@ -250,19 +250,29 @@ for patient in patient_ids:
                         featurization_rerun_dict["compartment"].append(
                             missing_file.split("_")[1]
                         )
-                        featurization_rerun_dict["processor_type"].append(
-                            missing_file.split("_")[3]
-                        )
+
                         if missing_file.split("_")[0] == "Colocalization":
                             featurization_rerun_dict["channel"].append(
                                 missing_file.split("_")[2].split(".")[0]
                                 + "."
                                 + missing_file.split("_")[2].split(".")[1]
                             )
-
+                            featurization_rerun_dict["processor_type"].append(
+                                missing_file.split("_")[3]
+                            )
+                        elif missing_file.split("_")[0] == "AreaSizeShape":
+                            featurization_rerun_dict["channel"].append(
+                                "DNA"
+                            )  # AreaSizeShape is always DNA
+                            featurization_rerun_dict["processor_type"].append(
+                                missing_file.split("_")[2]
+                            )
                         else:
                             featurization_rerun_dict["channel"].append(
                                 missing_file.split("_")[2]
+                            )
+                            featurization_rerun_dict["processor_type"].append(
+                                missing_file.split("_")[3]
                             )
 
 
@@ -280,6 +290,12 @@ print("Total files present: ", np.round(files_present / total_files * 100, 2), "
 df = pd.DataFrame(featurization_rerun_dict)
 df.to_csv(rerun_combinations_path, sep="\t", index=False)
 df.head()
+
+
+# In[13]:
+
+
+df.loc[df["feature"] == "AreaSizeShape"]
 
 
 # In[ ]:

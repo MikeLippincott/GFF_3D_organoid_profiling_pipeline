@@ -69,11 +69,11 @@ if not in_notebook:
     processor_type = arguments_dict["processor_type"]
 
 else:
-    well_fov = "G8-1"
+    well_fov = "E11-1"
     patient = "NF0014"
-    channel = "DNA.BF"
-    compartment = "Nuclei"
-    processor_type = "GPU"
+    channel = "Mito.BF"
+    compartment = "Cytoplasm"
+    processor_type = "CPU"
 
 channel1 = channel.split(".")[0] if "." in channel else channel
 channel2 = channel.split(".")[1] if "." in channel else None
@@ -183,8 +183,14 @@ for object_id in coloc_loader.object_ids:
     coloc_df.insert(0, "object_id", object_id)
     coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
     list_of_dfs.append(coloc_df)
-coloc_df = pd.concat(list_of_dfs, ignore_index=True)
-coloc_df.to_parquet(output_dir)
+if len(list_of_dfs) == 0:
+    print("No objects found for colocalization.")
+    # write an empty DataFrame to the output file
+    coloc_df = pd.DataFrame(columns=["object_id", "image_set"])
+    coloc_df.to_parquet(output_dir)
+else:
+    coloc_df = pd.concat(list_of_dfs, ignore_index=True)
+    coloc_df.to_parquet(output_dir)
 
 
 # In[7]:
