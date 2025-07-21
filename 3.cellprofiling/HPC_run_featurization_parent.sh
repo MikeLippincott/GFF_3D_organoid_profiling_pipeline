@@ -37,11 +37,11 @@ if [ "$feature" == "Granularity" ] ; then
     echo "Running CPU version for Granularity"
     sbatch \
         --nodes=1 \
-        --ntasks=3 \
+        --ntasks=4 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=60:00 \
+        --time=120:00 \
         --output="logs/granularity_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
         "$patient" \
@@ -55,11 +55,11 @@ if [ "$feature" == "Texture" ] ; then
     echo "Running texture feature extraction"
     sbatch \
         --nodes=1 \
-        --ntasks=2 \
+        --ntasks=4 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=10:00 \
+        --time=30:00 \
         --output="logs/texture_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
             "$patient" \
@@ -75,11 +75,11 @@ if [ "$feature" == "AreaSizeShape" ] ; then
         echo "Running CPU version for AreaSizeShape"
         sbatch \
             --nodes=1 \
-            --ntasks=1 \
+            --ntasks=2 \
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=5:00 \
+            --time=10:00 \
             --output="logs/area_shape_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
             "$patient" \
@@ -111,11 +111,11 @@ if [ "$feature" == "Colocalization" ] ; then
         echo "Running CPU version for Colocalization"
         sbatch \
             --nodes=1 \
-            --ntasks=2 \
+            --ntasks=4 \
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=10:00 \
+            --time=30:00 \
             --output="logs/colocalization_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
             "$patient" \
@@ -148,7 +148,7 @@ if [ "$feature" == "Intensity" ] ; then
         echo "Running CPU version for Intensity"
         sbatch \
             --nodes=1 \
-            --ntasks=2 \
+            --ntasks=3 \
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
