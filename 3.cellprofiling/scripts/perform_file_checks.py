@@ -18,11 +18,6 @@ try:
 except NameError:
     in_notebook = False
     # check if in a jupyter notebook
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
 
 # Get the current working directory
 cwd = pathlib.Path.cwd()
@@ -292,10 +287,13 @@ df.to_csv(rerun_combinations_path, sep="\t", index=False)
 df.head()
 
 
+# In[15]:
+
+
+df.groupby(["patient", "feature"]).count()
+
+
 # In[13]:
 
 
-df.loc[df["feature"] == "AreaSizeShape"]
-
-
-# In[ ]:
+df.groupby(["patient"]).count()

@@ -20,7 +20,7 @@ fi
 # start the timer
 start_timestamp=$(date +%s)
 
-echo "Running GPU version"
+echo "Running CPU version"
 python "$git_root"/3.cellprofiling/scripts/granularity.py \
     --patient "$patient" \
     --well_fov "$well_fov" \

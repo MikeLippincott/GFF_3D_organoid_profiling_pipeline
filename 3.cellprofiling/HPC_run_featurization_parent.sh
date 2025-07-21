@@ -24,7 +24,7 @@ if [ "$feature" == "Neighbors" ]; then
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
-    --time=5:00 \
+    --time=10:00 \
     --output="logs/child/neighbors_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
     "$git_root"/3.cellprofiling/slurm_scripts/run_neighbors_child.sh \
         "$patient" \
@@ -41,7 +41,7 @@ if [ "$feature" == "Granularity" ] ; then
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=120:00 \
+        --time=4:00:00 \
         --output="logs/granularity_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
         "$patient" \
@@ -115,7 +115,7 @@ if [ "$feature" == "Colocalization" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=30:00 \
+            --time=60:00 \
             --output="logs/colocalization_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
             "$patient" \
