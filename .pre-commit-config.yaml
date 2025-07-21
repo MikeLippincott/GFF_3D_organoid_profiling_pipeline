@@ -43,10 +43,6 @@ repos:
       - id: mixed-line-ending # removes mixed end of line
         args:
           - --fix=lf
-  - repo: https://github.com/pre-commit/mirrors-prettier # for nextflow (js) files
-    rev: v3.1.0 # Use the sha or tag you want to point at
-    hooks:
-      - id: prettier
 
   - repo: local
     hooks:
