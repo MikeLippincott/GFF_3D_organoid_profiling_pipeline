@@ -60,10 +60,10 @@ if not in_notebook:
     compartment = arguments_dict["compartment"]
     processor_type = arguments_dict["processor_type"]
 else:
-    well_fov = "C4-2"
-    patient = "NF0014"
+    well_fov = "D7-4"
+    patient = "NF0030"
     channel = "DNA"
-    compartment = "Nuclei"
+    compartment = "Cell"
     processor_type = "CPU"
 
 image_set_path = pathlib.Path(
@@ -75,7 +75,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[3]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -91,7 +91,7 @@ channel_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 start_time = time.time()
@@ -99,7 +99,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[5]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
