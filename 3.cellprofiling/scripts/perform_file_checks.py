@@ -4,10 +4,8 @@
 # In[1]:
 
 
-import argparse
 import itertools
 import pathlib
-import shutil
 import sys
 
 import numpy as np
@@ -43,7 +41,6 @@ from loading_classes import ImageSetLoader
 sys.path.append(str(pathlib.Path(f"{root_dir}/utils").resolve()))
 from file_checking import check_number_of_files
 
-
 # In[2]:
 
 
@@ -65,7 +62,7 @@ patient_ids = pd.read_csv(
 ).patient_id.tolist()
 
 
-# In[ ]:
+# In[3]:
 
 
 channel_mapping = {
@@ -99,10 +96,10 @@ channel_combinations = list(itertools.combinations(channels, 2))
 # | Granularity | 4 | 5 | 1 | 20 |
 # | Intensity | 4 | 5 | 2 | 40 |
 # | Neighbors | 1 | 1 | 1 | 1 |
-# | Texture | 4 | 5 | 1 | 20 |  
-# 
+# | Texture | 4 | 5 | 1 | 20 |
+#
 # Total no. files per well fov = 169
-# 
+#
 # ### OR
 # For CPU only:
 # For each well fov there should be the following number of files:
@@ -113,13 +110,13 @@ channel_combinations = list(itertools.combinations(channels, 2))
 # | Granularity | 4 | 5 | 1 | 20 |
 # | Intensity | 4 | 5 | 1 | 20 |
 # | Neighbors | 1 | 1 | 1 | 1 |
-# | Texture | 4 | 5 | 1 | 20 |  
-# 
+# | Texture | 4 | 5 | 1 | 20 |
+#
 # Total no. files per well fov = 105
-# 
-# 
+#
+#
 
-# In[ ]:
+# In[4]:
 
 
 feature_types = [
@@ -132,7 +129,7 @@ feature_types = [
 ]
 
 
-# In[ ]:
+# In[5]:
 
 
 processor_types = [
@@ -141,7 +138,7 @@ processor_types = [
 ]
 
 
-# In[ ]:
+# In[6]:
 
 
 feature_list = []
@@ -175,15 +172,10 @@ feature_list.append("Neighbors_Nuclei_DNA_CPU_features")
 for channel in channels:
     for compartment in compartments:
         feature_list.append(f"Texture_{compartment}_{channel}_CPU_features")
+len(feature_list)  # should be 105 or 169 depending on CPU vs CPU and GPU
 
 
-# In[ ]:
-
-
-len(feature_list)
-
-
-# In[ ]:
+# In[7]:
 
 
 featurization_rerun_dict = {
@@ -196,15 +188,7 @@ featurization_rerun_dict = {
 }
 
 
-# In[ ]:
-
-
-num_of_target_files = (
-    105  # could be 169 or 105 depending on if CPU or CPU + GPU are used
-)
-
-
-# In[ ]:
+# In[8]:
 
 
 total_files = 0
@@ -221,23 +205,20 @@ for patient in patient_ids:
                 f"{root_dir}/data/{patient}/extracted_features/{dir.name}"
             ).resolve()
             total_files += len(feature_list)
-            if not check_number_of_files(dir, num_of_target_files):
+            if not check_number_of_files(dir, feature_list):
                 # find the missing files
                 # cross reference the files in the directory
                 # with the expected feature list
-                existing_files = set(f.name for f in dir.glob("*"))
                 existing_files = [f.stem for f in dir.glob("*") if f.is_file()]
-                
+
                 files_present += len(existing_files)
                 missing_files = set(feature_list) - set(existing_files)
                 assert len(missing_files) >= 0, "There should be no missing files"
-                assert len(missing_files) <= num_of_target_files, (
-                    f"There should be at most {num_of_target_files} missing files"
+                assert len(missing_files) <= len(feature_list), (
+                    f"There should be at most {len(feature_list)} missing files"
                 )
-                assert (
-                    len(missing_files) + len(existing_files) == num_of_target_files
-                ), (
-                    f"There should be exactly {num_of_target_files} files in the directory"
+                assert len(missing_files) + len(existing_files) == len(feature_list), (
+                    f"There should be exactly {len(feature_list)} files in the directory"
                 )
                 if missing_files:
                     for missing_file in missing_files:
@@ -272,17 +253,19 @@ for patient in patient_ids:
                         featurization_rerun_dict["compartment"].append(
                             missing_file.split("_")[1]
                         )
+            else:
+                existing_files += [f.stem for f in dir.glob("*") if f.is_file()]
 
 
-# In[ ]:
+# In[9]:
 
 
 print(f"Total files expected: {total_files}")
 print(f"Total files present: {files_present}")
-print("Total files present: ", np.round(files_present / total_files * 100, 2), "%")
+print("Percent of files present:", np.round(files_present / total_files * 100, 2), "%")
 
 
-# In[ ]:
+# In[10]:
 
 
 df = pd.DataFrame(featurization_rerun_dict)
@@ -290,14 +273,7 @@ df.to_csv(rerun_combinations_path, sep="\t", index=False)
 df.head()
 
 
-# In[ ]:
-
-
-df.groupby(["patient", "feature"]).count()
-
-
-# In[ ]:
+# In[11]:
 
 
 df.groupby(["patient"]).count()
-
