@@ -253,9 +253,6 @@ for patient in patient_ids:
                             featurization_rerun_dict["processor_type"].append(
                                 missing_file.split("_")[2]
                             )
-                        # temporary elif
-                        elif missing_file.split("_")[0] == "Granularity":
-                            continue  # Granularity is always CPU
                         else:
                             featurization_rerun_dict["channel"].append(
                                 missing_file.split("_")[2]
