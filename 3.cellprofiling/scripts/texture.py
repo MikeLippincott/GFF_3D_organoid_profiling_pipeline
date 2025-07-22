@@ -4,11 +4,14 @@
 # In[ ]:
 
 
+import argparse
 import gc
+import multiprocessing
 import os
 import pathlib
 import sys
 import time
+from functools import partial
 from itertools import product
 
 import pandas as pd
@@ -48,6 +51,7 @@ from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 from texture_utils import measure_3D_texture
+
 
 # In[ ]:
 
@@ -169,3 +173,4 @@ get_mem_and_time_profiling(
         f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_{channel}_{compartment}_Texture_CPU.parquet"
     ),
 )
+
