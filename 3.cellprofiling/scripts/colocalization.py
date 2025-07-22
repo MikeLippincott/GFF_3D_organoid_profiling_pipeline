@@ -69,10 +69,10 @@ if not in_notebook:
     processor_type = arguments_dict["processor_type"]
 
 else:
-    well_fov = "E11-1"
-    patient = "NF0014"
+    well_fov = "E11-4"
+    patient = "NF0030"
     channel = "Mito.BF"
-    compartment = "Cytoplasm"
+    compartment = "Cell"
     processor_type = "CPU"
 
 channel1 = channel.split(".")[0] if "." in channel else channel
@@ -193,7 +193,7 @@ else:
     coloc_df.to_parquet(output_dir)
 
 
-# In[7]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

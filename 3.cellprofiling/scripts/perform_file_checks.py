@@ -201,22 +201,22 @@ num_of_target_files = (
 )
 
 
-# In[10]:
+# In[13]:
 
 
 total_files = 0
 files_present = 0
 for patient in patient_ids:
-    featurization_data_dir = pathlib.Path(
-        f"{root_dir}/data/{patient}/extracted_features/"
-    ).resolve()
+    well_fovs = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/").resolve()
 
     # perform checks for each directory
-    featurization_data_dirs = list(featurization_data_dir.glob("*"))
-    featurization_data_dirs = [d for d in featurization_data_dirs if d.is_dir()]
+    featurization_data_dirs = list(well_fovs.glob("*"))
 
     for dir in featurization_data_dirs:
         if dir.name != "run_stats":
+            dir = pathlib.Path(
+                f"{root_dir}/data/{patient}/extracted_features/{dir.name}"
+            ).resolve()
             if not check_number_of_files(dir, num_of_target_files):
                 # find the missing files
                 # cross reference the files in the directory
@@ -270,7 +270,7 @@ for patient in patient_ids:
                         )
 
 
-# In[11]:
+# In[14]:
 
 
 print(f"Total files expected: {total_files}")
@@ -278,7 +278,7 @@ print(f"Total files present: {files_present}")
 print("Total files present: ", np.round(files_present / total_files * 100, 2), "%")
 
 
-# In[12]:
+# In[ ]:
 
 
 df = pd.DataFrame(featurization_rerun_dict)
@@ -286,13 +286,13 @@ df.to_csv(rerun_combinations_path, sep="\t", index=False)
 df.head()
 
 
-# In[13]:
+# In[ ]:
 
 
 df.groupby(["patient", "feature"]).count()
 
 
-# In[14]:
+# In[ ]:
 
 
 df.groupby(["patient"]).count()
