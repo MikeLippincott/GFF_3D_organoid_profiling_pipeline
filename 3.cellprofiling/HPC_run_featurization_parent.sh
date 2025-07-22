@@ -37,11 +37,11 @@ if [ "$feature" == "Granularity" ] ; then
     echo "Running CPU version for Granularity"
     sbatch \
         --nodes=1 \
-        --ntasks=4 \
+        --ntasks=8 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=4:00:00 \
+        --time=12:00:00 \
         --output="logs/granularity_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
         "$patient" \
@@ -59,7 +59,7 @@ if [ "$feature" == "Texture" ] ; then
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=30:00 \
+        --time=60:00 \
         --output="logs/texture_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
             "$patient" \
@@ -79,7 +79,7 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=10:00 \
+            --time=30:00 \
             --output="logs/area_shape_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
             "$patient" \
@@ -115,7 +115,7 @@ if [ "$feature" == "Colocalization" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=60:00 \
+            --time=1:30:00 \
             --output="logs/colocalization_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
             "$patient" \
@@ -152,7 +152,7 @@ if [ "$feature" == "Intensity" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=10:00 \
+            --time=30:00 \
             --output="logs/intensity_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
             "$patient" \

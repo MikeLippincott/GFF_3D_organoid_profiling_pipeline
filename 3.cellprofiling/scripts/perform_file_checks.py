@@ -237,15 +237,6 @@ for patient in patient_ids:
                 )
                 if missing_files:
                     for missing_file in missing_files:
-                        featurization_rerun_dict["patient"].append(patient)
-                        featurization_rerun_dict["well_fov"].append(dir.name)
-                        featurization_rerun_dict["feature"].append(
-                            missing_file.split("_")[0]
-                        )
-                        featurization_rerun_dict["compartment"].append(
-                            missing_file.split("_")[1]
-                        )
-
                         if missing_file.split("_")[0] == "Colocalization":
                             featurization_rerun_dict["channel"].append(
                                 missing_file.split("_")[2].split(".")[0]
@@ -262,6 +253,9 @@ for patient in patient_ids:
                             featurization_rerun_dict["processor_type"].append(
                                 missing_file.split("_")[2]
                             )
+                        # temporary elif
+                        elif missing_file.split("_")[0] == "Granularity":
+                            continue  # Granularity is always CPU
                         else:
                             featurization_rerun_dict["channel"].append(
                                 missing_file.split("_")[2]
@@ -269,6 +263,14 @@ for patient in patient_ids:
                             featurization_rerun_dict["processor_type"].append(
                                 missing_file.split("_")[3]
                             )
+                        featurization_rerun_dict["patient"].append(patient)
+                        featurization_rerun_dict["well_fov"].append(dir.name)
+                        featurization_rerun_dict["feature"].append(
+                            missing_file.split("_")[0]
+                        )
+                        featurization_rerun_dict["compartment"].append(
+                            missing_file.split("_")[1]
+                        )
 
 
 # In[11]:
@@ -287,13 +289,13 @@ df.to_csv(rerun_combinations_path, sep="\t", index=False)
 df.head()
 
 
-# In[15]:
+# In[13]:
 
 
 df.groupby(["patient", "feature"]).count()
 
 
-# In[13]:
+# In[14]:
 
 
 df.groupby(["patient"]).count()
