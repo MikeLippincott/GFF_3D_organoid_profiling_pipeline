@@ -76,11 +76,11 @@ else:
     well_fov = "C4-2"
 
 image_dir = pathlib.Path(
-    f"{root_dir}/data/{patient}/processed_data/{well_fov}/"
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
 ).resolve(strict=True)
 
 
-# In[3]:
+# In[ ]:
 
 
 import vispy
@@ -104,7 +104,7 @@ channel_map = {
 scaling_values = [1, 0.1, 0.1]
 
 
-# In[5]:
+# In[ ]:
 
 
 frame_zstacks = image_set_to_arrays(
@@ -167,7 +167,7 @@ with tiff.TiffWriter(output_path, bigtiff=True) as tif:
     tif.write(combined_data, description=ome_xml, photometric="minisblack")
 
 
-# In[6]:
+# In[ ]:
 
 
 # import shutil
@@ -182,7 +182,7 @@ with tiff.TiffWriter(output_path, bigtiff=True) as tif:
 # )
 
 
-# In[7]:
+# In[ ]:
 
 
 viewer = view_ometiff_with_napari(
@@ -197,3 +197,6 @@ viewer = view_ometiff_with_napari(
 
 # screenshot the napari viewer
 nbscreenshot(viewer)
+
+
+# In[ ]:
