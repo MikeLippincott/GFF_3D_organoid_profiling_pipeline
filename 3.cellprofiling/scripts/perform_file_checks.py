@@ -4,8 +4,10 @@
 # In[1]:
 
 
+import argparse
 import itertools
 import pathlib
+import shutil
 import sys
 
 import numpy as np
@@ -41,6 +43,7 @@ from loading_classes import ImageSetLoader
 sys.path.append(str(pathlib.Path(f"{root_dir}/utils").resolve()))
 from file_checking import check_number_of_files
 
+
 # In[2]:
 
 
@@ -62,7 +65,7 @@ patient_ids = pd.read_csv(
 ).patient_id.tolist()
 
 
-# In[3]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -96,10 +99,10 @@ channel_combinations = list(itertools.combinations(channels, 2))
 # | Granularity | 4 | 5 | 1 | 20 |
 # | Intensity | 4 | 5 | 2 | 40 |
 # | Neighbors | 1 | 1 | 1 | 1 |
-# | Texture | 4 | 5 | 1 | 20 |
-#
+# | Texture | 4 | 5 | 1 | 20 |  
+# 
 # Total no. files per well fov = 169
-#
+# 
 # ### OR
 # For CPU only:
 # For each well fov there should be the following number of files:
@@ -110,13 +113,13 @@ channel_combinations = list(itertools.combinations(channels, 2))
 # | Granularity | 4 | 5 | 1 | 20 |
 # | Intensity | 4 | 5 | 1 | 20 |
 # | Neighbors | 1 | 1 | 1 | 1 |
-# | Texture | 4 | 5 | 1 | 20 |
-#
+# | Texture | 4 | 5 | 1 | 20 |  
+# 
 # Total no. files per well fov = 105
-#
-#
+# 
+# 
 
-# In[4]:
+# In[ ]:
 
 
 feature_types = [
@@ -129,7 +132,7 @@ feature_types = [
 ]
 
 
-# In[5]:
+# In[ ]:
 
 
 processor_types = [
@@ -138,7 +141,7 @@ processor_types = [
 ]
 
 
-# In[6]:
+# In[ ]:
 
 
 feature_list = []
@@ -174,13 +177,13 @@ for channel in channels:
         feature_list.append(f"Texture_{compartment}_{channel}_CPU_features")
 
 
-# In[7]:
+# In[ ]:
 
 
 len(feature_list)
 
 
-# In[8]:
+# In[ ]:
 
 
 featurization_rerun_dict = {
@@ -193,7 +196,7 @@ featurization_rerun_dict = {
 }
 
 
-# In[9]:
+# In[ ]:
 
 
 num_of_target_files = (
@@ -201,7 +204,7 @@ num_of_target_files = (
 )
 
 
-# In[13]:
+# In[ ]:
 
 
 total_files = 0
@@ -217,13 +220,14 @@ for patient in patient_ids:
             dir = pathlib.Path(
                 f"{root_dir}/data/{patient}/extracted_features/{dir.name}"
             ).resolve()
+            total_files += len(feature_list)
             if not check_number_of_files(dir, num_of_target_files):
                 # find the missing files
                 # cross reference the files in the directory
                 # with the expected feature list
                 existing_files = set(f.name for f in dir.glob("*"))
                 existing_files = [f.stem for f in dir.glob("*") if f.is_file()]
-                total_files += len(feature_list)
+                
                 files_present += len(existing_files)
                 missing_files = set(feature_list) - set(existing_files)
                 assert len(missing_files) >= 0, "There should be no missing files"
@@ -270,7 +274,7 @@ for patient in patient_ids:
                         )
 
 
-# In[14]:
+# In[ ]:
 
 
 print(f"Total files expected: {total_files}")
@@ -296,3 +300,4 @@ df.groupby(["patient", "feature"]).count()
 
 
 df.groupby(["patient"]).count()
+
