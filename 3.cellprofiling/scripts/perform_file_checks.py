@@ -262,6 +262,7 @@ for patient in patient_ids:
 
 print(f"Total files expected: {total_files}")
 print(f"Total files present: {files_present}")
+print(f"Only {total_files - files_present} files are missing.")
 print("Percent of files present:", np.round(files_present / total_files * 100, 2), "%")
 
 
