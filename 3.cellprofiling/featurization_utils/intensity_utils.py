@@ -67,7 +67,8 @@ def measure_3D_intensity_CPU(
         )
         selected_image_object[selected_label_object != 1] = 0
         non_zero_pixels_object = selected_image_object[selected_image_object > 0]
-
+        if non_zero_pixels_object.size == 0:
+            non_zero_pixels_object = numpy.array([0], dtype=numpy.float32)
         mask_outlines = get_outline(selected_label_object)
 
         # Extract only coordinates where object exists
