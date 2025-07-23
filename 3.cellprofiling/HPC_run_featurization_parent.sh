@@ -152,7 +152,7 @@ if [ "$feature" == "Intensity" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=30:00 \
+            --time=2:00:00 \
             --output="logs/intensity_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
             "$patient" \
