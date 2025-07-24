@@ -35,7 +35,7 @@ if root_dir is None:
     raise FileNotFoundError("No Git root directory found.")
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -63,13 +63,6 @@ else:
 result_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}"
 ).resolve(strict=True)
-database_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/converted_profiles/{well_fov}"
-).resolve()
-database_path.mkdir(parents=True, exist_ok=True)
-# create the sqlite database
-sqlite_path = database_path / f"{well_fov}.duckdb"
-
 # schema save path
 schema_path = pathlib.Path(
     f"{root_dir}/4.processing_image_based_profiles/data/schemas/schema_db.duckdb"
