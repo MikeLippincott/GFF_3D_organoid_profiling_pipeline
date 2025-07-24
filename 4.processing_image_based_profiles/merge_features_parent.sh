@@ -1,10 +1,8 @@
 #!/bin/bash
 
-module load anaconda
-conda init bash
-conda activate nf1_image_based_profiling_env
-
 patient=$1
+
+echo "Processing patient: $patient"
 
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
@@ -38,8 +36,8 @@ for dir in $dirs; do
         --qos=long \
         --account=amc-general \
         --time=5:00 \
-        --output=parent_featurize-%j.out \
-        "$git_root"/4.processing_image_based_profiles/merge_features_parent.sh "$patient" "$well_fov"
+        --output=child_featurize-%j.out \
+        "$git_root"/4.processing_image_based_profiles/merge_features_child.sh "$patient" "$well_fov"
 
 done
 
