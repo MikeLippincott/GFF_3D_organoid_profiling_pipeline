@@ -136,7 +136,7 @@ organoid_table.to_parquet(destination_organoid_parquet_file, index=False)
 organoid_table.head()
 
 
-# In[ ]:
+# In[8]:
 
 
 print(f"Final merged single cell dataframe shape: {merged_df.shape}")
