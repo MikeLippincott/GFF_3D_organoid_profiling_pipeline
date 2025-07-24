@@ -23,6 +23,23 @@ try:
 except NameError:
     in_notebook = False
 
+# Get the current working directory
+cwd = pathlib.Path.cwd()
+
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+# Check if a Git root directory was found
+if root_dir is None:
+    raise FileNotFoundError("No Git root directory found.")
+
 
 # In[2]:
 
@@ -53,13 +70,13 @@ else:
 
 
 input_sqlite_file = pathlib.Path(
-    f"../../data/{patient}/converted_profiles/{well_fov}/{well_fov}.duckdb"
+    f"{root_dir}/data/{patient}/converted_profiles/{well_fov}/{well_fov}.duckdb"
 ).resolve(strict=True)
 destination_sc_parquet_file = pathlib.Path(
-    f"../../data/{patient}/image_based_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
+    f"{root_dir}/data/{patient}/image_based_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
 ).resolve()
 destination_organoid_parquet_file = pathlib.Path(
-    f"../../data/{patient}/image_based_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
+    f"{root_dir}/data/{patient}/image_based_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
 ).resolve()
 destination_sc_parquet_file.parent.mkdir(parents=True, exist_ok=True)
 dest_datatype = "parquet"
@@ -69,22 +86,16 @@ dest_datatype = "parquet"
 
 
 # show the tables
-con = duckdb.connect(input_sqlite_file)
-tables = con.execute("SHOW TABLES").fetchdf()
-tables["name"].to_list()
+with duckdb.connect(input_sqlite_file) as con:
+    tables = con.execute("SHOW TABLES").fetchdf()
+    print(tables)
+    nuclei_table = con.sql("SELECT * FROM Nuclei").df()
+    cells_table = con.sql("SELECT * FROM Cell").df()
+    cytoplasm_table = con.sql("SELECT * FROM Cytoplasm").df()
+    organoid_table = con.sql("SELECT * FROM Organoid").df()
 
 
 # In[5]:
-
-
-nuclei_table = con.sql("SELECT * FROM Nuclei").df()
-cells_table = con.sql("SELECT * FROM Cell").df()
-cytoplasm_table = con.sql("SELECT * FROM Cytoplasm").df()
-organoid_table = con.sql("SELECT * FROM Organoid").df()
-con.close()
-
-
-# In[6]:
 
 
 nuclei_id_set = set(nuclei_table["object_id"].to_list())
@@ -98,24 +109,24 @@ cells_table = cells_table[cells_table["object_id"].isin(intersection_set)]
 cytoplasm_table = cytoplasm_table[cytoplasm_table["object_id"].isin(intersection_set)]
 
 
+# In[6]:
+
+
+# connect to DuckDB and register the tables
+with duckdb.connect() as con:
+    con.register("df1", nuclei_table)
+    con.register("df2", cells_table)
+    con.register("df3", cytoplasm_table)
+    # Merge them with SQL
+    merged_df = con.execute("""
+        SELECT *
+        FROM df1
+        LEFT JOIN df2 USING (object_id)
+        LEFT JOIN df3 USING (object_id)
+    """).df()
+
+
 # In[7]:
-
-
-con = duckdb.connect()
-con.register("df1", nuclei_table)
-con.register("df2", cells_table)
-con.register("df3", cytoplasm_table)
-# Merge them with SQL
-merged_df = con.execute("""
-    SELECT *
-    FROM df1
-    LEFT JOIN df2 USING (object_id)
-    LEFT JOIN df3 USING (object_id)
-""").df()
-con.close()
-
-
-# In[8]:
 
 
 # save the organoid data as parquet
@@ -124,10 +135,10 @@ organoid_table.to_parquet(destination_organoid_parquet_file, index=False)
 organoid_table.head()
 
 
-# In[9]:
+# In[8]:
 
 
-print(f"Final merged dataframe shape: {merged_df.shape}")
+print(f"Final merged single cell dataframe shape: {merged_df.shape}")
 # save the sc data as parquet
 merged_df.to_parquet(destination_sc_parquet_file, index=False)
 merged_df.head()

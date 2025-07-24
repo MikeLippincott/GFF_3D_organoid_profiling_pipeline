@@ -23,7 +23,7 @@ python "$git_root"/4.processing_image_based_profiles/scripts/0.get_profiling_sta
 # loop through each dir and submit a job
 for dir in $dirs; do
     well_fov=$(basename "$dir")
-    echo "$well_fov"
+    echo "$patient - $well_fov"
     # check that the number of jobs is less than 990
     # prior to submitting a job
     number_of_jobs=$(squeue -u "$USER" | wc -l)
@@ -37,7 +37,7 @@ for dir in $dirs; do
         --partition=amilan \
         --qos=long \
         --account=amc-general \
-        --time=1:00:00 \
+        --time=5:00 \
         --output=parent_featurize-%j.out \
         "$git_root"/4.processing_image_based_profiles/merge_features_parent.sh "$patient" "$well_fov"
 

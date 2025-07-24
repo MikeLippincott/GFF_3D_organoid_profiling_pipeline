@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import argparse
@@ -100,7 +100,7 @@ def centroid_within_bbox_detection(
 
 # ### Pathing
 
-# In[ ]:
+# In[4]:
 
 
 # input paths
@@ -135,7 +135,7 @@ print(f"Organoid profile shape: {organoid_profile_df.shape}")
 sc_profile_df.insert(2, "parent_organoid", -1)
 
 
-# In[ ]:
+# In[7]:
 
 
 x_y_z_sc_colnames = [
@@ -157,8 +157,6 @@ organoid_bbox_colnames = [
 organoid_bbox_colnames = sorted(organoid_bbox_colnames)
 print(f"The organoid bounding boxes are in the columns:\n{organoid_bbox_colnames}")
 
-
-# ### Relate the single cells and organoids
 
 # In[9]:
 
