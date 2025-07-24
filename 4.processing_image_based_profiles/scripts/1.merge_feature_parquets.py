@@ -56,15 +56,15 @@ if not in_notebook:
     well_fov = args.well_fov
     patient = args.patient
 else:
-    well_fov = "G10-2"
-    patient = "NF0016"
+    well_fov = "C4-1"
+    patient = "NF0014"
 
 
 result_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}"
 ).resolve(strict=True)
 database_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/converted_profiles/{well_fov}"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}"
 ).resolve()
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
