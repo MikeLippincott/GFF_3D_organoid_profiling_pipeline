@@ -72,8 +72,8 @@ if not in_notebook:
     well_fov = args.well_fov
     patient = args.patient
 else:
-    well_fov = "G10-2"
-    patient = "NF0016"
+    well_fov = "C4-1"
+    patient = "NF0014"
 
 
 result_path = pathlib.Path(
