@@ -18,6 +18,12 @@ else
     echo "Error: File $patient_array_file_path does not exist."
     exit 1
 fi
+# setup the logs dir
+if [ -d "$git_root/4.processing_image_based_profiles/logs" ]; then
+    rm -rf "$git_root/4.processing_image_based_profiles/logs"
+fi
+mkdir "$git_root/4.processing_image_based_profiles/logs"
+
 
 for patient in "${patient_array[@]}"; do
     number_of_jobs=$(squeue -u "$USER" | wc -l)
