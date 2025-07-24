@@ -1,8 +1,11 @@
 #!/bin/bash
-
-module load anaconda
-conda init bash
-conda activate nf1_image_based_profiling_env
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --partition=amilan
+#SBATCH --qos=normal
+#SBATCH --account=amc-general
+#SBATCH --time=10:00
+#SBATCH --output=merge_features_grand_parent-%j.out
 
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
@@ -35,11 +38,11 @@ for patient in "${patient_array[@]}"; do
     --nodes=1 \
     --ntasks=1 \
     --partition=amilan \
-    --qos=long \
+    --qos=normal \
     --account=amc-general \
     --time=1:00:00 \
-    --output=featurization_sc_grand_parent-%j.out \
-    "$git_root"/4.processing_image_based_profiles/HPC_run_featurization_grand_parent.sh "$patient"
+    --output=merge_features_parent-%j.out \
+    "$git_root"/4.processing_image_based_profiles/merge_features_parent.sh "$patient"
 done
 
 conda deactivate
