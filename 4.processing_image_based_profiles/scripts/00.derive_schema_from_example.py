@@ -56,8 +56,8 @@ if not in_notebook:
     well_fov = args.well_fov
     patient = args.patient
 else:
-    well_fov = "G10-2"
-    patient = "NF0016"
+    well_fov = "C4-2"
+    patient = "NF0014"
 
 
 result_path = pathlib.Path(
@@ -69,9 +69,13 @@ database_path = pathlib.Path(
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
 sqlite_path = database_path / f"{well_fov}.duckdb"
+
+# schema save path
 schema_path = pathlib.Path(
     f"{root_dir}/4.processing_image_based_profiles/data/schemas/schema_db.duckdb"
-).resolve(strict=True)
+).resolve()
+schema_path.parent.mkdir(parents=True, exist_ok=True)
+
 
 # get a list of all parquets in the directory recursively
 parquet_files = list(result_path.rglob("*.parquet"))
@@ -248,42 +252,9 @@ for compartment in final_df_dict.keys():
 # In[10]:
 
 
-for compartment, df in compartment_merged_dict.items():
-    print(compartment, df.shape)
-
-
-# In[11]:
-
-
 with duckdb.connect(schema_path) as cx:
-    organoid_table = cx.execute("SELECT * FROM Organoid").df()
-    cell_table = cx.execute("SELECT * FROM Cell").df()
-    nuclei_table = cx.execute("SELECT * FROM Nuclei").df()
-    cytoplasm_table = cx.execute("SELECT * FROM Cytoplasm").df()
-
-dict_of_schemas = {
-    "Organoid": organoid_table,
-    "Cell": cell_table,
-    "Nuclei": nuclei_table,
-    "Cytoplasm": cytoplasm_table,
-}
-
-
-# In[12]:
-
-
-# get the table from the schema
-with duckdb.connect(sqlite_path) as cx:
     for compartment, df in compartment_merged_dict.items():
-        if df.empty:
-            cx.register("temp_df", dict_of_schemas[compartment])
-            cx.execute(
-                f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df"
-            )
-            cx.unregister("temp_df")
-        else:
-            cx.register("temp_df", df)
-            cx.execute(
-                f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df"
-            )
-            cx.unregister("temp_df")
+        df = df.head(0)
+        cx.register("temp_df", df)
+        cx.execute(f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df")
+        cx.unregister("temp_df")

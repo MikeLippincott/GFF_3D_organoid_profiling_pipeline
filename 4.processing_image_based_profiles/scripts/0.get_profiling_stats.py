@@ -17,6 +17,23 @@ try:
 except NameError:
     in_notebook = False
 
+    # Get the current working directory
+cwd = pathlib.Path.cwd()
+
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+# Check if a Git root directory was found
+if root_dir is None:
+    raise FileNotFoundError("No Git root directory found.")
+
 
 # In[2]:
 
@@ -39,11 +56,13 @@ else:
 
 
 stats_path = pathlib.Path(
-    f"../../data/{patient}/extracted_features/run_stats/"
+    f"{root_dir}/data/{patient}/extracted_features/run_stats/"
 ).resolve(strict=True)
-output_path = pathlib.Path(f"../../data/{patient}/converted_profiles/").resolve()
+output_path = pathlib.Path(f"{root_dir}/data/{patient}/converted_profiles/").resolve()
 output_path.mkdir(parents=True, exist_ok=True)
-stats_output_path = pathlib.Path(f"../../data/{patient}/profiling_stats/").resolve()
+stats_output_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_stats/"
+).resolve()
 stats_output_path.mkdir(parents=True, exist_ok=True)
 
 stats_files = list(stats_path.glob("*.parquet"))
