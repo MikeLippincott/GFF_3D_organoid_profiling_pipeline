@@ -33,7 +33,7 @@ for dir in $dirs; do
         --nodes=1 \
         --ntasks=1 \
         --partition=amilan \
-        --qos=long \
+        --qos=normal \
         --account=amc-general \
         --time=5:00 \
         --output=child_featurize-%j.out \
