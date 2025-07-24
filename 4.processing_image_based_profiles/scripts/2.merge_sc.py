@@ -63,20 +63,20 @@ if not in_notebook:
     well_fov = args.well_fov
 else:
     patient = "NF0014"
-    well_fov = "C4-2"
+    well_fov = "C4-1"
 
 
 # In[3]:
 
 
 input_sqlite_file = pathlib.Path(
-    f"{root_dir}/data/{patient}/converted_profiles/{well_fov}/{well_fov}.duckdb"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/{well_fov}.duckdb"
 ).resolve(strict=True)
 destination_sc_parquet_file = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
 ).resolve()
 destination_organoid_parquet_file = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
 ).resolve()
 destination_sc_parquet_file.parent.mkdir(parents=True, exist_ok=True)
 dest_datatype = "parquet"
