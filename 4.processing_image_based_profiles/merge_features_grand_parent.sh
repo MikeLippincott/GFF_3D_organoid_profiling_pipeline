@@ -12,6 +12,7 @@ if [ -z "$git_root" ]; then
     echo "Error: Could not find the git root directory."
     exit 1
 fi
+jupyter nbconvert --to=script --FilesWriter.build_directory="$git_root"/4.processing_image_based_profiles/scripts/ "$git_root"/4.processing_image_based_profiles/notebooks/*.ipynb
 
 patient_array_file_path="$git_root/data/patient_IDs.txt"
 # read the patient IDs from the file into an array

@@ -62,6 +62,3 @@ print(
         (len(passed_list) / total_runs) * 100
     )
 )
-
-
-# In[ ]:
