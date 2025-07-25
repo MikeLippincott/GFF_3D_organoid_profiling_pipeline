@@ -1,0 +1,11 @@
+blocklist
+Area.Size.Shape_Organoid_CENTER.X
+Area.Size.Shape_Organoid_CENTER.Y
+Area.Size.Shape_Organoid_CENTER.Z
+Area.Size.Shape_Organoid_BBOX.VOLUME
+Area.Size.Shape_Organoid_MIN.X
+Area.Size.Shape_Organoid_MAX.X
+Area.Size.Shape_Organoid_MIN.Y
+Area.Size.Shape_Organoid_MAX.Y
+Area.Size.Shape_Organoid_MIN.Z
+Area.Size.Shape_Organoid_MAX.Z
