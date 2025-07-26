@@ -1,23 +1,23 @@
 Treatment,Target,Class,Therapeutic Categories
-ARV-825,BR4 inhibitor,PROTAC,PROTAC
+ARV-825,BRD4 inhibitor,PROTAC,PROTAC
 Binimetinib,MEK1/2 inhibitor,Small Molecule,Kinase Inhibitor
 Cabozantinib,receptor tyrosine kinase inhibitor,Small Molecule,Kinase Inhibitor
 Copanlisib,PI3K inhibitor,Small Molecule,Kinase Inhibitor
 DMSO,Control,Control,Control
 Digoxin,Na+/K+ pump inhibitor,Small Molecule,Cardiac Glycosides
-Everolimus,mTOR inhibtor,Small Molecule,Kinase Inhibitor
-Fimepinostat,PI3K and HDAC,Small Molecule,Investigational
+Everolimus,mTOR inhibitor,Small Molecule,Kinase Inhibitor
+Fimepinostat,PI3K and HDAC inhibitor,Small Molecule,Investigational
 Imatinib,tyrosine kinase inhibitor,Small Molecule,Kinase Inhibitor
 Ketotifen,histamine H1 receptor antagonist,Small Molecule,Anti-Allergic Agents
 Linsitinib,IGF-1R inhibitor,Small Molecule,Investigational
 Mirdametinib,MEK1/2 inhibitor,Small Molecule,Kinase Inhibitor
-Nilotinib,tyrosine kinase inhibitor,Small Molecule,Investegational
+Nilotinib,tyrosine kinase inhibitor,Small Molecule,Investigational
 Onalespib,HSP90 inhibitor,Small Molecule,Investigational
 Panobinostat,HDAC inhibitor,Small Molecule,Histone Deacetylase Inhibitors
-Rapamycin,mTOR inhibtor,Small Molecule,Kinase Inhibitor
-Sapanisertib,mTOR inhibtor,Small Molecule,Investigational
-Selumetinib,MEK1/MEK1/2 inhibitor2,Small Molecule,Kinase Inhibitor
+Rapamycin,mTOR inhibitor,Small Molecule,Kinase Inhibitor
+Sapanisertib,mTOR inhibitor,Small Molecule,Investigational
+Selumetinib,MEK1/2 inhibitor,Small Molecule,Kinase Inhibitor
 Staurosporine,Apoptosis induction,Small Molecule,Experimental
 Trabectedin,DNA binding,Small Molecule,Alkylating Drugs
 Trametinib,MEK1/2 inhibitor,Small Molecule,Kinase Inhibitor
-Vistusertib,mTOR inhibtor,Small Molecule,Investigational
+Vistusertib,mTOR inhibitor,Small Molecule,Investigational
