@@ -66,6 +66,9 @@ for patient in "${patient_array[@]}"; do
 
 done
 
+python "$git_root"/4.processing_image_based_profiles/scripts/11.combine_patients.py
+python "$git_root"/4.processing_image_based_profiles/scripts/12.add_drug_metadata.py
+
 conda deactivate
 
 echo "All features merged for patients" "${patient_array[@]}"
