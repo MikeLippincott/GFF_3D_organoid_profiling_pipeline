@@ -1,23 +1,23 @@
-Treatment,Pathway,Function,Class,Therapeutic Categories
-ARV-825,C-MYC,Degrades BRD4,PROTAC,PROTAC
-Binimetinib,MEK1/2,Inhibits MEK1/2,Small Molecule,Kinase Inhibitor
-Cabozantinib,MEK1/2,Inhibits FLT3; c-KIT; c-RET; AXL; c-MET; VEGFR2; MDR1,Small Molecule,Kinase Inhibitor
-Copanlisib,mTOR;NF-kB; MEK1/2,Inhibits PI3K,Small Molecule,Kinase Inhibitor
-DMSO,Control,Control,Control,Control
-Digoxin,MEK1/2;AKT,Ihibits NA/K pumps,Small Molecule,Cardiac Glycosides
-Everolimus,mTOR,Inhibits mTOR,Small Molecule,Kinase Inhibitor
-Fimepinostat,mTOR;NF-kB; MEK1/2,Inhibits PI3K,Small Molecule,Investigational
-Imatinib,MEK1/2,Inhibits PI3K,Small Molecule,Kinase Inhibitor
-Ketotifen,Histamines,histamine H1 receptor blocker and mast cell stabilizer,Small Molecule,Anti-Allergic Agents
-Linsitinib,mTOR,Inhibits IGF-1R,Small Molecule,Investigational
-Mirdametinib,MEK1/2,Inhibits MEK1/2,Small Molecule,Kinase Inhibitor
-Nilotinib,MEK1/2,Inhibits FLT3; c-KIT; PDGFR; BCR-ABL1,Small Molecule,Investegational
-Onalespib,HSP90,,Small Molecule,Investigational
-Panobinostat,HDAC,Inhibits HDAC,Small Molecule,Histone Deacetylase Inhibitors
-Rapamycin,mTOR,Inhibits mTOR,Small Molecule,Kinase Inhibitor
-Sapanisertib,mTOR,Inhibits mTOR,Small Molecule,Investigational
-Selumetinib,MEK1/2,Inhibits MEK1/2,Small Molecule,Kinase Inhibitor
-Staurosporine,PKC,Inhibits PKC,Small Molecule,Experimental
-Trabectedin,DNA binding,"Inhibits DNA repair, transcriptions",Small Molecule,Alkylating Drugs
-Trametinib,MEK1/2,Inhibits MEK1/2,Small Molecule,Kinase Inhibitor
-Vistusertib,mTOR,Inhibits mTOR,Small Molecule,Investigational
+Treatment,Target,Class,Therapeutic Categories
+ARV-825,BR4 inhibitor,PROTAC,PROTAC
+Binimetinib,MEK1/2 inhibitor,Small Molecule,Kinase Inhibitor
+Cabozantinib,receptor tyrosine kinase inhibitor,Small Molecule,Kinase Inhibitor
+Copanlisib,PI3K inhibitor,Small Molecule,Kinase Inhibitor
+DMSO,Control,Control,Control
+Digoxin,Na+/K+ pump inhibitor,Small Molecule,Cardiac Glycosides
+Everolimus,mTOR inhibtor,Small Molecule,Kinase Inhibitor
+Fimepinostat,PI3K and HDAC,Small Molecule,Investigational
+Imatinib,tyrosine kinase inhibitor,Small Molecule,Kinase Inhibitor
+Ketotifen,histamine H1 receptor antagonist,Small Molecule,Anti-Allergic Agents
+Linsitinib,IGF-1R inhibitor,Small Molecule,Investigational
+Mirdametinib,MEK1/2 inhibitor,Small Molecule,Kinase Inhibitor
+Nilotinib,tyrosine kinase inhibitor,Small Molecule,Investegational
+Onalespib,HSP90 inhibitor,Small Molecule,Investigational
+Panobinostat,HDAC inhibitor,Small Molecule,Histone Deacetylase Inhibitors
+Rapamycin,mTOR inhibtor,Small Molecule,Kinase Inhibitor
+Sapanisertib,mTOR inhibtor,Small Molecule,Investigational
+Selumetinib,MEK1/MEK1/2 inhibitor2,Small Molecule,Kinase Inhibitor
+Staurosporine,Apoptosis induction,Small Molecule,Experimental
+Trabectedin,DNA binding,Small Molecule,Alkylating Drugs
+Trametinib,MEK1/2 inhibitor,Small Molecule,Kinase Inhibitor
+Vistusertib,mTOR inhibtor,Small Molecule,Investigational
