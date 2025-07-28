@@ -133,6 +133,9 @@ sc_metadata_columns = [
     "dose",
     "treatment",
     "image_set",
+    "Target",
+    "Class",
+    "Therapeutic Categories",
     "Well",
     "parent_organoid",
 ]
@@ -204,6 +207,9 @@ organoid_metadata_columns = [
     "dose",
     "treatment",
     "image_set",
+    "Target",
+    "Class",
+    "Therapeutic Categories",
     "Well",
     "single_cell_count",
 ]
