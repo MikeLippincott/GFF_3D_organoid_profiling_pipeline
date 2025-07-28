@@ -32,26 +32,26 @@ mkdir -p "$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/" #
 
 for patient in "${patient_array[@]}"; do
 
-    # python "$git_root"/4.processing_image_based_profiles/scripts/0.get_profiling_stats.py --patient "$patient"
-    # # get the list of all dirs in the parent_dir
-    # parent_dir="$git_root/data/$patient/extracted_features"
-    # # get the list of all dirs in the parent_dir
-    # dirs=$(ls -d "$parent_dir"/*)
-    # for dir in $dirs; do
-    #     well_fov=$(basename "$dir")
-    #     # check if the well fov is a run stats dir
-    #     if [[ $well_fov == *"run_stats"* ]]; then
-    #         continue
-    #     fi
-    #     echo "$patient - $well_fov"
-    #     log_file="$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/${patient}_${well_fov}.log"
-    #     touch "$log_file"  # create the log file if it doesn't exist
-    #     {
-    #         python "$git_root"/4.processing_image_based_profiles/scripts/1.merge_feature_parquets.py --patient "$patient" --well_fov "$well_fov"
-    #         python "$git_root"/4.processing_image_based_profiles/scripts/2.merge_sc.py --patient "$patient" --well_fov "$well_fov"
-    #         python "$git_root"/4.processing_image_based_profiles/scripts/3.organoid_cell_relationship.py --patient "$patient" --well_fov "$well_fov"
-    #     } >> "$log_file" 2>&1
-    # done
+    python "$git_root"/4.processing_image_based_profiles/scripts/0.get_profiling_stats.py --patient "$patient"
+    # get the list of all dirs in the parent_dir
+    parent_dir="$git_root/data/$patient/extracted_features"
+    # get the list of all dirs in the parent_dir
+    dirs=$(ls -d "$parent_dir"/*)
+    for dir in $dirs; do
+        well_fov=$(basename "$dir")
+        # check if the well fov is a run stats dir
+        if [[ $well_fov == *"run_stats"* ]]; then
+            continue
+        fi
+        echo "$patient - $well_fov"
+        log_file="$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/${patient}_${well_fov}.log"
+        touch "$log_file"  # create the log file if it doesn't exist
+        {
+            python "$git_root"/4.processing_image_based_profiles/scripts/1.merge_feature_parquets.py --patient "$patient" --well_fov "$well_fov"
+            python "$git_root"/4.processing_image_based_profiles/scripts/2.merge_sc.py --patient "$patient" --well_fov "$well_fov"
+            python "$git_root"/4.processing_image_based_profiles/scripts/3.organoid_cell_relationship.py --patient "$patient" --well_fov "$well_fov"
+        } >> "$log_file" 2>&1
+    done
     patient_log_file="$git_root/4.processing_image_based_profiles/logs/patients/${patient}.log"
     mkdir -p "$(dirname "$patient_log_file")"  # create the patients directory if it doesn't exist
     touch "$patient_log_file"  # create the patient log file if it doesn't exist
