@@ -78,6 +78,11 @@ def annotate_profiles(
         pd.DataFrame
             Annotated profile DataFrame with additional columns for treatment, dose, and unit.
     """
+    drug_information = pd.read_csv(
+        pathlib.Path(
+            f"{root_dir}/4.processing_image_based_profiles/data/drugs/drug_information.csv"
+        )
+    )
     profile_df["Well"] = profile_df["image_set"].str.split("-").str[0]
     profile_df.insert(2, "Well", profile_df.pop("Well"))
     profile_df = pd.merge(
@@ -87,6 +92,10 @@ def annotate_profiles(
         right_on="well_position",
         how="left",
     ).drop(columns=["well_position"])
+    profile_df = profile_df.merge(
+        drug_information, how="left", left_on="treatment", right_on="Treatment"
+    )
+    profile_df.drop(columns=["Treatment"], inplace=True)
     for col in ["treatment", "dose", "unit"]:
         profile_df.insert(1, col, profile_df.pop(col))
     profile_df.insert(0, "patient", patient)

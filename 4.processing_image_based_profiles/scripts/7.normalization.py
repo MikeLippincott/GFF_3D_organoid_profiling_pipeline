@@ -91,12 +91,21 @@ organoid_annotated_profiles = pd.read_parquet(organoid_annotated_path)
 # In[5]:
 
 
+sc_annotated_profiles
+
+
+# In[6]:
+
+
 sc_metadata_columns = [
     "patient",
     "object_id",
     "unit",
     "dose",
     "treatment",
+    "Target",
+    "Class",
+    "Therapeutic Categories",
     "image_set",
     "Well",
     "parent_organoid",
@@ -106,7 +115,7 @@ sc_features_columns = [
 ]
 
 
-# In[6]:
+# In[7]:
 
 
 # find inf values and replace with NaN
@@ -115,7 +124,7 @@ sc_annotated_profiles[sc_features_columns] = sc_annotated_profiles[
 ].replace([float("inf"), -float("inf")], np.nan)
 
 
-# In[7]:
+# In[8]:
 
 
 # normalize the data
@@ -132,13 +141,13 @@ sc_normalized_profiles.head()
 
 # ### Normalize the organoid profiles
 
-# In[8]:
+# In[9]:
 
 
 organoid_annotated_profiles.head()
 
 
-# In[9]:
+# In[10]:
 
 
 organoid_metadata_columns = [
@@ -147,6 +156,9 @@ organoid_metadata_columns = [
     "unit",
     "dose",
     "treatment",
+    "Target",
+    "Class",
+    "Therapeutic Categories",
     "image_set",
     "Well",
     "single_cell_count",
