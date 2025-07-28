@@ -90,6 +90,9 @@ metadata_cols = [
     "unit",
     "dose",
     "treatment",
+    "Target",
+    "Class",
+    "Therapeutic Categories",
     "image_set",
     "Well",
     "parent_organoid",
@@ -159,7 +162,16 @@ for compartment, files in levels_to_merge_dict.items():
         # aggregate the profiles
         sc_agg_df = aggregate(
             population_df=fs_profiles,
-            strata=["patient", "Well", "treatment", "dose", "unit"],
+            strata=[
+                "patient",
+                "Well",
+                "treatment",
+                "dose",
+                "unit",
+                "Target",
+                "Class",
+                "Therapeutic Categories",
+            ],
             features=feature_columns,
             operation="median",
         )
@@ -170,7 +182,15 @@ for compartment, files in levels_to_merge_dict.items():
         # consensus profiles
         sc_consensus_df = aggregate(
             population_df=fs_profiles,
-            strata=["patient", "treatment", "dose", "unit"],
+            strata=[
+                "patient",
+                "treatment",
+                "dose",
+                "unit",
+                "Target",
+                "Class",
+                "Therapeutic Categories",
+            ],
             features=feature_columns,
             operation="median",
         )
@@ -225,7 +245,16 @@ for compartment, files in levels_to_merge_dict.items():
         # aggregate the profiles
         agg_df = aggregate(
             population_df=fs_profiles,
-            strata=["patient", "Well", "treatment", "dose", "unit"],
+            strata=[
+                "patient",
+                "Well",
+                "treatment",
+                "dose",
+                "unit",
+                "Target",
+                "Class",
+                "Therapeutic Categories",
+            ],
             features=feature_columns,
             operation="median",
         )
@@ -236,7 +265,15 @@ for compartment, files in levels_to_merge_dict.items():
         # consensus profiles
         consensus_df = aggregate(
             population_df=fs_profiles,
-            strata=["patient", "treatment", "dose", "unit"],
+            strata=[
+                "patient",
+                "treatment",
+                "dose",
+                "unit",
+                "Target",
+                "Class",
+                "Therapeutic Categories",
+            ],
             features=feature_columns,
             operation="median",
         )
