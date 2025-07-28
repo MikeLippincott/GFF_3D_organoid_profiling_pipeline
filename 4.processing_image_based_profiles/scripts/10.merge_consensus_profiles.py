@@ -124,8 +124,22 @@ organoid_fs = pd.read_parquet(organoid_fs_path)
 sc_agg_well_parent_organoid = pd.read_parquet(sc_agg_well_parent_organoid_path)
 sc_agg_well_parent_organoid_merge = sc_agg_well_parent_organoid.merge(
     organoid_fs,
-    left_on=["Well", "parent_organoid"],
-    right_on=["Well", "object_id"],
+    left_on=[
+        "Well",
+        "parent_organoid",
+        "treatment",
+        "Target",
+        "Class",
+        "Therapeutic Categories",
+    ],
+    right_on=[
+        "Well",
+        "object_id",
+        "treatment",
+        "Target",
+        "Class",
+        "Therapeutic Categories",
+    ],
 )
 
 sc_agg_well_parent_organoid_merge.to_parquet(
@@ -141,7 +155,7 @@ sc_agg_well = pd.read_parquet(sc_agg_well_path)
 organoid_agg_well = pd.read_parquet(organoid_agg_well_path)
 sc_agg_well_merge = sc_agg_well.merge(
     organoid_agg_well,
-    on=["Well"],
+    on=["Well", "treatment", "Target", "Class", "Therapeutic Categories"],
 )
 sc_agg_well_merge.to_parquet(organoid_agg_well_merge_path, index=False)
 sc_agg_well_merge.head()
@@ -152,6 +166,8 @@ sc_agg_well_merge.head()
 
 sc_consensus = pd.read_parquet(sc_consensus_path)
 organoid_consensus = pd.read_parquet(organoid_consensus_path)
-sc_consensus_merge = sc_consensus.merge(organoid_consensus, on=["treatment"])
+sc_consensus_merge = sc_consensus.merge(
+    organoid_consensus, on=["treatment", "Target", "Class", "Therapeutic Categories"]
+)
 sc_consensus_merge.to_parquet(organoid_consensus_merge_path, index=False)
 sc_consensus_merge.head()
