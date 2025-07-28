@@ -115,6 +115,9 @@ sc_metadata_columns = [
     "unit",
     "dose",
     "treatment",
+    "Target",
+    "Class",
+    "Therapeutic Categories",
     "image_set",
     "Well",
     "parent_organoid",
@@ -129,7 +132,7 @@ sc_features_df = sc_fs.drop(columns=sc_metadata_columns, errors="ignore")
 # stratification approach #1
 sc_well_agg = aggregate(
     population_df=sc_fs,
-    strata=["Well"],
+    strata=["Well", "treatment", "Target", "Class", "Therapeutic Categories"],
     features=sc_features_columns,
     operation="median",
 )
@@ -138,7 +141,14 @@ sc_well_agg.to_parquet(sc_agg_well_output_path, index=False)
 # stratification approach #2
 sc_well_parent_organoid_agg = aggregate(
     population_df=sc_fs,
-    strata=["Well", "parent_organoid"],
+    strata=[
+        "Well",
+        "parent_organoid",
+        "treatment",
+        "Target",
+        "Class",
+        "Therapeutic Categories",
+    ],
     features=sc_features_columns,
     operation="median",
 )
@@ -148,7 +158,7 @@ sc_well_parent_organoid_agg.to_parquet(
 # stratification approach #3
 sc_consensus = aggregate(  # a.k.a. consensus
     population_df=sc_fs,
-    strata=["treatment"],
+    strata=["treatment", "Target", "Class", "Therapeutic Categories"],
     features=sc_features_columns,
     operation="median",
 )
@@ -176,6 +186,9 @@ organoid_metadata_columns = [
     "dose",
     "treatment",
     "image_set",
+    "Target",
+    "Class",
+    "Therapeutic Categories",
     "Well",
     "parent_organoid",
     "MOA",
@@ -192,7 +205,7 @@ organoid_features_df = organoid_fs.drop(columns=sc_metadata_columns, errors="ign
 # stratification approach #1
 organoid_well_agg = aggregate(
     population_df=organoid_fs,
-    strata=["Well"],
+    strata=["Well", "treatment", "Target", "Class", "Therapeutic Categories"],
     features=organoidfeatures_columns,
     operation="median",
 )
@@ -201,8 +214,20 @@ organoid_well_agg.to_parquet(organoid_agg_well_output_path, index=False)
 # stratification approach #2
 organoid_consensus = aggregate(  # a.k.a. consensus
     population_df=organoid_fs,
-    strata=["treatment"],
+    strata=["treatment", "Target", "Class", "Therapeutic Categories"],
     features=organoidfeatures_columns,
     operation="median",
 )
 organoid_consensus.to_parquet(organoid_consensus_output_path, index=False)
+
+
+# In[11]:
+
+
+organoid_well_agg.head()
+
+
+# In[12]:
+
+
+organoid_consensus.head()
