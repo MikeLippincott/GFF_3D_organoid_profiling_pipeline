@@ -8,6 +8,7 @@ import pathlib
 
 import duckdb
 import pandas as pd
+from pycytominer import aggregate, feature_select
 
 # Get the current working directory
 cwd = pathlib.Path.cwd()
@@ -41,33 +42,18 @@ patients = pd.read_csv(patient_ids_path, header=None, names=["patient_id"], dtyp
     "patient_id"
 ].to_list()
 
+all_patients_output_path = pathlib.Path(
+    f"{root_dir}/data/all_patient_profiles"
+).resolve()
+all_patients_output_path.mkdir(parents=True, exist_ok=True)
 
-# Merge patients by the following levels:
 
 # In[3]:
 
 
 levels_to_merge_dict = {
-    "norm": {
-        "sc": [],
-        "organoid": [],
-    },
-    "fs": {
-        "sc_fs": [],
-        "organoid_fs": [],
-    },
-    "agg": {
-        "sc_agg_parent_organoid_level": [],
-        "sc_agg_well_level": [],
-        "sc_consensus": [],
-        "organoid_agg_well_level": [],
-        "organoid_consensus": [],
-    },
-    "merged": {
-        "sc-organoid_sc_agg_well_parent_organoid_level": [],
-        "sc-organoid_agg_well_level": [],
-        "sc-organoid_consensus": [],
-    },
+    "sc": [],
+    "organoid": [],
 }
 
 
@@ -81,47 +67,183 @@ for patient in patients:
     fs_path = pathlib.Path(
         f"{root_dir}/data/{patient}/image_based_profiles/4.feature_selected_profiles"
     )
-    agg_path = pathlib.Path(
-        f"{root_dir}/data/{patient}/image_based_profiles/5.aggregated_profiles"
-    )
-    merge_path = pathlib.Path(
-        f"{root_dir}/data/{patient}/image_based_profiles/6.merged_profiles"
-    )
+
     for file in norm_path.glob("*.parquet"):
         if "sc" in file.name:
-            levels_to_merge_dict["norm"]["sc"].append(file)
+            levels_to_merge_dict["sc"].append(file)
         elif "organoid" in file.name:
-            levels_to_merge_dict["norm"]["organoid"].append(file)
-    for file in fs_path.glob("*.parquet"):
-        if "sc" in file.name:
-            levels_to_merge_dict["fs"]["sc_fs"].append(file)
-        elif "organoid" in file.name:
-            levels_to_merge_dict["fs"]["organoid_fs"].append(file)
-    for file in agg_path.glob("*.parquet"):
-        for key in levels_to_merge_dict["agg"].keys():
-            if key in file.name:
-                levels_to_merge_dict["agg"][key].append(file)
-    for file in merge_path.glob("*.parquet"):
-        for key in levels_to_merge_dict["merged"].keys():
-            if key in file.name:
-                levels_to_merge_dict["merged"][key].append(file)
+            levels_to_merge_dict["organoid"].append(file)
 
 
 # In[5]:
 
 
-for level, files_dict in levels_to_merge_dict.items():
-    for profile_type, files in files_dict.items():
-        if not files:
-            continue
+feature_select_ops = [
+    "variance_threshold",
+    "drop_na_columns",
+    "correlation_threshold",
+    "blocklist",
+]
+metadata_cols = [
+    "patient",
+    "object_id",
+    "unit",
+    "dose",
+    "treatment",
+    "image_set",
+    "Well",
+    "parent_organoid",
+]
 
-        # Read and merge the parquet files
-        df = pd.concat([pd.read_parquet(file) for file in files], ignore_index=True)
-        print(f"Merged df shape for {level} - {profile_type}: {df.shape}")
 
-        # Optionally, you can save the merged table to a parquet file
-        output_path = pathlib.Path(
-            f"{root_dir}/data/all_patient_IBPs/{level}_{profile_type}_merged.parquet"
+# In[6]:
+
+
+for compartment, files in levels_to_merge_dict.items():
+    print(f"Found {len(files)} files for {compartment} level.")
+    list_of_dfs = []
+    for file in files:
+        patient_id = str(file.parent).split("/")[-3]
+        df = pd.read_parquet(file)
+        df["patient"] = patient_id
+        list_of_dfs.append(df)
+    df = pd.concat(list_of_dfs, ignore_index=True)
+
+    print(f"Concatenated DataFrame for {compartment} has the shape: {df.shape}")
+    df.to_parquet(
+        f"{all_patients_output_path}/{compartment}_profiles.parquet",
+        index=False,
+    )
+    if compartment == "sc":
+        blocklist_path = pathlib.Path(
+            f"{root_dir}/4.processing_image_based_profiles/data/blocklist/sc_blocklist.txt"
         )
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        df.to_parquet(output_path, index=False)
+        metadata_cols = [
+            "patient",
+            "object_id",
+            "unit",
+            "dose",
+            "treatment",
+            "Target",
+            "Class",
+            "Therapeutic Categories",
+            "image_set",
+            "Well",
+            "parent_organoid",
+        ]
+        # feature selection
+        feature_columns = [col for col in df.columns if col not in metadata_cols]
+        features_df = df[feature_columns]
+        fs_profiles = feature_select(
+            features_df,
+            operation=feature_select_ops,
+            features=feature_columns,
+            blocklist_file=blocklist_path,
+        )
+        original_data_shape = features_df.shape
+        fs_profiles = pd.concat(
+            [
+                df[metadata_cols].reset_index(drop=True),
+                fs_profiles.reset_index(drop=True),
+            ],
+            axis=1,
+        )
+        fs_profiles.to_parquet(
+            f"{all_patients_output_path}/sc_fs_profiles.parquet",
+            index=False,
+        )
+        feature_columns = [
+            col for col in fs_profiles.columns if col not in metadata_cols
+        ]
+        features_df = fs_profiles[feature_columns]
+        # aggregate the profiles
+        sc_agg_df = aggregate(
+            population_df=fs_profiles,
+            strata=["patient", "Well", "treatment", "dose", "unit"],
+            features=feature_columns,
+            operation="median",
+        )
+        sc_agg_df.to_parquet(
+            f"{all_patients_output_path}/sc_agg_profiles.parquet",
+            index=False,
+        )
+        # consensus profiles
+        sc_consensus_df = aggregate(
+            population_df=fs_profiles,
+            strata=["patient", "treatment", "dose", "unit"],
+            features=feature_columns,
+            operation="median",
+        )
+        sc_consensus_df.to_parquet(
+            f"{all_patients_output_path}/sc_consensus_profiles.parquet",
+            index=False,
+        )
+        print("The number features before feature selection:", original_data_shape[1])
+        print("The number features after feature selection:", fs_profiles.shape[1])
+
+    elif compartment == "organoid":
+        blocklist_path = pathlib.Path(
+            f"{root_dir}/4.processing_image_based_profiles/data/blocklist/organoid_blocklist.txt"
+        )
+        metadata_cols = [
+            "patient",
+            "object_id",
+            "unit",
+            "dose",
+            "treatment",
+            "Target",
+            "Class",
+            "Therapeutic Categories",
+            "image_set",
+            "Well",
+            "single_cell_count",
+        ]
+        feature_columns = [col for col in df.columns if col not in metadata_cols]
+        features_df = df[feature_columns]
+        fs_profiles = feature_select(
+            features_df,
+            operation=feature_select_ops,
+            features=feature_columns,
+            blocklist_file=blocklist_path,
+        )
+        original_data_shape = features_df.shape
+        fs_profiles = pd.concat(
+            [
+                df[metadata_cols].reset_index(drop=True),
+                fs_profiles.reset_index(drop=True),
+            ],
+            axis=1,
+        )
+        fs_profiles.to_parquet(
+            f"{all_patients_output_path}/organoid_fs_profiles.parquet",
+            index=False,
+        )
+        feature_columns = [
+            col for col in fs_profiles.columns if col not in metadata_cols
+        ]
+        features_df = fs_profiles[feature_columns]
+        # aggregate the profiles
+        agg_df = aggregate(
+            population_df=fs_profiles,
+            strata=["patient", "Well", "treatment", "dose", "unit"],
+            features=feature_columns,
+            operation="median",
+        )
+        agg_df.to_parquet(
+            f"{all_patients_output_path}/organoid_agg_profiles.parquet",
+            index=False,
+        )
+        # consensus profiles
+        consensus_df = aggregate(
+            population_df=fs_profiles,
+            strata=["patient", "treatment", "dose", "unit"],
+            features=feature_columns,
+            operation="median",
+        )
+        consensus_df.to_parquet(
+            f"{all_patients_output_path}/organoid_consensus_profiles.parquet",
+            index=False,
+        )
+
+        print("The number features before feature selection:", original_data_shape[1])
+        print("The number features after feature selection:", fs_profiles.shape[1])
