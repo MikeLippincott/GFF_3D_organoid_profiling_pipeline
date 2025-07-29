@@ -100,26 +100,26 @@ def centroid_within_bbox_detection(
 
 # ### Pathing
 
-# In[4]:
+# In[5]:
 
 
 # input paths
 sc_profile_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
 ).resolve(strict=True)
 organoid_profile_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
 ).resolve(strict=True)
 # output paths
 sc_profile_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/{well_fov}/sc_profiles_{well_fov}_related.parquet"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}_related.parquet"
 ).resolve()
 organoid_profile_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/{well_fov}/organoid_profiles_{well_fov}_related.parquet"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}_related.parquet"
 ).resolve()
 
 
-# In[5]:
+# In[6]:
 
 
 sc_profile_df = pd.read_parquet(sc_profile_path)
@@ -128,14 +128,26 @@ print(f"Single-cell profile shape: {sc_profile_df.shape}")
 print(f"Organoid profile shape: {organoid_profile_df.shape}")
 
 
-# In[6]:
+# In[7]:
 
 
 # initialize the parent organoid column
 sc_profile_df.insert(2, "parent_organoid", -1)
 
 
-# In[7]:
+# In[14]:
+
+
+[x for x in sc_profile_df.columns if "area" in x.lower()]
+
+
+# In[12]:
+
+
+sc_profile_df.columns
+
+
+# In[8]:
 
 
 x_y_z_sc_colnames = [
@@ -148,7 +160,7 @@ print(
 )
 
 
-# In[8]:
+# In[9]:
 
 
 organoid_bbox_colnames = [
@@ -160,7 +172,7 @@ print(f"The organoid bounding boxes are in the columns:\n{organoid_bbox_colnames
 
 # ### Relate the single cells and organoids
 
-# In[9]:
+# In[10]:
 
 
 # loop thorugh the organoids first as there are less organoids than single-cells
@@ -195,7 +207,7 @@ for organoid_index, organoid_row in organoid_profile_df.iterrows():
 
 # ### Add single-cell counts for each organoid
 
-# In[10]:
+# In[ ]:
 
 
 organoid_sc_counts = (
@@ -220,14 +232,14 @@ organoid_profile_df.insert(2, "single_cell_count", sc_count)
 
 # ### Save the profiles
 
-# In[11]:
+# In[ ]:
 
 
 organoid_profile_df.to_parquet(organoid_profile_output_path, index=False)
 organoid_profile_df.head()
 
 
-# In[12]:
+# In[ ]:
 
 
 sc_profile_df.to_parquet(sc_profile_output_path, index=False)

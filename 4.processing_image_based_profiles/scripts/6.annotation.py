@@ -51,7 +51,7 @@ if not in_notebook:
     patient = args.patient
 
 else:
-    patient = "SARCO361"
+    patient = "NF0014"
 
 
 # In[3]:
@@ -106,6 +106,7 @@ def annotate_profiles(
 
 
 # pathing
+
 sc_merged_path = pathlib.Path(
     f"{root_dir}/data/{patient}/image_based_profiles/1.combined_profiles/sc.parquet"
 ).resolve(strict=True)
