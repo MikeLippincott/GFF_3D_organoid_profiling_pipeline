@@ -188,3 +188,4 @@ nextflow_pipeline/.nextflow.log*
 .nextflow*
 
 5.EDA/results/*
+*Rplots.pdf
