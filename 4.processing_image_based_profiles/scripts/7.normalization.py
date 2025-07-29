@@ -52,7 +52,7 @@ if not in_notebook:
     patient = args.patient
 
 else:
-    patient = "SARCO361"
+    patient = "NF0014"
 
 
 # In[3]:
