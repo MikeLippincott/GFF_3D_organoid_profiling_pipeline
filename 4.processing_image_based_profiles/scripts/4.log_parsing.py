@@ -37,7 +37,7 @@ if root_dir is None:
 
 
 log_directory = pathlib.Path(
-    root_dir / "4.processing_image_based_profiles/logs"
+    root_dir / "4.processing_image_based_profiles/logs/patients"
 ).resolve(strict=True)
 # get a list of all files in the log directory
 log_files = [f for f in log_directory.iterdir() if f.is_file() and f.suffix == ".log"]
