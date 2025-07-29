@@ -64,10 +64,6 @@ for patient in patients:
     norm_path = pathlib.Path(
         f"{root_dir}/data/{patient}/image_based_profiles/3.normalized_profiles"
     )
-    fs_path = pathlib.Path(
-        f"{root_dir}/data/{patient}/image_based_profiles/4.feature_selected_profiles"
-    )
-
     for file in norm_path.glob("*.parquet"):
         if "sc" in file.name:
             levels_to_merge_dict["sc"].append(file)
@@ -284,3 +280,6 @@ for compartment, files in levels_to_merge_dict.items():
 
         print("The number features before feature selection:", original_data_shape[1])
         print("The number features after feature selection:", fs_profiles.shape[1])
+
+
+# In[ ]:
