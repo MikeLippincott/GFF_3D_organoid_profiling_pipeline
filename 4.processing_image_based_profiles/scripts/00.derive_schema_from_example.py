@@ -35,7 +35,7 @@ if root_dir is None:
     raise FileNotFoundError("No Git root directory found.")
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
