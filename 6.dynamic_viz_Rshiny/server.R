@@ -12,13 +12,13 @@ server <- function(input, output, session) {
     output$sc_or_organoid <- renderUI({
         selectInput("sc_or_organoid", "Select Data Type:",
                    choices = c("Single Cell", "Organoid"),
-                   selected = "Single Cell")
+                   selected = "Organoid")
     })
 
     output$data_level <- renderUI({
         selectInput("data_level", "Select Data Level:",
-                   choices = c("Consensus", "Feature Selected", "Normalized"),
-                   selected = "Consensus")
+                   choices = c("Consensus", "Aggregated", "Feature Selected", "Normalized"),
+                   selected = "Feature Selected")
     })
 
     # Reactive data loading
@@ -30,6 +30,8 @@ server <- function(input, output, session) {
                 # Load single cell data
                 if (input$data_level == "Consensus") {
                     data <- arrow::read_parquet("data/sc_consensus_umap.parquet")
+                } else if (input$data_level == "Aggregated") {
+                    data <- arrow::read_parquet("data/sc_aggregated_umap.parquet")
                 } else if (input$data_level == "Feature Selected") {
                     data <- arrow::read_parquet("data/sc_fs_umap.parquet")
                 } else if (input$data_level == "Normalized") {
@@ -40,6 +42,8 @@ server <- function(input, output, session) {
                 # Load organoid data
                 if (input$data_level == "Consensus") {
                     data <- arrow::read_parquet("data/organoid_consensus_umap.parquet")
+                } else if (input$data_level == "Aggregated") {
+                    data <- arrow::read_parquet("data/organoid_aggregated_umap.parquet")
                 } else if (input$data_level == "Feature Selected") {
                     data <- arrow::read_parquet("data/organoid_fs_umap.parquet")
                 } else if (input$data_level == "Normalized") {
@@ -76,7 +80,7 @@ server <- function(input, output, session) {
             patients <- unique(df()[[patient_col]])
             checkboxGroupInput("PatientSelect", "Select Patient(s):",
                               choices = patients,
-                              selected = patients[1])
+                              selected = patients)
         } else {
             h4("No patient column found in data")
         }
@@ -84,7 +88,7 @@ server <- function(input, output, session) {
 
     output$FacetSelect <- renderUI({
         # give the choice to facet by patient or not
-        selectInput("FacetSelect", "Facet by Patient:", choices = c("Yes", "No"), selected = "Yes")
+        selectInput("FacetSelect", "Facet by Patient:", choices = c("Yes", "No"), selected = "No")
     })
 
     # Filtered data based on patient selection
