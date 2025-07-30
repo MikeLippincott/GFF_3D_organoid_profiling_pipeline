@@ -5,7 +5,7 @@ library(rsconnect)
 
 testing <- FALSE
 
-if (testing) {
+if (!testing) {
 
     # Load environment variables from .Renviron file
     # This happens automatically when R starts, but we can explicitly load it
