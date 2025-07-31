@@ -3,7 +3,7 @@ library(ggplot2)
 library(shiny)
 library(rsconnect)
 
-testing <- FALSE
+testing <- TRUE
 
 if (!testing) {
 
