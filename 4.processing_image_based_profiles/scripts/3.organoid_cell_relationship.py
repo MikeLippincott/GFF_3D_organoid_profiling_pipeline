@@ -54,8 +54,8 @@ if not in_notebook:
     well_fov = args.well_fov
     patient = args.patient
 else:
-    well_fov = "C4-1"
-    patient = "NF0014"
+    well_fov = "G7-5"
+    patient = "SARCO361"
 
 
 # In[3]:
@@ -135,20 +135,18 @@ print(f"Organoid profile shape: {organoid_profile_df.shape}")
 sc_profile_df.insert(2, "parent_organoid", -1)
 
 
-# In[7]:
+# In[8]:
 
 
 x_y_z_sc_colnames = [
-    x
-    for x in sc_profile_df.columns
-    if "area" in x.lower() and "center" in x.lower() and "nuclei" in x.lower()
+    x for x in sc_profile_df.columns if "area" in x.lower() and "center" in x.lower()
 ]
 print(
     f"The nuclei centroids in the single-cell profile are in the columns:\n{x_y_z_sc_colnames}"
 )
 
 
-# In[8]:
+# In[9]:
 
 
 organoid_bbox_colnames = [
@@ -158,7 +156,7 @@ organoid_bbox_colnames = sorted(organoid_bbox_colnames)
 print(f"The organoid bounding boxes are in the columns:\n{organoid_bbox_colnames}")
 
 
-# In[9]:
+# In[10]:
 
 
 # loop thorugh the organoids first as there are less organoids than single-cells
@@ -193,7 +191,7 @@ for organoid_index, organoid_row in organoid_profile_df.iterrows():
 
 # ### Add single-cell counts for each organoid
 
-# In[10]:
+# In[11]:
 
 
 organoid_sc_counts = (
@@ -202,8 +200,6 @@ organoid_sc_counts = (
     .to_frame(name="single_cell_count")
     .reset_index()
 )
-# filter out singleton single-cells
-organoid_sc_counts = organoid_sc_counts.loc[organoid_sc_counts["parent_organoid"] > 0]
 # merge the organoid profile with the single-cell counts
 organoid_profile_df = pd.merge(
     organoid_profile_df,
@@ -218,14 +214,14 @@ organoid_profile_df.insert(2, "single_cell_count", sc_count)
 
 # ### Save the profiles
 
-# In[11]:
+# In[12]:
 
 
 organoid_profile_df.to_parquet(organoid_profile_output_path, index=False)
 organoid_profile_df.head()
 
 
-# In[12]:
+# In[13]:
 
 
 sc_profile_df.to_parquet(sc_profile_output_path, index=False)
