@@ -72,8 +72,8 @@ if not in_notebook:
     well_fov = args.well_fov
     patient = args.patient
 else:
-    well_fov = "C4-1"
-    patient = "NF0014"
+    well_fov = "G7-5"
+    patient = "SARCO361"
 
 
 result_path = pathlib.Path(
@@ -183,7 +183,7 @@ for compartment in feature_types_dict.keys():
 
 
 feature_types = [
-    "AreaSize_Shape",
+    "AreaSizeShape",
     "Colocalization",
     "Intensity",
     "Granularity",
