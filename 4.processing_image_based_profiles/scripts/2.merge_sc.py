@@ -62,8 +62,8 @@ if not in_notebook:
     patient = args.patient
     well_fov = args.well_fov
 else:
-    patient = "NF0014"
-    well_fov = "C4-1"
+    patient = "SARCO361"
+    well_fov = "G7-5"
 
 
 # In[3]:
