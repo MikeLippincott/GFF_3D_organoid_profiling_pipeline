@@ -11,6 +11,7 @@ ui <- fluidPage(
       uiOutput("sc_or_organoid"),
       uiOutput("data_level"),
       uiOutput("PatientSelect"),
+      uiOutput("TreatmentSelect"),
       uiOutput("FacetSelect")
     ),
 

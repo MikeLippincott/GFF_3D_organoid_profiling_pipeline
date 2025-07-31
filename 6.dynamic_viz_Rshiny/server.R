@@ -17,7 +17,7 @@ server <- function(input, output, session) {
 
     output$data_level <- renderUI({
         selectInput("data_level", "Select Data Level:",
-                   choices = c("Consensus", "Aggregated", "Feature Selected", "Normalized"),
+                   choices = c("Consensus", "Feature Selected"),
                    selected = "Feature Selected")
     })
 
@@ -30,25 +30,15 @@ server <- function(input, output, session) {
                 # Load single cell data
                 if (input$data_level == "Consensus") {
                     data <- arrow::read_parquet("data/sc_consensus_umap.parquet")
-                } else if (input$data_level == "Aggregated") {
-                    data <- arrow::read_parquet("data/sc_aggregated_umap.parquet")
                 } else if (input$data_level == "Feature Selected") {
                     data <- arrow::read_parquet("data/sc_fs_umap.parquet")
-                } else if (input$data_level == "Normalized") {
-                    # Fallback to available file
-                    data <- arrow::read_parquet("data/sc_umap.parquet")
                 }
             } else if (input$sc_or_organoid == "Organoid") {
                 # Load organoid data
                 if (input$data_level == "Consensus") {
                     data <- arrow::read_parquet("data/organoid_consensus_umap.parquet")
-                } else if (input$data_level == "Aggregated") {
-                    data <- arrow::read_parquet("data/organoid_aggregated_umap.parquet")
                 } else if (input$data_level == "Feature Selected") {
                     data <- arrow::read_parquet("data/organoid_fs_umap.parquet")
-                } else if (input$data_level == "Normalized") {
-                    # Fallback to available file
-                    data <- arrow::read_parquet("data/organoid_umap.parquet")
                 }
             }
 
@@ -78,9 +68,20 @@ server <- function(input, output, session) {
 
         if (!is.null(patient_col)) {
             patients <- unique(df()[[patient_col]])
-            checkboxGroupInput("PatientSelect", "Select Patient(s):",
-                              choices = patients,
-                              selected = patients)
+            patients <- patients[!is.na(patients)]  # Remove NA values
+            patients <- sort(patients)  # Sort alphabetically
+
+            tagList(
+                checkboxGroupInput("PatientSelect", "Select Patient(s):",
+                                  choices = patients,
+                                  selected = patients),
+                fluidRow(
+                    column(6, actionButton("selectAllPatients", "Select All",
+                                         style = "width: 100%; font-size: 12px;")),
+                    column(6, actionButton("clearAllPatients", "Clear All",
+                                         style = "width: 100%; font-size: 12px;"))
+                )
+            )
         } else {
             h4("No patient column found in data")
         }
@@ -91,11 +92,46 @@ server <- function(input, output, session) {
         selectInput("FacetSelect", "Facet by Patient:", choices = c("Yes", "No"), selected = "No")
     })
 
-    # Filtered data based on patient selection
-    filtered_data <- reactive({
-        req(df(), input$PatientSelect)
+    output$TreatmentSelect <- renderUI({
+        req(df())
 
-        # Find patient column
+        # Try different possible treatment column names
+        treatment_col <- if("treatment" %in% colnames(df())) {
+            "treatment"
+        } else if("Treatment" %in% colnames(df())) {
+            "Treatment"
+        } else if("Target" %in% colnames(df())) {
+            "Target"
+        } else if("target" %in% colnames(df())) {
+            "target"
+        } else {
+            NULL
+        }
+
+        if (!is.null(treatment_col)) {
+            treatments <- unique(df()[[treatment_col]])
+            treatments <- treatments[!is.na(treatments)]  # Remove NA values
+            treatments <- sort(treatments)  # Sort alphabetically
+
+            tagList(
+                checkboxGroupInput("TreatmentSelect", "Select Treatment(s):",
+                                  choices = treatments,
+                                  selected = treatments),
+                fluidRow(
+                    column(6, actionButton("selectAllTreatments", "Select All",
+                                         style = "width: 100%; font-size: 12px;")),
+                    column(6, actionButton("clearAllTreatments", "Clear All",
+                                         style = "width: 100%; font-size: 12px;"))
+                )
+            )
+        } else {
+            h4("No treatment column found in data")
+        }
+    })
+
+    # Observers for select all / clear all patients
+    observeEvent(input$selectAllPatients, {
+        req(df())
         patient_col <- if("patient" %in% colnames(df())) {
             "patient"
         } else if("Patient" %in% colnames(df())) {
@@ -103,10 +139,87 @@ server <- function(input, output, session) {
         } else if("Metadata_Patient" %in% colnames(df())) {
             "Metadata_Patient"
         } else {
-            return(df())  # Return all data if no patient column
+            NULL
         }
 
-        dplyr::filter(df(), !!sym(patient_col) %in% input$PatientSelect)
+        if (!is.null(patient_col)) {
+            patients <- unique(df()[[patient_col]])
+            patients <- patients[!is.na(patients)]
+            updateCheckboxGroupInput(session, "PatientSelect", selected = patients)
+        }
+    })
+
+    observeEvent(input$clearAllPatients, {
+        updateCheckboxGroupInput(session, "PatientSelect", selected = character(0))
+    })
+
+    # Observers for select all / clear all treatments
+    observeEvent(input$selectAllTreatments, {
+        req(df())
+        treatment_col <- if("treatment" %in% colnames(df())) {
+            "treatment"
+        } else if("Treatment" %in% colnames(df())) {
+            "Treatment"
+        } else if("Target" %in% colnames(df())) {
+            "Target"
+        } else if("target" %in% colnames(df())) {
+            "target"
+        } else {
+            NULL
+        }
+
+        if (!is.null(treatment_col)) {
+            treatments <- unique(df()[[treatment_col]])
+            treatments <- treatments[!is.na(treatments)]
+            updateCheckboxGroupInput(session, "TreatmentSelect", selected = treatments)
+        }
+    })
+
+    observeEvent(input$clearAllTreatments, {
+        updateCheckboxGroupInput(session, "TreatmentSelect", selected = character(0))
+    })
+
+    # Filtered data based on patient and treatment selection
+    filtered_data <- reactive({
+        req(df(), input$PatientSelect)
+
+        data <- df()
+
+        # Find patient column
+        patient_col <- if("patient" %in% colnames(data)) {
+            "patient"
+        } else if("Patient" %in% colnames(data)) {
+            "Patient"
+        } else if("Metadata_Patient" %in% colnames(data)) {
+            "Metadata_Patient"
+        } else {
+            NULL
+        }
+
+        # Find treatment column
+        treatment_col <- if("treatment" %in% colnames(data)) {
+            "treatment"
+        } else if("Treatment" %in% colnames(data)) {
+            "Treatment"
+        } else if("Target" %in% colnames(data)) {
+            "Target"
+        } else if("target" %in% colnames(data)) {
+            "target"
+        } else {
+            NULL
+        }
+
+        # Filter by patient
+        if (!is.null(patient_col)) {
+            data <- dplyr::filter(data, !!sym(patient_col) %in% input$PatientSelect)
+        }
+
+        # Filter by treatment if selection exists
+        if (!is.null(treatment_col) && !is.null(input$TreatmentSelect)) {
+            data <- dplyr::filter(data, !!sym(treatment_col) %in% input$TreatmentSelect)
+        }
+
+        return(data)
     })
 
     output$umapPlot <- renderPlot({
@@ -197,6 +310,8 @@ server <- function(input, output, session) {
         cat("Target column:", target_col, "\n")
         cat("Patient column:", patient_col, "\n")
         cat("FacetSelect value:", input$FacetSelect, "\n")
+        cat("Selected patients:", paste(input$PatientSelect, collapse = ", "), "\n")
+        cat("Selected treatments:", paste(input$TreatmentSelect, collapse = ", "), "\n")
         cat("Patient column class:", class(data[[patient_col]]), "\n")
         cat("Unique patients:", paste(unique(data[[patient_col]]), collapse = ", "), "\n")
         cat("Number of rows in data:", nrow(data), "\n")
@@ -210,12 +325,30 @@ server <- function(input, output, session) {
 
         if (input$FacetSelect == "No") {
             # Create plot with dynamic column names
-            p <- ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
+            p <- (ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
                                 color = !!sym(target_col))) +
-                geom_point(size = 2, alpha = 0.7) +
+                geom_point(size = 1, alpha = 0.7) +
                 theme_minimal() +
                 labs(x = umap1_col, y = umap2_col, title = "UMAP Plot") +
-                scale_color_manual(values = custom_MOA_palette)  # Use custom colors
+                scale_color_manual(values = custom_MOA_palette) + # Use custom colors
+                theme_minimal() +
+                        labs(x = umap1_col, y = umap2_col, title = "UMAP Plot") +
+                        scale_color_manual(values = custom_MOA_palette) # Use custom colors
+                        + theme_bw()
+                        + theme(
+                            plot.title = element_text(hjust = 0.5, size = 16),
+                            axis.title.x = element_text(size = 14),
+                            axis.title.y = element_text(size = 14),
+                            legend.title = element_text(size = 14, hjust = 0.5),
+                            legend.text = element_text(size = 12)
+                        )
+                        + guides(
+                            color = guide_legend(
+                            title = "MOA",
+                            text = element_text(size = 16, hjust = 0.5),
+                            override.aes = list(alpha = 1,size = 5)
+                        )
+                        ))
         } else {
             # Create plot with dynamic column names and faceting
             if (!is.null(patient_col)) {
@@ -235,12 +368,28 @@ server <- function(input, output, session) {
 
                 # Try a simpler approach to faceting
                 tryCatch({
-                    p <- ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
+                    p <- (ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
                                         color = !!sym(target_col))) +
-                        geom_point(size = 2, alpha = 0.7) +
+                        geom_point(size = 1, alpha = 0.7) +
                         theme_minimal() +
                         labs(x = umap1_col, y = umap2_col, title = "UMAP Plot") +
                         scale_color_manual(values = custom_MOA_palette) # Use custom colors
+                        + theme_bw()
+                        + theme(
+                            plot.title = element_text(hjust = 0.5, size = 16),
+                            axis.title.x = element_text(size = 14),
+                            axis.title.y = element_text(size = 14),
+                            legend.title = element_text(size = 14, hjust = 0.5),
+                            legend.text = element_text(size = 12)
+                        )
+                        + guides(
+                            color = guide_legend(
+                            title = "MOA",
+                            text = element_text(size = 16, hjust = 0.5),
+                            override.aes = list(alpha = 1,size = 5)
+                        )
+                        )
+                    )
 
                     # Add faceting using a different method
                     if (patient_col == "patient") {
@@ -253,13 +402,13 @@ server <- function(input, output, session) {
                 }, error = function(e) {
                     cat("Faceting error:", e$message, "\n")
                     # Fallback: create plot without faceting
-                    p <- ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
+                    p <- (ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
                                         color = !!sym(target_col))) +
-                        geom_point(size = 2, alpha = 0.7) +
+                        geom_point(size = 1, alpha = 0.7) +
                         theme_bw() +
                         labs(x = umap1_col, y = umap2_col, title = "UMAP Plot (Faceting Failed)") +
                         scale_color_manual(values = custom_MOA_palette)
-                        + geom_point(alpha = 0.7)
+                        + geom_point(alpha = 0.7, size = 1)
                         # make the colors continuous
                         + scale_color_gradient(low = "lightblue", high = "darkblue")
                         + theme_bw()
@@ -271,19 +420,19 @@ server <- function(input, output, session) {
                             legend.text = element_text(size = 12)
                         )
                         + guides(
-                            color = guide_colorbar(
-                                title = "Target",
-                                title.position = "top",
-                                title.hjust = 0.5,
-                                size = 3
-                            )
+                            color = guide_legend(
+                            title = "MOA",
+                            text = element_text(size = 16, hjust = 0.5),
+                            override.aes = list(alpha = 1,size = 5)
+                        )
+                        )
                         )
                 })
             } else {
                 # Fallback when no patient column - just show regular plot
-                p <- ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
+                p <- (ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
                                     color = !!sym(target_col))) +
-                    geom_point(size = 2, alpha = 0.7) +
+                    geom_point(size = 1, alpha = 0.7) +
                     theme_bw() +
                     labs(x = umap1_col, y = umap2_col, title = "UMAP Plot (No Patient Column Found)") +
                     scale_color_manual(values = custom_MOA_palette)
@@ -299,11 +448,11 @@ server <- function(input, output, session) {
                         legend.text = element_text(size = 12)
                     )
                     + guides(
-                        color = guide_colorbar(
-                            title = "Target",
-                            title.position = "top",
-                            title.hjust = 0.5,
-                            size = 3
+                            color = guide_legend(
+                            title = "MOA",
+                            text = element_text(size = 16, hjust = 0.5),
+                            override.aes = list(alpha = 1,size = 5)
+                        )
                         )
                     )
             }
