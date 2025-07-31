@@ -87,9 +87,24 @@ server <- function(input, output, session) {
         }
     })
 
+    output$ColorBySelect <- renderUI({
+        selectInput("ColorBySelect", "Color by:",
+                   choices = c("Target", "Patient"),
+                   selected = "Target")
+    })
+
     output$FacetSelect <- renderUI({
-        # give the choice to facet by patient or not
-        selectInput("FacetSelect", "Facet by Patient:", choices = c("Yes", "No"), selected = "No")
+        req(input$ColorBySelect)
+
+        if (input$ColorBySelect == "Target") {
+            selectInput("FacetSelect", "Facet by Patient:",
+                       choices = c("Yes", "No"),
+                       selected = "No")
+        } else {
+            selectInput("FacetSelect", "Facet by Target:",
+                       choices = c("Yes", "No"),
+                       selected = "No")
+        }
     })
 
     output$TreatmentSelect <- renderUI({
@@ -302,18 +317,17 @@ server <- function(input, output, session) {
             return()
         }
 
-        req(input$FacetSelect)  # Ensure FacetSelect input exists
+        req(input$FacetSelect, input$ColorBySelect)  # Ensure both inputs exist
 
         # Debug: print what we found
         cat("UMAP1 column:", umap1_col, "\n")
         cat("UMAP2 column:", umap2_col, "\n")
         cat("Target column:", target_col, "\n")
         cat("Patient column:", patient_col, "\n")
+        cat("ColorBySelect value:", input$ColorBySelect, "\n")
         cat("FacetSelect value:", input$FacetSelect, "\n")
         cat("Selected patients:", paste(input$PatientSelect, collapse = ", "), "\n")
         cat("Selected treatments:", paste(input$TreatmentSelect, collapse = ", "), "\n")
-        cat("Patient column class:", class(data[[patient_col]]), "\n")
-        cat("Unique patients:", paste(unique(data[[patient_col]]), collapse = ", "), "\n")
         cat("Number of rows in data:", nrow(data), "\n")
 
         # Check if all required columns exist
@@ -323,139 +337,128 @@ server <- function(input, output, session) {
             return()
         }
 
-        if (input$FacetSelect == "No") {
-            # Create plot with dynamic column names
-            p <- (ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
-                                color = !!sym(target_col))) +
-                geom_point(size = 1, alpha = 0.7) +
-                theme_minimal() +
-                labs(x = umap1_col, y = umap2_col, title = "UMAP Plot") +
-                scale_color_manual(values = custom_MOA_palette) + # Use custom colors
-                theme_minimal() +
-                        labs(x = umap1_col, y = umap2_col, title = "UMAP Plot") +
-                        scale_color_manual(values = custom_MOA_palette) # Use custom colors
-                        + theme_bw()
-                        + theme(
-                            plot.title = element_text(hjust = 0.5, size = 16),
-                            axis.title.x = element_text(size = 14),
-                            axis.title.y = element_text(size = 14),
-                            legend.title = element_text(size = 14, hjust = 0.5),
-                            legend.text = element_text(size = 12)
-                        )
-                        + guides(
-                            color = guide_legend(
-                            title = "MOA",
-                            text = element_text(size = 16, hjust = 0.5),
-                            override.aes = list(alpha = 1,size = 5)
-                        )
-                        ))
+        # Determine color and facet variables based on selection
+        if (input$ColorBySelect == "Target") {
+            color_col <- target_col
+            facet_col <- if(input$FacetSelect == "Yes") patient_col else NULL
+            color_title <- "MOA"
+            color_palette <- custom_MOA_palette
         } else {
-            # Create plot with dynamic column names and faceting
+            color_col <- patient_col
+            facet_col <- if(input$FacetSelect == "Yes") target_col else NULL
+            color_title <- "Patient"
+            # Create a patient color palette (you can customize these colors)
             if (!is.null(patient_col)) {
-                # Ensure patient column is a factor and clean any problematic values
-                data[[patient_col]] <- as.factor(as.character(data[[patient_col]]))
-
-                # Remove any rows with NA in patient column
-                data <- data[!is.na(data[[patient_col]]), ]
-
-                if (nrow(data) == 0) {
-                    plot(1, 1, type = "n", xlab = "", ylab = "")
-                    text(1, 1, "No data after filtering")
-                    return()
-                }
-
-                cat("After cleaning - rows:", nrow(data), "patients:", paste(unique(data[[patient_col]]), collapse = ", "), "\n")
-
-                # Try a simpler approach to faceting
-                tryCatch({
-                    p <- (ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
-                                        color = !!sym(target_col))) +
-                        geom_point(size = 1, alpha = 0.7) +
-                        theme_minimal() +
-                        labs(x = umap1_col, y = umap2_col, title = "UMAP Plot") +
-                        scale_color_manual(values = custom_MOA_palette) # Use custom colors
-                        + theme_bw()
-                        + theme(
-                            plot.title = element_text(hjust = 0.5, size = 16),
-                            axis.title.x = element_text(size = 14),
-                            axis.title.y = element_text(size = 14),
-                            legend.title = element_text(size = 14, hjust = 0.5),
-                            legend.text = element_text(size = 12)
-                        )
-                        + guides(
-                            color = guide_legend(
-                            title = "MOA",
-                            text = element_text(size = 16, hjust = 0.5),
-                            override.aes = list(alpha = 1,size = 5)
-                        )
-                        )
-                    )
-
-                    # Add faceting using a different method
-                    if (patient_col == "patient") {
-                        p <- p + facet_wrap(~ patient, scales = "free")
-                    } else {
-                        # Fallback to no faceting if column name is unusual
-                        cat("Using alternative faceting approach\n")
-                        p <- p + labs(title = paste("UMAP Plot - Multiple Patients:", paste(unique(data[[patient_col]]), collapse = ", ")))
-                    }
-                }, error = function(e) {
-                    cat("Faceting error:", e$message, "\n")
-                    # Fallback: create plot without faceting
-                    p <- (ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
-                                        color = !!sym(target_col))) +
-                        geom_point(size = 1, alpha = 0.7) +
-                        theme_bw() +
-                        labs(x = umap1_col, y = umap2_col, title = "UMAP Plot (Faceting Failed)") +
-                        scale_color_manual(values = custom_MOA_palette)
-                        + geom_point(alpha = 0.7, size = 1)
-                        # make the colors continuous
-                        + scale_color_gradient(low = "lightblue", high = "darkblue")
-                        + theme_bw()
-                        + theme(
-                            plot.title = element_text(hjust = 0.5, size = 16),
-                            axis.title.x = element_text(size = 14),
-                            axis.title.y = element_text(size = 14),
-                            legend.title = element_text(size = 14, hjust = 0.5),
-                            legend.text = element_text(size = 12)
-                        )
-                        + guides(
-                            color = guide_legend(
-                            title = "MOA",
-                            text = element_text(size = 16, hjust = 0.5),
-                            override.aes = list(alpha = 1,size = 5)
-                        )
-                        )
-                        )
-                })
+                unique_patients <- unique(data[[patient_col]])
+                patient_colors <- rainbow(length(unique_patients))
+                names(patient_colors) <- unique_patients
+                color_palette <- patient_colors
             } else {
-                # Fallback when no patient column - just show regular plot
-                p <- (ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
-                                    color = !!sym(target_col))) +
+                color_palette <- NULL
+            }
+        }
+
+        # Check if color column exists
+        if (is.null(color_col)) {
+            plot(1, 1, type = "n", xlab = "", ylab = "")
+            text(1, 1, paste("Column not found for coloring:", input$ColorBySelect))
+            return()
+        }
+
+        if (is.null(facet_col)) {
+            # Create plot without faceting
+            p <- ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
+                                color = !!sym(color_col))) +
+                geom_point(size = 1, alpha = 0.7) +
+                theme_bw() +
+                labs(x = umap1_col, y = umap2_col, title = "UMAP Plot") +
+                theme(
+                    plot.title = element_text(hjust = 0.5, size = 16),
+                    axis.title.x = element_text(size = 14),
+                    axis.title.y = element_text(size = 14),
+                    legend.title = element_text(size = 14, hjust = 0.5),
+                    legend.text = element_text(size = 12)
+                ) +
+                guides(
+                    color = guide_legend(
+                        title = color_title,
+                        override.aes = list(alpha = 1, size = 5)
+                    )
+                )
+
+            # Add color scale
+            if (!is.null(color_palette)) {
+                p <- p + scale_color_manual(values = color_palette)
+            }
+        } else {
+            # Create plot with faceting
+            # Ensure facet column is a factor and clean any problematic values
+            data[[facet_col]] <- as.factor(as.character(data[[facet_col]]))
+
+            # Remove any rows with NA in facet column
+            data <- data[!is.na(data[[facet_col]]), ]
+
+            if (nrow(data) == 0) {
+                plot(1, 1, type = "n", xlab = "", ylab = "")
+                text(1, 1, "No data after filtering")
+                return()
+            }
+
+            cat("After cleaning - rows:", nrow(data), "facet levels:", paste(unique(data[[facet_col]]), collapse = ", "), "\n")
+
+            tryCatch({
+                p <- ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
+                                    color = !!sym(color_col))) +
                     geom_point(size = 1, alpha = 0.7) +
                     theme_bw() +
-                    labs(x = umap1_col, y = umap2_col, title = "UMAP Plot (No Patient Column Found)") +
-                    scale_color_manual(values = custom_MOA_palette)
-                    + geom_point(alpha = 0.7)
-                    # make the colors continuous
-                    + scale_color_gradient(low = "lightblue", high = "darkblue")
-                    + theme_bw()
-                    + theme(
+                    labs(x = umap1_col, y = umap2_col,
+                         title = paste("UMAP Plot - Faceted by", if(input$ColorBySelect == "Target") "Patient" else "Target")) +
+                    theme(
                         plot.title = element_text(hjust = 0.5, size = 16),
                         axis.title.x = element_text(size = 14),
                         axis.title.y = element_text(size = 14),
                         legend.title = element_text(size = 14, hjust = 0.5),
                         legend.text = element_text(size = 12)
-                    )
-                    + guides(
-                            color = guide_legend(
-                            title = "MOA",
-                            text = element_text(size = 16, hjust = 0.5),
-                            override.aes = list(alpha = 1,size = 5)
+                    ) +
+                    guides(
+                        color = guide_legend(
+                            title = color_title,
+                            override.aes = list(alpha = 1, size = 5)
                         )
+                    ) +
+                    facet_wrap(as.formula(paste("~", facet_col)), scales = "free")
+
+                # Add color scale
+                if (!is.null(color_palette)) {
+                    p <- p + scale_color_manual(values = color_palette)
+                }
+            }, error = function(e) {
+                cat("Faceting error:", e$message, "\n")
+                # Fallback: create plot without faceting
+                p <- ggplot(data, aes(x = !!sym(umap1_col), y = !!sym(umap2_col),
+                                    color = !!sym(color_col))) +
+                    geom_point(size = 1, alpha = 0.7) +
+                    theme_bw() +
+                    labs(x = umap1_col, y = umap2_col, title = "UMAP Plot (Faceting Failed)") +
+                    theme(
+                        plot.title = element_text(hjust = 0.5, size = 16),
+                        axis.title.x = element_text(size = 14),
+                        axis.title.y = element_text(size = 14),
+                        legend.title = element_text(size = 14, hjust = 0.5),
+                        legend.text = element_text(size = 12)
+                    ) +
+                    guides(
+                        color = guide_legend(
+                            title = color_title,
+                            override.aes = list(alpha = 1, size = 5)
                         )
                     )
-            }
+
+                # Add color scale
+                if (!is.null(color_palette)) {
+                    p <- p + scale_color_manual(values = color_palette)
+                }
+            })
         }
 
         p

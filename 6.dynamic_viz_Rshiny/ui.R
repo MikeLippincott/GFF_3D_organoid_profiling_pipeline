@@ -12,6 +12,7 @@ ui <- fluidPage(
       uiOutput("data_level"),
       uiOutput("PatientSelect"),
       uiOutput("TreatmentSelect"),
+      uiOutput("ColorBySelect"),
       uiOutput("FacetSelect")
     ),
 
