@@ -462,5 +462,6 @@ server <- function(input, output, session) {
         }
 
         p
-    })
+    }, width = function() session$clientData$output_umapPlot_width,
+       height = function() session$clientData$output_umapPlot_height)
 }
