@@ -40,7 +40,7 @@ for patient in "${patient_array[@]}"; do
         if [[ $well_fov == *"run_stats"* ]]; then
             continue
         fi
-        echo "$patient - $well_fov"
+        # echo "$patient - $well_fov"
         log_file="$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/${patient}_${well_fov}.log"
         touch "$log_file"  # create the log file if it doesn't exist
         # {
