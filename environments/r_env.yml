@@ -25,3 +25,6 @@ dependencies:
   - conda-forge::r-arrow
   - conda-forge::r-ggridges
   - conda-forge::r-circlize
+  - conda-forge::r-hrbrthemes
+  - conda-forge::r-tm
+
