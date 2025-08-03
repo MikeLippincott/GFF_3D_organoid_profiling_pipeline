@@ -28,6 +28,30 @@ for (package in list_of_packages) {
     )
 }
 
+# set custom colors for each MOA
+custom_MOA_palette <- c(
+    'BRD4 inhibitor' = "#93152A",  # Dark red
+    'receptor tyrosine kinase inhibitor' = "#BA3924",  # Red
+    'tyrosine kinase inhibitor' = "#D08543",  # Orange
+    'MEK1/2 inhibitor' = "#A1961A",  # Yellow-green/olive
+
+    'IGF-1R inhibitor' = "#9FC62A",  # Yellow-green
+    'mTOR inhibitor' = "#1FAD23",  # Green
+    'PI3K inhibitor' = "#32D06A",  # Light green
+    'PI3K and HDAC inhibitor' = "#15937C",  # Teal/dark green
+    'HDAC inhibitor' = "#24A5BA",  # Light blue/cyan
+
+    'Apoptosis induction' = "#438CD0",  # Medium blue
+    'DNA binding' = "#1A24A1",  # Dark blue
+    'HSP90 inhibitor' = "#532AC6",  # Blue-purple
+
+    'histamine H1 receptor antagonist' = "#AD1FA6",  # Purple/magenta
+    'Na+/K+ pump inhibitor' = "#D03294",  # Pink/magenta
+
+    'Control' = "#444444"  # Gray
+)
+
+
 parser <- ArgumentParser(description = "Consensus Profiles Analysis")
 parser$add_argument("--patient", type = "character", required = TRUE, help = "Input file path")
 args <- parser$parse_args()
@@ -86,6 +110,8 @@ if (!dir.exists(file.path(root_dir,paste0("5.EDA/figures/consensus_heatmaps/")))
     dir.create(file.path(root_dir,paste0("5.EDA/figures/consensus_heatmaps/")), recursive = TRUE)
 }
 
+unique(sc_consensus_df$Target)
+
 # drop columns that contain neighbors
 sc_consensus_df <- sc_consensus_df %>%
   select(-contains("Neighbors"))
@@ -99,10 +125,10 @@ column_anno <- HeatmapAnnotation(
         title_position = "topcenter",
         title_gp = gpar(fontsize = 16, angle = 0, fontface = "bold", hjust = 1.0),
         labels_gp = gpar(fontsize = 16,
-        title = gpar(fontsize = 16))
-    )
-
-
+        title = gpar(fontsize = 16))),
+    col = list(
+            Target = custom_MOA_palette
+        )
 )
 
 # get the list of features
@@ -271,8 +297,10 @@ column_anno <- HeatmapAnnotation(
         title_position = "topcenter",
         title_gp = gpar(fontsize = 16, angle = 0, fontface = "bold", hjust = 1.0),
         labels_gp = gpar(fontsize = 16,
-        title = gpar(fontsize = 16))
-    )
+        title = gpar(fontsize = 16))),
+        col = list(
+            Target = custom_MOA_palette
+        )
 
 
 )

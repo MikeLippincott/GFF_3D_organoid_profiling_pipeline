@@ -15,7 +15,8 @@ jupyter nbconvert --to=script --FilesWriter.build_directory="$git_root"/5.EDA/sc
 conda deactivate
 conda activate gff_figure_env
 
-# Rscript "$git_root"/5.EDA/scripts/1.plot_umap.R
+Rscript "$git_root"/5.EDA/scripts/1.plot_umap.r
+Rscript "$git_root"/5.EDA/scripts/3.heatmap.r
 
 patient_array_file_path="$git_root/data/patient_IDs.txt"
 # read the patient IDs from the file into an array
