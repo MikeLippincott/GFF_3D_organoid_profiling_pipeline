@@ -52,7 +52,7 @@ if not in_notebook:
     patient = args.patient
 
 else:
-    patient = "NF0014"
+    patient = "NF0018"
 
 
 # In[3]:
@@ -113,6 +113,29 @@ if "image_set_2" in organoid_profile.columns:
 
 
 # In[7]:
+
+
+sc_profile.head()
+
+
+# ## Remvoe all BF channels
+#
+
+# In[8]:
+
+
+print(f"Single-cell profiles shape: {sc_profile.shape}")
+list_of_columns_to_drop = [col for col in sc_profile.columns if "BF" in col]
+sc_profile = sc_profile.drop(columns=list_of_columns_to_drop)
+print(f"Single-cell profiles shape after dropping BF channels: {sc_profile.shape}")
+
+print(f"Organoid profiles shape: {organoid_profile.shape}")
+list_of_columns_to_drop = [col for col in organoid_profile.columns if "BF" in col]
+organoid_profile = organoid_profile.drop(columns=list_of_columns_to_drop)
+print(f"Organoid profiles shape after dropping BF channels: {organoid_profile.shape}")
+
+
+# In[9]:
 
 
 sc_profile.to_parquet(sc_merged_output_path, index=False)
