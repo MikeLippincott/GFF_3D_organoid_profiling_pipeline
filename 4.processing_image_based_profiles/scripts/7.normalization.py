@@ -88,12 +88,6 @@ organoid_annotated_profiles = pd.read_parquet(organoid_annotated_path)
 
 # ### Normalize the single-cell profiles
 
-# In[5]:
-
-
-sc_annotated_profiles
-
-
 # In[6]:
 
 
