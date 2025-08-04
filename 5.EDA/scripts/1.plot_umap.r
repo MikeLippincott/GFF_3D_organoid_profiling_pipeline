@@ -92,7 +92,7 @@ height <- 5
 options(repr.plot.width = width, repr.plot.height = height)
 umap_organoid_plot <- (
     ggplot(umap_results, aes(x = UMAP1, y = UMAP2, color = Target, size = single_cell_count))
-    + geom_point(alpha = 0.7)
+    + geom_point(alpha = 0.5)
     + scale_color_manual(values = custom_MOA_palette)
     + labs(title = "UMAP of Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
     + theme_bw()

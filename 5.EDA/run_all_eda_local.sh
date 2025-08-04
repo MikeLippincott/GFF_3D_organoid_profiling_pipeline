@@ -10,7 +10,7 @@ conda activate GFF_analysis
 
 jupyter nbconvert --to=script --FilesWriter.build_directory="$git_root"/5.EDA/scripts/ "$git_root"/5.EDA/notebooks/*.ipynb
 
-# python "$git_root"/5.EDA/scripts/0.generate_umap.py
+python "$git_root"/5.EDA/scripts/0.generate_umap.py
 
 conda deactivate
 conda activate gff_figure_env
