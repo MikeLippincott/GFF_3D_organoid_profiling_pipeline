@@ -9,3 +9,15 @@ Area.Size.Shape_Organoid_MIN.Y
 Area.Size.Shape_Organoid_MAX.Y
 Area.Size.Shape_Organoid_MIN.Z
 Area.Size.Shape_Organoid_MAX.Z
+Intensity_Organoid_AGP_MAX.X
+Intensity_Organoid_AGP_MAX.Y
+Intensity_Organoid_AGP_MAX.Z
+Intensity_Organoid_DNA_MAX.X
+Intensity_Organoid_DNA_MAX.Y
+Intensity_Organoid_DNA_MAX.Z
+Intensity_Organoid_ER_MAX.X
+Intensity_Organoid_ER_MAX.Y
+Intensity_Organoid_ER_MAX.Z
+Intensity_Organoid_Mito_MAX.X
+Intensity_Organoid_Mito_MAX.Y
+Intensity_Organoid_Mito_MAX.Z

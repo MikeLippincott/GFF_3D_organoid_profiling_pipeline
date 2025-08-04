@@ -95,21 +95,43 @@ feature_select_ops = [
 ]
 
 
+# In[6]:
+
+
+na_cutoff = 0.05
+corr_threshold = 0.95
+freq_cut = 0.01
+unique_cut = 0.01
+
+
 # ### Feature select the single-cell profiles
 
-# In[6]:
+# In[7]:
 
 
 sc_normalized.head()
 
 
-# In[7]:
+# In[8]:
 
 
 sc_blocklist = [
     x
     for x in sc_normalized.columns
     if "Area" in x and ("MAX" in x or "MIN" in x or "BBOX" in x or "CENTER" in x)
+]
+sc_blocklist += [
+    x
+    for x in sc_normalized.columns
+    if "Intensity" in x
+    and (
+        "MIN.X" in x
+        or "MAX.X" in x
+        or "MIN.Y" in x
+        or "MAX.Y" in x
+        or "MIN.Z" in x
+        or "MAX.Z" in x
+    )
 ]
 # write the blocklist to a file
 # add "blocklist" the beginning of the list
@@ -123,7 +145,7 @@ with open(sc_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[8]:
+# In[9]:
 
 
 sc_metadata_columns = [
@@ -145,7 +167,7 @@ sc_features_columns = [
 sc_features_df = sc_normalized.drop(columns=sc_metadata_columns, errors="ignore")
 
 
-# In[9]:
+# In[10]:
 
 
 # fs the data
@@ -154,6 +176,10 @@ sc_fs_profiles = feature_select(
     operation=feature_select_ops,
     features=sc_features_columns,
     blocklist_file=sc_blocklist_path,
+    na_cutoff=na_cutoff,
+    corr_threshold=corr_threshold,
+    freq_cut=freq_cut,
+    unique_cut=unique_cut,
 )
 original_data_shape = sc_normalized.shape
 sc_fs_profiles = pd.concat(
@@ -171,19 +197,32 @@ sc_fs_profiles.head()
 
 # ### Normalize the organoid profiles
 
-# In[10]:
+# In[11]:
 
 
 organoid_normalized.head()
 
 
-# In[11]:
+# In[12]:
 
 
 organoid_blocklist = [
     x
     for x in organoid_normalized.columns
     if "Area" in x and ("MAX" in x or "MIN" in x or "BBOX" in x or "CENTER" in x)
+]
+organoid_blocklist += [
+    x
+    for x in organoid_normalized.columns
+    if "Intensity" in x
+    and (
+        "MIN.X" in x
+        or "MAX.X" in x
+        or "MIN.Y" in x
+        or "MAX.Y" in x
+        or "MIN.Z" in x
+        or "MAX.Z" in x
+    )
 ]
 # write the blocklist to a file
 # add "blocklist" the beginning of the list
@@ -197,7 +236,7 @@ with open(organoid_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[12]:
+# In[13]:
 
 
 organoid_metadata_columns = [
@@ -221,7 +260,7 @@ organoid_features_df = organoid_normalized.drop(
 )
 
 
-# In[13]:
+# In[14]:
 
 
 # normalize the data
@@ -230,6 +269,10 @@ organoid_fs_profiles = feature_select(
     operation=feature_select_ops,
     features=organoid_features_columns,
     blocklist_file=organoid_blocklist_path,
+    na_cutoff=na_cutoff,
+    corr_threshold=corr_threshold,
+    freq_cut=freq_cut,
+    unique_cut=unique_cut,
 )
 original_data_shape = organoid_normalized.shape
 organoid_fs_profiles = pd.concat(

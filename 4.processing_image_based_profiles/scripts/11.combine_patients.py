@@ -93,6 +93,10 @@ metadata_cols = [
     "Well",
     "parent_organoid",
 ]
+na_cutoff = 0.05
+corr_threshold = 0.95
+freq_cut = 0.01
+unique_cut = 0.01
 
 
 # In[6]:
@@ -138,6 +142,10 @@ for compartment, files in levels_to_merge_dict.items():
             operation=feature_select_ops,
             features=feature_columns,
             blocklist_file=blocklist_path,
+            na_cutoff=na_cutoff,
+            corr_threshold=corr_threshold,
+            freq_cut=freq_cut,
+            unique_cut=unique_cut,
         )
         original_data_shape = features_df.shape
         fs_profiles = pd.concat(
@@ -221,6 +229,10 @@ for compartment, files in levels_to_merge_dict.items():
             operation=feature_select_ops,
             features=feature_columns,
             blocklist_file=blocklist_path,
+            na_cutoff=na_cutoff,
+            corr_threshold=corr_threshold,
+            freq_cut=freq_cut,
+            unique_cut=unique_cut,
         )
         original_data_shape = features_df.shape
         fs_profiles = pd.concat(
