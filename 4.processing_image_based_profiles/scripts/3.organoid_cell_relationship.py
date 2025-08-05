@@ -146,7 +146,7 @@ print(
 )
 
 
-# In[9]:
+# In[8]:
 
 
 organoid_bbox_colnames = [
@@ -156,7 +156,7 @@ organoid_bbox_colnames = sorted(organoid_bbox_colnames)
 print(f"The organoid bounding boxes are in the columns:\n{organoid_bbox_colnames}")
 
 
-# In[10]:
+# In[9]:
 
 
 # loop thorugh the organoids first as there are less organoids than single-cells
