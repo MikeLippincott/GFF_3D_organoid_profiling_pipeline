@@ -54,8 +54,8 @@ if not in_notebook:
     well_fov = args.well_fov
     patient = args.patient
 else:
-    well_fov = "G7-5"
-    patient = "SARCO361"
+    well_fov = "C2-1"
+    patient = "NF0014"
 
 
 # In[3]:
@@ -135,7 +135,7 @@ print(f"Organoid profile shape: {organoid_profile_df.shape}")
 sc_profile_df.insert(2, "parent_organoid", -1)
 
 
-# In[8]:
+# In[7]:
 
 
 x_y_z_sc_colnames = [
@@ -146,7 +146,7 @@ print(
 )
 
 
-# In[9]:
+# In[8]:
 
 
 organoid_bbox_colnames = [
@@ -156,7 +156,7 @@ organoid_bbox_colnames = sorted(organoid_bbox_colnames)
 print(f"The organoid bounding boxes are in the columns:\n{organoid_bbox_colnames}")
 
 
-# In[10]:
+# In[9]:
 
 
 # loop thorugh the organoids first as there are less organoids than single-cells
@@ -191,7 +191,7 @@ for organoid_index, organoid_row in organoid_profile_df.iterrows():
 
 # ### Add single-cell counts for each organoid
 
-# In[11]:
+# In[10]:
 
 
 organoid_sc_counts = (
@@ -212,16 +212,36 @@ sc_count = organoid_profile_df.pop("single_cell_count")
 organoid_profile_df.insert(2, "single_cell_count", sc_count)
 
 
-# ### Save the profiles
+# In[11]:
+
+
+if organoid_profile_df.empty:
+    # add a row with Na values
+    organoid_profile_df.loc[len(organoid_profile_df)] = [None] * len(
+        organoid_profile_df.columns
+    )
+    organoid_profile_df["image_set"] = well_fov
+
 
 # In[12]:
+
+
+if sc_profile_df.empty:
+    # add a row with Na values
+    sc_profile_df.loc[len(sc_profile_df)] = [None] * len(sc_profile_df.columns)
+    sc_profile_df["image_set"] = well_fov
+
+
+# ### Save the profiles
+
+# In[13]:
 
 
 organoid_profile_df.to_parquet(organoid_profile_output_path, index=False)
 organoid_profile_df.head()
 
 
-# In[13]:
+# In[14]:
 
 
 sc_profile_df.to_parquet(sc_profile_output_path, index=False)

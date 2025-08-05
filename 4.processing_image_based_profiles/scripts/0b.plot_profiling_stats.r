@@ -1,4 +1,4 @@
-list_of_packages <- c("ggplot2", "dplyr", "tidyr", "arrow")
+list_of_packages <- c("ggplot2", "dplyr", "tidyr", "arrow", "ggbreak")
 for (package in list_of_packages) {
     suppressPackageStartupMessages(
         suppressWarnings(
@@ -69,7 +69,7 @@ time_plot <- (
     + geom_boxplot(outlier.shape = NA)
     + geom_jitter(
         aes(color = feature_type),
-        position = position_jitterdodge(dodge.width = 0.1, jitter.width = 0.8),
+        position = position_jitterdodge(dodge.width = 0.1, jitter.width = 0.6),
         alpha = 0.1
     )
     + theme_bw()
@@ -85,6 +85,8 @@ time_plot <- (
         y = "Time Taken (minutes)",
     )
 )
+
+time_plot <- time_plot + scale_y_break(c(15, 16),scales = 0.3, space = 0.05)
 ggsave(
     filename = file.path(figures_path, "profiling_time_per_feature_type.png"),
     plot = time_plot,
@@ -92,47 +94,6 @@ ggsave(
     height = height,
     dpi = 300
 )
-time_plot
-width <- 12
-height <- 6
-options(repr.plot.width = width, repr.plot.height = height)
-time_plot_zoom <- (
-    ggplot(
-        profiling_stats_df,
-        aes(
-            x = feature_type,
-            y = time_taken_minutes,
-            fill = feature_type
-        )
-    )
-    + geom_boxplot(outlier.shape = NA)
-    + geom_jitter(
-        aes(color = feature_type),
-        position = position_jitterdodge(dodge.width = 0.1, jitter.width = 0.8),
-        alpha = 0.1
-    )
-    + theme_bw()
-    + theme(
-        axis.text.x = element_text(size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title.x = element_text(size = 16),
-        axis.title.y = element_text(size = 16),
-        legend.position = "none",
-    )
-    + labs(
-        x = "Feature Type",
-        y = "Time Taken (minutes)",
-    )
-    + ylim(0,30)
-)
-ggsave(
-    filename = file.path(figures_path, "profiling_time_per_feature_type_zoomed.png"),
-    plot = time_plot_zoom,
-    width = width,
-    height = height,
-    dpi = 300
-)
-time_plot_zoom
 
 mem_plot <- (
     ggplot(
