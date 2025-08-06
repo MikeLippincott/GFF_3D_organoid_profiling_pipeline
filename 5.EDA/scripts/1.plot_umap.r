@@ -46,18 +46,10 @@ if (!dir.exists(figures_path)) {
   dir.create(figures_path, recursive = TRUE)
 }
 
-# # output paths
-# organoid_features_path <- file.path(figures_path, "umap_organoid_features.png")
-# single_cell_features_path <- file.path(figures_path, "umap_single_cell_features.png")
-# single_cell_features_annotated_path <- file.path(figures_path, "umap_single_cell_w_parent_organoid_labels.png")
-
-umap_results <- arrow::read_parquet(file.path(root_dir,"5.EDA/results/organoid_fs_umap.parquet"))
-head(umap_results)
-
-unique(umap_results$Target)
-
-print(length(unique(umap_results$Target)))
-unique(umap_results$Target)
+organoid_umap_results <- arrow::read_parquet(file.path(root_dir,"5.EDA/results/organoid_fs_umap.parquet"))
+head(organoid_umap_results)
+sc_umap_results <- arrow::read_parquet(file.path(root_dir,"5.EDA/results/sc_fs_umap.parquet"))
+head(sc_umap_results)
 
 # set custom colors for each MOA
 custom_MOA_palette <- c(
@@ -85,13 +77,13 @@ custom_MOA_palette <- c(
 )
 
 
-head(umap_results)
+head(organoid_umap_results)
 
 width <- 10
 height <- 5
 options(repr.plot.width = width, repr.plot.height = height)
 umap_organoid_plot <- (
-    ggplot(umap_results, aes(x = UMAP1, y = UMAP2, color = Target, size = single_cell_count))
+    ggplot(organoid_umap_results, aes(x = UMAP1, y = UMAP2, color = Target, size = single_cell_count))
     + geom_point(alpha = 0.5)
     + scale_color_manual(values = custom_MOA_palette)
     + labs(title = "UMAP of Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
@@ -130,7 +122,7 @@ organoid_features_path <- file.path(figures_path, "all_patients_umap_organoid_fe
 ggsave(umap_organoid_plot, file = organoid_features_path, width = width, height = height, dpi = 300)
 umap_organoid_plot
 
-patients <- unique(umap_results$patient)
+patients <- unique(organoid_umap_results$patient)
 hex_codes <- c(
 "#86C436",
 "#BFD468",
@@ -147,7 +139,7 @@ width <- 10
 height <- 5
 options(repr.plot.width = width, repr.plot.height = height)
 umap_organoid_plot <- (
-    ggplot(umap_results, aes(x = UMAP1, y = UMAP2, color = patient, size = single_cell_count))
+    ggplot(organoid_umap_results, aes(x = UMAP1, y = UMAP2, color = patient, size = single_cell_count))
     + geom_point(alpha = 0.7)
     + scale_color_manual(values = patient_color_palette)
     + labs(title = "UMAP of Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
@@ -188,13 +180,13 @@ ggsave(umap_organoid_plot, file = organoid_features_path, width = width, height 
 umap_organoid_plot
 
 # get just the DMSO treatments
-umap_results_dmsos <- umap_results %>% filter(Target == "Control")
+organoid_umap_results_dmsos <- organoid_umap_results %>% filter(Target == "Control")
 
 width <- 10
 height <- 5
 options(repr.plot.width = width, repr.plot.height = height)
 umap_organoid_plot <- (
-    ggplot(umap_results_dmsos, aes(x = UMAP1, y = UMAP2, color = patient, size = single_cell_count))
+    ggplot(organoid_umap_results_dmsos, aes(x = UMAP1, y = UMAP2, color = patient, size = single_cell_count))
     + geom_point(alpha = 0.7)
     + scale_color_manual(values = patient_color_palette)
     + labs(title = "UMAP of Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
@@ -232,6 +224,119 @@ organoid_features_path <- file.path(figures_path, "all_patients_controls_only_um
 
 ggsave(umap_organoid_plot, file = organoid_features_path, width = width, height = height, dpi = 300)
 umap_organoid_plot
+
+width <- 10
+height <- 5
+options(repr.plot.width = width, repr.plot.height = height)
+umap_sc_plot <- (
+    ggplot(sc_umap_results, aes(x = UMAP1, y = UMAP2, color = Target))
+    + geom_point(alpha = 0.5, size = 1)
+    + scale_color_manual(values = custom_MOA_palette)
+    + labs(title = "UMAP of Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + theme_bw()
+    + theme(
+        plot.title = element_text(hjust = 0.5, size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.title = element_text(size = 14, hjust = 0.5),
+        legend.text = element_text(size = 12)
+    )
+    + guides(
+        color = guide_legend(
+            title = "MOA",
+            text = element_text(size = 16, hjust = 0.5),
+            override.aes = list(alpha = 1,size = 5),
+            # nrow = 2,
+            ncol = 1
+            # position = "bottom"
+        )
+    )
+    + facet_wrap(~patient, nrow = 2)
+)
+sc_features_path <- file.path(figures_path, "all_patients_umap_sc_features_facet_by_patient.png")
+ggsave(umap_sc_plot, file = sc_features_path, width = width, height = height, dpi = 300)
+umap_sc_plot
+
+patients <- unique(sc_umap_results$patient)
+hex_codes <- c(
+"#86C436",
+"#BFD468",
+"#36C4BB",
+"#68D4B4",
+"#7336C4",
+"#7E68D4",
+"#C4363F",
+"#D46888"
+)
+patient_color_palette <- setNames(hex_codes[1:length(patients)], patients)
+
+width <- 10
+height <- 5
+options(repr.plot.width = width, repr.plot.height = height)
+umap_sc_plot <- (
+    ggplot(sc_umap_results, aes(x = UMAP1, y = UMAP2, color = patient))
+    + geom_point(alpha = 0.7, size = 1)
+    + scale_color_manual(values = patient_color_palette)
+    + labs(title = "UMAP of Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + theme_bw()
+    + theme(
+        plot.title = element_text(hjust = 0.5, size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.title = element_text(size = 14, hjust = 0.5),
+        legend.text = element_text(size = 12)
+    )
+    + guides(
+        color = guide_legend(
+            title = "Patient",
+            text = element_text(size = 16, hjust = 0.5),
+            override.aes = list(alpha = 1,size = 5),
+            # nrow = 2,
+            ncol = 1
+            # position = "bottom"
+        )
+    )
+    + facet_wrap(~Target, nrow = 3)
+)
+sc_features_path <- file.path(figures_path, "all_patients_umap_sc_features_facet_by_target.png")
+
+ggsave(umap_sc_plot, file = sc_features_path, width = width, height = height, dpi = 300)
+umap_sc_plot
+
+# get just the DMSO treatments
+sc_umap_results_dmsos <- sc_umap_results %>% filter(Target == "Control")
+
+width <- 10
+height <- 5
+options(repr.plot.width = width, repr.plot.height = height)
+umap_sc_plot <- (
+    ggplot(sc_umap_results_dmsos, aes(x = UMAP1, y = UMAP2, color = patient))
+    + geom_point(alpha = 0.7, size = 1)
+    + scale_color_manual(values = patient_color_palette)
+    + labs(title = "UMAP of Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + theme_bw()
+    + theme(
+        plot.title = element_text(hjust = 0.5, size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.title = element_text(size = 14, hjust = 0.5),
+        legend.text = element_text(size = 12)
+    )
+    + guides(
+        color = guide_legend(
+            title = "Patients",
+            text = element_text(size = 16, hjust = 0.5),
+            override.aes = list(alpha = 1,size = 5),
+            # nrow = 2,
+            ncol = 1
+            # position = "bottom"
+        )
+    )
+)
+sc_features_path <- file.path(figures_path, "all_patients_controls_only_umap_sc_features.png")
+
+ggsave(umap_sc_plot, file = sc_features_path, width = width, height = height, dpi = 300)
+umap_sc_plot
 
 for (patient in patients) {
     patient_umap_file_path <- file.path(root_dir, paste0("5.EDA/results/patient_results/",patient,"_organoid_fs_umap.parquet"))
