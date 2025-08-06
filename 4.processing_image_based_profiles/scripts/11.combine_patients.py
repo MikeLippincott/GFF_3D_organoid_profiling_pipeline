@@ -99,7 +99,7 @@ freq_cut = 0.01
 unique_cut = 0.01
 
 
-# In[6]:
+# In[ ]:
 
 
 for compartment, files in levels_to_merge_dict.items():
@@ -134,6 +134,9 @@ for compartment, files in levels_to_merge_dict.items():
             "Well",
             "parent_organoid",
         ]
+        # only perform feature selection on DMSO and staurosporine treatments and apply to rest of profiles
+        all_trt_df = df.copy()
+        df = df.loc[df["treatment"].isin(["DMSO", "Staurosporine"])]
         # feature selection
         feature_columns = [col for col in df.columns if col not in metadata_cols]
         features_df = df[feature_columns]
@@ -148,6 +151,10 @@ for compartment, files in levels_to_merge_dict.items():
             unique_cut=unique_cut,
         )
         original_data_shape = features_df.shape
+        # apply feature selection to all profiles
+        fs_profiles = all_trt_df[
+            [col for col in all_trt_df.columns if col in fs_profiles.columns]
+        ]
         fs_profiles = pd.concat(
             [
                 df[metadata_cols].reset_index(drop=True),
@@ -222,6 +229,8 @@ for compartment, files in levels_to_merge_dict.items():
             "Well",
             "single_cell_count",
         ]
+        all_trt_df = df.copy()
+        df = df.loc[df["treatment"].isin(["DMSO", "Staurosporine"])]
         feature_columns = [col for col in df.columns if col not in metadata_cols]
         features_df = df[feature_columns]
         fs_profiles = feature_select(
@@ -234,6 +243,9 @@ for compartment, files in levels_to_merge_dict.items():
             freq_cut=freq_cut,
             unique_cut=unique_cut,
         )
+        fs_profiles = all_trt_df[
+            [col for col in all_trt_df.columns if col in fs_profiles.columns]
+        ]
         original_data_shape = features_df.shape
         fs_profiles = pd.concat(
             [
@@ -292,3 +304,6 @@ for compartment, files in levels_to_merge_dict.items():
 
         print("The number features before feature selection:", original_data_shape[1])
         print("The number features after feature selection:", fs_profiles.shape[1])
+
+
+# In[ ]:

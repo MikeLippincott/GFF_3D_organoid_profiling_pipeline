@@ -145,7 +145,7 @@ with open(sc_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[9]:
+# In[ ]:
 
 
 sc_metadata_columns = [
@@ -161,13 +161,19 @@ sc_metadata_columns = [
     "Well",
     "parent_organoid",
 ]
+all_trt_df = sc_normalized.copy()
+
+sc_normalized = sc_normalized.loc[
+    sc_normalized["treatment"].isin(["DMSO", "Staurosporine"])
+]
+
 sc_features_columns = [
     col for col in sc_normalized.columns if col not in sc_metadata_columns
 ]
 sc_features_df = sc_normalized.drop(columns=sc_metadata_columns, errors="ignore")
 
 
-# In[10]:
+# In[ ]:
 
 
 # fs the data
@@ -181,6 +187,10 @@ sc_fs_profiles = feature_select(
     freq_cut=freq_cut,
     unique_cut=unique_cut,
 )
+fs_profiles = all_trt_df[
+    [col for col in all_trt_df.columns if col in sc_fs_profiles.columns]
+]
+
 original_data_shape = sc_normalized.shape
 sc_fs_profiles = pd.concat(
     [
@@ -236,7 +246,7 @@ with open(organoid_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[13]:
+# In[ ]:
 
 
 organoid_metadata_columns = [
@@ -252,6 +262,10 @@ organoid_metadata_columns = [
     "Well",
     "single_cell_count",
 ]
+all_trt_df = organoid_normalized.copy()
+organoid_normalized = organoid_normalized.loc[
+    organoid_normalized["treatment"].isin(["DMSO", "Staurosporine"])
+]
 organoid_features_columns = [
     col for col in organoid_normalized.columns if col not in organoid_metadata_columns
 ]
@@ -260,7 +274,7 @@ organoid_features_df = organoid_normalized.drop(
 )
 
 
-# In[14]:
+# In[ ]:
 
 
 # normalize the data
@@ -274,6 +288,11 @@ organoid_fs_profiles = feature_select(
     freq_cut=freq_cut,
     unique_cut=unique_cut,
 )
+# apply feature selection to all profiles
+fs_profiles = all_trt_df[
+    [col for col in all_trt_df.columns if col in organoid_fs_profiles.columns]
+]
+# concatenate the metadata and the feature selected profiles
 original_data_shape = organoid_normalized.shape
 organoid_fs_profiles = pd.concat(
     [
