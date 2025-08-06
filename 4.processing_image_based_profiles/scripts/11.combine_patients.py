@@ -75,9 +75,9 @@ for patient in patients:
 
 
 feature_select_ops = [
-    "variance_threshold",
+    # "variance_threshold",
     "drop_na_columns",
-    "correlation_threshold",
+    # "correlation_threshold",
     "blocklist",
 ]
 metadata_cols = [
@@ -94,12 +94,12 @@ metadata_cols = [
     "parent_organoid",
 ]
 na_cutoff = 0.05
-corr_threshold = 0.95
+corr_threshold = 0.9
 freq_cut = 0.01
 unique_cut = 0.01
 
 
-# In[ ]:
+# In[6]:
 
 
 for compartment, files in levels_to_merge_dict.items():
@@ -146,9 +146,9 @@ for compartment, files in levels_to_merge_dict.items():
             features=feature_columns,
             blocklist_file=blocklist_path,
             na_cutoff=na_cutoff,
-            corr_threshold=corr_threshold,
-            freq_cut=freq_cut,
-            unique_cut=unique_cut,
+            # corr_threshold=corr_threshold,
+            # freq_cut=freq_cut,
+            # unique_cut=unique_cut,
         )
         original_data_shape = features_df.shape
         # apply feature selection to all profiles
@@ -157,7 +157,7 @@ for compartment, files in levels_to_merge_dict.items():
         ]
         fs_profiles = pd.concat(
             [
-                df[metadata_cols].reset_index(drop=True),
+                all_trt_df[metadata_cols].reset_index(drop=True),
                 fs_profiles.reset_index(drop=True),
             ],
             axis=1,
@@ -249,7 +249,7 @@ for compartment, files in levels_to_merge_dict.items():
         original_data_shape = features_df.shape
         fs_profiles = pd.concat(
             [
-                df[metadata_cols].reset_index(drop=True),
+                all_trt_df[metadata_cols].reset_index(drop=True),
                 fs_profiles.reset_index(drop=True),
             ],
             axis=1,
@@ -304,6 +304,3 @@ for compartment, files in levels_to_merge_dict.items():
 
         print("The number features before feature selection:", original_data_shape[1])
         print("The number features after feature selection:", fs_profiles.shape[1])
-
-
-# In[ ]:
