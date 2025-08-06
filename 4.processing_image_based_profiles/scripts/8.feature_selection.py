@@ -88,9 +88,9 @@ organoid_normalized = pd.read_parquet(organoid_normalized_path)
 
 
 feature_select_ops = [
-    "variance_threshold",
+    # "variance_threshold",
     "drop_na_columns",
-    "correlation_threshold",
+    # "correlation_threshold",
     "blocklist",
 ]
 
@@ -145,7 +145,7 @@ with open(sc_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[ ]:
+# In[9]:
 
 
 sc_metadata_columns = [
@@ -173,7 +173,7 @@ sc_features_columns = [
 sc_features_df = sc_normalized.drop(columns=sc_metadata_columns, errors="ignore")
 
 
-# In[ ]:
+# In[10]:
 
 
 # fs the data
@@ -194,7 +194,7 @@ fs_profiles = all_trt_df[
 original_data_shape = sc_normalized.shape
 sc_fs_profiles = pd.concat(
     [
-        sc_normalized[sc_metadata_columns].reset_index(drop=True),
+        all_trt_df[sc_metadata_columns].reset_index(drop=True),
         sc_fs_profiles.reset_index(drop=True),
     ],
     axis=1,
@@ -246,7 +246,7 @@ with open(organoid_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[ ]:
+# In[13]:
 
 
 organoid_metadata_columns = [
@@ -274,7 +274,13 @@ organoid_features_df = organoid_normalized.drop(
 )
 
 
-# In[ ]:
+# In[14]:
+
+
+all_trt_df["treatment"].unique()
+
+
+# In[15]:
 
 
 # normalize the data
@@ -289,14 +295,14 @@ organoid_fs_profiles = feature_select(
     unique_cut=unique_cut,
 )
 # apply feature selection to all profiles
-fs_profiles = all_trt_df[
+organoid_fs_profiles = all_trt_df[
     [col for col in all_trt_df.columns if col in organoid_fs_profiles.columns]
 ]
 # concatenate the metadata and the feature selected profiles
 original_data_shape = organoid_normalized.shape
 organoid_fs_profiles = pd.concat(
     [
-        organoid_normalized[organoid_metadata_columns].reset_index(drop=True),
+        all_trt_df[organoid_metadata_columns].reset_index(drop=True),
         organoid_fs_profiles.reset_index(drop=True),
     ],
     axis=1,
