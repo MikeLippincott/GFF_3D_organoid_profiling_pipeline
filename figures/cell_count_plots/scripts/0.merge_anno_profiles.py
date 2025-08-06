@@ -81,6 +81,7 @@ organoid_metadata_columns = [
     "image_set",
     "Well",
     "single_cell_count",
+    "Area.Size.Shape_Organoid_VOLUME",
 ]
 
 
@@ -107,7 +108,9 @@ organoid_counts = pd.concat(
         )
     ],
     ignore_index=True,
-)[organoid_metadata_columns]
+)
+organoid_counts1 = organoid_counts
+organoid_counts = organoid_counts[organoid_metadata_columns]
 
 
 # In[6]:
@@ -138,6 +141,10 @@ organoid_counts = (
     organoid_counts.groupby(["patient", "unit", "dose", "treatment", "Well"])
     .sum(numeric_only=True)
     .reset_index()
+)
+organoid_counts["cell_density"] = (
+    organoid_counts["single_cell_count"]
+    / organoid_counts["Area.Size.Shape_Organoid_VOLUME"]
 )
 
 
@@ -175,15 +182,13 @@ sc_and_organoid_counts = pd.merge(
 
 
 # save the merged profile counts
-pathlib.Path(f"{root_dir}/figures/results/").mkdir(parents=True, exist_ok=True)
+pathlib.Path(f"{root_dir}/figures/cell_count_plots/results/").mkdir(
+    parents=True, exist_ok=True
+)
 sc_and_organoid_counts.to_parquet(
-    pathlib.Path(f"{root_dir}/figures/results/sc_and_organoid_counts.parquet"),
+    pathlib.Path(
+        f"{root_dir}/figures/cell_count_plots/results/sc_and_organoid_counts.parquet"
+    ),
     index=False,
 )
 sc_and_organoid_counts.shape
-
-
-# In[12]:
-
-
-sc_and_organoid_counts
