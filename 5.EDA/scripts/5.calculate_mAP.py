@@ -166,11 +166,6 @@ def calculate_intra_patient_mAP(
 ):
     list_of_dfs = []
     for patient in df["patient"].unique():
-        for shuffle in ["no_shuffle", "shuffle"]:
-            if shuffle == "shuffle":
-                # permutate all columns randomly
-                for col in df.columns:
-                    df[col] = np.random.permutation(df[col])
         patient_df = df.loc[df["patient"] == patient, :].copy()
         for drug in patient_df["treatment"].unique():
             # subset the DataFrame for the current drug and DMSO
@@ -187,7 +182,6 @@ def calculate_intra_patient_mAP(
             if mAP is not None:
                 mAP["patient"] = patient
                 mAP["treatment"] = drug
-                mAP["shuffle"] = shuffle
                 list_of_dfs.append(mAP)
 
     output_df = pd.concat(list_of_dfs, ignore_index=True)
@@ -212,27 +206,21 @@ def calculate_inter_patient_mAP(
         DataFrame containing the profiles and metadata.
     """
     list_of_dfs = []
-    for shuffle in ["no_shuffle", "shuffle"]:
-        if shuffle == "shuffle":
-            # permutate all columns randomly
-            for col in df.columns:
-                df[col] = np.random.permutation(df[col])
-        for drug in df["treatment"].unique():
-            drug_df = df.loc[df["treatment"] == drug, :].copy()
-            dmso_df = df.loc[df["treatment"] == "DMSO", :].copy()
-            drug_df = pd.concat([drug_df, dmso_df], ignore_index=True)
-            # calculate mAP for the current drug
-            mAP = calculate_mAP(
-                drug_df,
-                metadata_columns=metadata_columns,
-                col_for_reference=col_for_reference,
-                reference_group=reference_group,
-            )
-            if mAP is not None:
-                mAP["treatment"] = drug
-                mAP["patient"] = "all_patients"
-                mAP["shuffle"] = shuffle
-                list_of_dfs.append(mAP)
+    for drug in df["treatment"].unique():
+        drug_df = df.loc[df["treatment"] == drug, :].copy()
+        dmso_df = df.loc[df["treatment"] == "DMSO", :].copy()
+        drug_df = pd.concat([drug_df, dmso_df], ignore_index=True)
+        # calculate mAP for the current drug
+        mAP = calculate_mAP(
+            drug_df,
+            metadata_columns=metadata_columns,
+            col_for_reference=col_for_reference,
+            reference_group=reference_group,
+        )
+        if mAP is not None:
+            mAP["treatment"] = drug
+            mAP["patient"] = "all_patients"
+            list_of_dfs.append(mAP)
     output_df = pd.concat(list_of_dfs, ignore_index=True)
     if output_path is not None:
         output_df.to_parquet(output_path, index=False)
@@ -244,13 +232,13 @@ def calculate_inter_patient_mAP(
 
 for key, paths in paths_to_process_dict.items():
     print(f"Processing {key}")
-    # calculate_intra_patient_mAP(
-    #     df=pd.read_parquet(paths["input"]),
-    #     metadata_columns=paths["metadata_columns"],
-    #     col_for_reference="treatment",
-    #     reference_group="DMSO",
-    #     output_path=paths["intra_patient_results_path"],
-    # )
+    calculate_intra_patient_mAP(
+        df=pd.read_parquet(paths["input"]),
+        metadata_columns=paths["metadata_columns"],
+        col_for_reference="treatment",
+        reference_group="DMSO",
+        output_path=paths["intra_patient_results_path"],
+    )
     calculate_inter_patient_mAP(
         df=pd.read_parquet(paths["input"]),
         metadata_columns=paths["metadata_columns"],
