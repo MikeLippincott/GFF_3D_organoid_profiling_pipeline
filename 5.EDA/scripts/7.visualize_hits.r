@@ -119,11 +119,26 @@ cat("Common drugs:", paste(common_organoid_sc, collapse = ", "), "\n")
 
 # plot the Venn diagram
 # venn_plot <- ggVennDiagram(
+width <- 8
+height <- 8
+options(repr.plot.width = width, repr.plot.height = height)
+
 venn_plot <- ggvenn(
     venn_lists,
     fill_color = c("#FF9999", "#66B3FF", "#99FF99", "#FFCC99"),
 )
-print(venn_plot)
+png(
+    filename = file.path(
+        root_dir,
+        "5.EDA/figures/venn_diagram_organoid_sc_drug_hits.png"
+    ),
+    width = width,
+    height = height,
+    res = 300,
+    units = 'in'
+)
+venn_plot
+dev.off()
 
 # get the unique drugs in each category
 organoid_inter_unique <- setdiff(organoid_inter_drugs, union(organoid_intra_drugs, union(sc_inter_drugs, sc_intra_drugs)))
