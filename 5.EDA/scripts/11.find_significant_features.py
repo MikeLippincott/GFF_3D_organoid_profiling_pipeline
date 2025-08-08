@@ -89,7 +89,9 @@ profile_dict = {
 # rsquared adjusted threshold is set to positive values - the model performs better than the mean
 #
 
-# In[53]:
+# ### Single Cell
+
+# In[3]:
 
 
 df = pd.read_parquet(
@@ -98,16 +100,16 @@ df = pd.read_parquet(
 print(df.shape)
 
 
-# In[59]:
+# In[4]:
 
 
 pvalue_threshold_max = 0.05
-rsquared_threshold_min = 0.4
+rsquared_threshold_min = 0.5
 rsquared_adj_threshold_min = 0
 coefficient_threshold_min = 1
 
 
-# In[60]:
+# In[5]:
 
 
 # filter significant features
@@ -121,19 +123,71 @@ print(df_filtered.shape)
 df_filtered.head()
 
 
-# In[61]:
+# In[6]:
 
 
 df_filtered["treatment"].unique()
 
 
-# In[62]:
+# In[7]:
 
 
 df_filtered["patient"].unique()
 
 
-# In[63]:
+# In[8]:
+
+
+df_filtered["feature"].unique()
+
+
+# ### Organoid
+
+# In[9]:
+
+
+df = pd.read_parquet(
+    profile_dict["organoid_fs"]["input_profile_path"],
+)
+print(df.shape)
+
+
+# In[10]:
+
+
+pvalue_threshold_max = 0.05
+rsquared_threshold_min = 0.4
+rsquared_adj_threshold_min = 0
+coefficient_threshold_min = 1
+
+
+# In[11]:
+
+
+# filter significant features
+df_filtered = df[
+    (df["pvalue"] < pvalue_threshold_max)
+    & (df["rsquared"] > rsquared_threshold_min)
+    & (df["rsquared_adj"] > rsquared_adj_threshold_min)
+    & (df["coefficient"].abs() > coefficient_threshold_min)
+].copy()
+print(df_filtered.shape)
+df_filtered.head()
+
+
+# In[12]:
+
+
+df_filtered["treatment"].unique()
+
+
+# In[13]:
+
+
+df_filtered["patient"].unique()
+
+
+# In[14]:
 
 
 df_filtered["feature"].unique()
