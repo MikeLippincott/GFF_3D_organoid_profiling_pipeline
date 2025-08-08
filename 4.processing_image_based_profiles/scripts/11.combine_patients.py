@@ -133,6 +133,9 @@ for compartment, files in levels_to_merge_dict.items():
             "image_set",
             "Well",
             "parent_organoid",
+            "Area.Size.Shape_Cell_CENTER.X",
+            "Area.Size.Shape_Cell_CENTER.Y",
+            "Area.Size.Shape_Cell_CENTER.Z",
         ]
         # only perform feature selection on DMSO and staurosporine treatments and apply to rest of profiles
         all_trt_df = df.copy()
@@ -228,6 +231,9 @@ for compartment, files in levels_to_merge_dict.items():
             "image_set",
             "Well",
             "single_cell_count",
+            "Area.Size.Shape_Organoid_CENTER.X",
+            "Area.Size.Shape_Organoid_CENTER.Y",
+            "Area.Size.Shape_Organoid_CENTER.Z",
         ]
         all_trt_df = df.copy()
         df = df.loc[df["treatment"].isin(["DMSO", "Staurosporine"])]
