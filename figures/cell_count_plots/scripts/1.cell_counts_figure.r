@@ -82,7 +82,7 @@ single_cell_counts_plot <- (
         legend.title = element_blank(),
         legend.text = element_text(size = 16),
         strip.text = element_text(size = 16),
-        legend.position = "bottom"
+        legend.position = "none"
     )
     + facet_wrap(~ treatment, ncol = 5)
 )
@@ -126,7 +126,7 @@ organoid_cell_counts_plot <- (
         legend.title = element_blank(),
         legend.text = element_text(size = 16),
         strip.text = element_text(size = 16),
-        legend.position = "bottom"
+        legend.position = "none"
     )
     + facet_wrap(~ treatment, ncol = 5)
 )
@@ -166,6 +166,7 @@ cell_count_volume_ratio_plot <- (
         axis.title.x = element_text(size = 18),
         axis.title.y = element_text(size = 18),
         plot.title = element_text(size = 20, hjust = 0.5),
+        legend.position = "none",
     )
     + facet_wrap(~ treatment, ncol = 5)
 )
