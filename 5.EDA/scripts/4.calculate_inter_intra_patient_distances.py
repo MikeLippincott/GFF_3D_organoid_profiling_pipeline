@@ -78,7 +78,6 @@ def calculate_inter_patient_metrics(
         # drop NaN values
         dmso_df = dmso_df.dropna(axis=0, how="any")
         drug_df = drug_df.dropna(axis=0, how="any")
-
         euclidean_distance = sklearn.metrics.pairwise.euclidean_distances(
             dmso_df.values, drug_df.values
         ).reshape(-1)
@@ -157,6 +156,7 @@ def calculate_intra_patient_metrics(
         for drug in patient_df["treatment"].unique():
             if drug == "DMSO":
                 continue
+
             # get both dmso and drug data
             test_df = patient_df.loc[patient_df["treatment"] == drug]
             dmso_df = patient_df.loc[patient_df["treatment"] == "DMSO"]
@@ -165,6 +165,13 @@ def calculate_intra_patient_metrics(
             # drop NaN values
             test_df = test_df.dropna(axis=0, how="any")
             dmso_df = dmso_df.dropna(axis=0, how="any")
+            # check the test_df shape
+            if test_df.shape[0] == 0 or dmso_df.shape[0] == 0:
+                print(
+                    f"Skipping patient {patient} and drug {drug} due to empty DataFrame."
+                )
+                continue
+
             # calculate the distance between the drug and the DMSO
             euclidean_distance = sklearn.metrics.pairwise.euclidean_distances(
                 dmso_df.values, test_df.values
@@ -232,26 +239,6 @@ paths_to_process_dict = {
             "single_cell_count",
         ],
     },
-    "organoid_consensus": {
-        "input": pathlib.Path(
-            f"{root_dir}/data/all_patient_profiles/organoid_consensus_profiles.parquet"
-        ).resolve(strict=True),
-        "inter_patient_results_path": pathlib.Path(
-            f"{root_dir}/5.EDA/results/distance_metrics/organoid_consensus_inter_patient_distance_metrics.parquet"
-        ).resolve(),
-        "intra_patient_results_path": pathlib.Path(
-            f"{root_dir}/5.EDA/results/distance_metrics/organoid_consensus_intra_patient_distance_metrics.parquet"
-        ).resolve(),
-        "metadata_columns": [
-            "patient",
-            "unit",
-            "dose",
-            "treatment",
-            "Target",
-            "Class",
-            "Therapeutic Categories",
-        ],
-    },
     "single_cell_fs": {
         "input": pathlib.Path(
             f"{root_dir}/data/all_patient_profiles/sc_fs_profiles.parquet"
@@ -273,26 +260,6 @@ paths_to_process_dict = {
             "Therapeutic Categories",
             "image_set",
             "Well",
-        ],
-    },
-    "single_cell_consensus": {
-        "input": pathlib.Path(
-            f"{root_dir}/data/all_patient_profiles/sc_consensus_profiles.parquet"
-        ).resolve(strict=True),
-        "inter_patient_results_path": pathlib.Path(
-            f"{root_dir}/5.EDA/results/distance_metrics/sc_consensus_inter_patient_distance_metrics.parquet"
-        ).resolve(),
-        "intra_patient_results_path": pathlib.Path(
-            f"{root_dir}/5.EDA/results/distance_metrics/sc_consensus_intra_patient_distance_metrics.parquet"
-        ).resolve(),
-        "metadata_columns": [
-            "patient",
-            "unit",
-            "dose",
-            "treatment",
-            "Target",
-            "Class",
-            "Therapeutic Categories",
         ],
     },
 }

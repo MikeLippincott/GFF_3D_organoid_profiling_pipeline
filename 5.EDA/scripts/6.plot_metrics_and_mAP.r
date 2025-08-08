@@ -187,6 +187,7 @@ organoid_inter_plot <- (
         point.padding = 0.5,
         max.overlaps = 10
     )
+    + xlim(0, 1)
 )
 ggsave(
     filename = organoid_fs_inter_patient_mAP_plot_path,
@@ -238,7 +239,7 @@ sc_intra_plot <- (
         segment.size = 0.2,
         box.padding = 0.5,
         point.padding = 0.5,
-        max.overlaps = 10
+        max.overlaps = 8
     )
 )
 ggsave(
@@ -441,21 +442,51 @@ ggsave(
 )
 plot
 
-file_path <- file.path(
+organoid_fs_inter_patient_distance_metrics_path <- file.path(
     root_dir,
-    "5.EDA/results/distance_metrics/organoid_consensus_inter_patient_distance_metrics.parquet"
+    "5.EDA/results/distance_metrics/organoid_fs_inter_patient_distance_metrics.parquet"
 )
-organoid_consensus_inter_patient_distance_metrics_df <- arrow::read_parquet(
-    file_path
+organoid_fs_intra_patient_distance_metrics_path <- file.path(
+    root_dir,
+    "5.EDA/results/distance_metrics/organoid_fs_intra_patient_distance_metrics.parquet"
+)
+single_cell_fs_inter_patient_distance_metrics_path <- file.path(
+    root_dir,
+    "5.EDA/results/distance_metrics/sc_fs_inter_patient_distance_metrics.parquet"
+)
+single_cell_fs_intra_patient_distance_metrics_path <- file.path(
+    root_dir,
+    "5.EDA/results/distance_metrics/sc_fs_intra_patient_distance_metrics.parquet"
 )
 
-head(organoid_consensus_inter_patient_distance_metrics_df)
+figures_path <- file.path(
+    root_dir,
+    "5.EDA/figures/distance_metrics/"
+)
+if (!dir.exists(figures_path)) {
+    dir.create(figures_path, recursive = TRUE)
+}
+
+organoid_fs_inter_patient_distance_metrics_df <- arrow::read_parquet(
+    organoid_fs_inter_patient_distance_metrics_path
+)
+organoid_fs_intra_patient_distance_metrics_df <- arrow::read_parquet(
+    organoid_fs_intra_patient_distance_metrics_path
+)
+single_cell_fs_inter_patient_distance_metrics_df <- arrow::read_parquet(
+    single_cell_fs_inter_patient_distance_metrics_path
+)
+single_cell_fs_intra_patient_distance_metrics_df <- arrow::read_parquet(
+    single_cell_fs_intra_patient_distance_metrics_path
+)
+
+head(organoid_fs_inter_patient_distance_metrics_df)
 
 width <- 10
 height <- 6
 options(repr.plot.width = width, repr.plot.height = height)
 plot <- (ggplot(
-    data = organoid_consensus_inter_patient_distance_metrics_df,
+    data = organoid_fs_inter_patient_distance_metrics_df,
     aes(x = euclidean_distance_mean, y = euclidean_distance_std, fill = treatment, label = treatment)
 
 )
@@ -491,7 +522,7 @@ plot <- (ggplot(
     )
 )
 ggsave(
-    filename = file.path(figures_path, "organoid_consensus_inter_patient_distance_metrics.png"),
+    filename = file.path(figures_path, "organoid_fs_inter_patient_distance_metrics.png"),
     plot = plot,
     width = 10,
     height = 6,
@@ -499,22 +530,11 @@ ggsave(
 )
 plot
 
-file_path <- file.path(
-    root_dir,
-    "5.EDA/results/distance_metrics/organoid_consensus_intra_patient_distance_metrics.parquet"
-)
-organoid_consensus_intra_patient_distance_metrics_df <- arrow::read_parquet(
-    file_path
-)
-
-head(organoid_consensus_intra_patient_distance_metrics_df)
-
-
-width <- 16
-height <- 8
+width <- 10
+height <- 6
 options(repr.plot.width = width, repr.plot.height = height)
 plot <- (ggplot(
-    data = organoid_consensus_intra_patient_distance_metrics_df,
+    data = organoid_fs_intra_patient_distance_metrics_df,
     aes(x = euclidean_distance_mean, y = euclidean_distance_std, fill = treatment, label = treatment)
 
 )
@@ -527,34 +547,33 @@ plot <- (ggplot(
     + theme_bw()
     + theme(
         plot.title = element_text(hjust = 0.5, size = 14),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        axis.title.x = element_text(size = 14),
-        axis.title.y = element_text(size = 14),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
         legend.position = "bottom",
         legend.title = element_blank(),
-        legend.text = element_text(size = 12),
-        strip.text = element_text(size = 12)
+        legend.text = element_text(size = 16)
     )
         + geom_text_repel(
         aes(
             label = treatment
         ),
-        size = 3,
+        size = 4,
         nudge_y = 0.1,
         show.legend = FALSE,
         segment.color = "grey50",
         segment.size = 0.2,
-        box.padding = 0.3,
-        point.padding = 0.3,
-        max.overlaps = 15
+        box.padding = 0.5,
+        point.padding = 0.5,
+        max.overlaps = 10
     )
     + facet_wrap(~patient, ncol = 4,
-    scales = "free"
+        scales = "free"
     )
 )
 ggsave(
-    filename = file.path(figures_path, "organoid_consensus_intra_patient_distance_metrics.png"),
+    filename = file.path(figures_path, "organoid_fs_intra_patient_distance_metrics.png"),
     plot = plot,
     width = 10,
     height = 6,
@@ -562,4 +581,101 @@ ggsave(
 )
 plot
 
+width <- 10
+height <- 6
+options(repr.plot.width = width, repr.plot.height = height)
+plot <- (ggplot(
+    data = single_cell_fs_inter_patient_distance_metrics_df,
+    aes(x = euclidean_distance_mean, y = euclidean_distance_std, fill = treatment, label = treatment)
 
+)
+    + geom_point(size = 3, shape = 21, alpha = 0.7)
+    + labs(
+        x = "Mean Euclidean Distance",
+        y = "Standard Deviation of Euclidean Distance",
+        title = "Inter-patient Distance Metrics for Single Cell Consensus"
+    )
+    + theme_bw()
+    + theme(
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 16)
+    )
+        + geom_text_repel(
+        aes(
+            label = treatment
+        ),
+        size = 4,
+        nudge_y = 0.1,
+        show.legend = FALSE,
+        segment.color = "grey50",
+        segment.size = 0.2,
+        box.padding = 0.5,
+        point.padding = 0.5,
+        max.overlaps = 10
+    )
+)
+ggsave(
+    filename = file.path(figures_path, "single_cell_fs_inter_patient_distance_metrics.png"),
+    plot = plot,
+    width = 10,
+    height = 6,
+    dpi = 600
+)
+plot
+
+width <- 10
+height <- 6
+options(repr.plot.width = width, repr.plot.height = height)
+plot <- (ggplot(
+    data = single_cell_fs_intra_patient_distance_metrics_df,
+    aes(x = euclidean_distance_mean, y = euclidean_distance_std, fill = treatment, label = treatment)
+
+)
+    + geom_point(size = 3, shape = 21, alpha = 0.7)
+    + labs(
+        x = "Mean Euclidean Distance",
+        y = "Standard Deviation of Euclidean Distance",
+        title = "Intra-patient Distance Metrics for Single Cell Consensus"
+    )
+    + theme_bw()
+    + theme(
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 16)
+    )
+        + geom_text_repel(
+        aes(
+            label = treatment
+        ),
+        size = 4,
+        nudge_y = 0.1,
+        show.legend = FALSE,
+        segment.color = "grey50",
+        segment.size = 0.2,
+        box.padding = 0.5,
+        point.padding = 0.5,
+        max.overlaps = 10
+    )
+    + facet_wrap(~patient, ncol = 4,
+        scales = "free"
+    )
+)
+ggsave(
+    filename = file.path(figures_path, "single_cell_fs_intra_patient_distance_metrics.png"),
+    plot = plot,
+    width = 10,
+    height = 6,
+    dpi = 600
+)
+plot
