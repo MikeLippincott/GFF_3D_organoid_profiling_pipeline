@@ -88,7 +88,7 @@ print(len(parquet_files), "parquet files found")
 
 # create the nested dictionary to hold the feature types and compartments
 feature_types = [
-    "AreaSize_Shape",
+    "AreaSizeShape",
     "Colocalization",
     "Intensity",
     "Granularity",
