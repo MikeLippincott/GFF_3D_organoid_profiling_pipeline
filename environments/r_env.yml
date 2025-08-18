@@ -27,4 +27,5 @@ dependencies:
   - conda-forge::r-circlize
   - conda-forge::r-hrbrthemes
   - conda-forge::r-tm
+  - conda-forge::r-ggbreak
 
