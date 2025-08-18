@@ -4,11 +4,14 @@
 # In[1]:
 
 
+import argparse
 import itertools
+import multiprocessing
 import os
 import pathlib
 import sys
 import time
+from functools import partial
 from itertools import product
 
 import pandas as pd
@@ -57,6 +60,7 @@ from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, TwoObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
+
 # In[2]:
 
 
@@ -69,15 +73,17 @@ if not in_notebook:
     processor_type = arguments_dict["processor_type"]
 
 else:
-    well_fov = "C4-2"
-    patient = "NF0014"
-    channel = "ER.AGP"
-    compartment = "Nuclei"
-    processor_type = "GPU"
+    well_fov = "E11-4"
+    patient = "NF0030"
+    channel = "Mito.BF"
+    compartment = "Cell"
+    processor_type = "CPU"
 
 channel1 = channel.split(".")[0] if "." in channel else channel
 channel2 = channel.split(".")[1] if "." in channel else None
-image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+image_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
+)
 
 output_parent_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
@@ -174,14 +180,24 @@ for object_id in coloc_loader.object_ids:
         f"Colocalization_{compartment}_{channel1}.{channel2}_{col}"
         for col in coloc_df.columns
     ]
+    # retype the columns to float32
+    for col in coloc_df.columns:
+        if col not in ["object_id", "image_set"]:
+            coloc_df[col] = coloc_df[col].astype("float32")
     coloc_df.insert(0, "object_id", object_id)
     coloc_df.insert(1, "image_set", image_set_loader.image_set_name)
     list_of_dfs.append(coloc_df)
-coloc_df = pd.concat(list_of_dfs, ignore_index=True)
-coloc_df.to_parquet(output_dir)
+if len(list_of_dfs) == 0:
+    print("No objects found for colocalization.")
+    # write an empty DataFrame to the output file
+    coloc_df = pd.DataFrame(columns=["object_id", "image_set"])
+    coloc_df.to_parquet(output_dir)
+else:
+    coloc_df = pd.concat(list_of_dfs, ignore_index=True)
+    coloc_df.to_parquet(output_dir)
 
 
-# In[7]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -201,3 +217,4 @@ get_mem_and_time_profiling(
         f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_Colocalization_{channel1}.{channel2}_{compartment}_{processor_type}.parquet"
     ),
 )
+
