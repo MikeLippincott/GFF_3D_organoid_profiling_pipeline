@@ -81,4 +81,4 @@ Great-grandparent jobs will be submitted when the total number of jobs drops bel
 Grandparent jobs will be submitted when the total number of jobs drops below 990.
 Parent jobs take no such precautions as they are only submitting a single child job and thus will not exceed the 999 job limit as there should be a 1:1 job replacement.
 
-Essentially, this places a decent time gap between the submission of the great grandparent and grandparent jobs [individual patients] so that the grandparent jobs can be submitted in a timely manner and are not competing for resources with the great grandparent jobs or other grandparent jobs from other grandparent jobs.
+Essentially, this places a decent time gap between the submission of the great grandparent and grandparent jobs (e.g., individual patients) so that the grandparent jobs can be submitted in a timely manner and are not competing for resources with the great grandparent jobs or other grandparent jobs.
