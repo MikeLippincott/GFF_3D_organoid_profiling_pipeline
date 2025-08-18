@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
@@ -12,6 +12,7 @@ import pandas as pd
 from cytotable import convert, presets
 
 sys.path.append("../../../utils")
+import uuid
 
 import duckdb
 from parsl.config import Config
@@ -62,11 +63,11 @@ if not in_notebook:
     patient = args.patient
     well_fov = args.well_fov
 else:
-    patient = "NF0014"
-    well_fov = "C4-2"
+    patient = "SARCO361"
+    well_fov = "G7-5"
 
 
-# In[3]:
+# In[ ]:
 
 
 input_sqlite_file = pathlib.Path(
@@ -109,20 +110,20 @@ cells_table = cells_table[cells_table["object_id"].isin(intersection_set)]
 cytoplasm_table = cytoplasm_table[cytoplasm_table["object_id"].isin(intersection_set)]
 
 
-# In[6]:
+# In[ ]:
 
 
 # connect to DuckDB and register the tables
 with duckdb.connect() as con:
-    con.register("df1", nuclei_table)
-    con.register("df2", cells_table)
-    con.register("df3", cytoplasm_table)
+    con.register("nuclei", nuclei_table)
+    con.register("cells", cells_table)
+    con.register("cytoplasm", cytoplasm_table)
     # Merge them with SQL
     merged_df = con.execute("""
         SELECT *
-        FROM df1
-        LEFT JOIN df2 USING (object_id)
-        LEFT JOIN df3 USING (object_id)
+        FROM nuclei
+        LEFT JOIN cells USING (object_id)
+        LEFT JOIN cytoplasm USING (object_id)
     """).df()
 
 
@@ -142,3 +143,4 @@ print(f"Final merged single cell dataframe shape: {merged_df.shape}")
 # save the sc data as parquet
 merged_df.to_parquet(destination_sc_parquet_file, index=False)
 merged_df.head()
+
