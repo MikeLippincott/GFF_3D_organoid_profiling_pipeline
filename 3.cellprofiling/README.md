@@ -73,7 +73,7 @@ Usage of featurization vs feature extraction:
 
 The HPC we are using only allows a max of 999 jobs to be running or queued at a time.
 This ensures efficient resource management and prevents overloading the system.
-Thus we will be taking steps to ensure that we never exceed this limit.
+Thus, we will be taking steps to ensure that we never exceed this limit.
 Additionally, there is a compute max wall time of 7 days for each job.
 To prevent exceeding this limit, we will ensure that the great grandparent and grandparent jobs are prioritized to finish prior to submiting the parent and child jobs.
 What this looks like in practice is limiting the submissions based on the current number of jobs running and queued.
