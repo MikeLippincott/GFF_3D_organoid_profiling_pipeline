@@ -139,6 +139,7 @@ png(
 )
 venn_plot
 dev.off()
+venn_plot
 
 # get the unique drugs in each category
 organoid_inter_unique <- setdiff(organoid_inter_drugs, union(organoid_intra_drugs, union(sc_inter_drugs, sc_intra_drugs)))

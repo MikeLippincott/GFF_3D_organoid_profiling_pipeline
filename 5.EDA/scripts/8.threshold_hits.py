@@ -126,7 +126,7 @@ paths_to_process_dict = {
 
 # ## organoid fs inter patient mAP and distance metrics
 
-# In[3]:
+# In[ ]:
 
 
 organoid_inter_metric_df = pd.read_parquet(
@@ -141,12 +141,11 @@ organoid_fs_merged_inter_patient_df = organoid_inter_mAP_df.merge(
     on=["treatment"],
     how="left",
 ).drop(columns=["indices"])
-# organoid_fs_merged_inter_patient_df.head()
 
 
 # ## organoid fs intra patient mAP and distance metrics
 
-# In[4]:
+# In[ ]:
 
 
 organoid_intra_metric_df = pd.read_parquet(
@@ -161,12 +160,11 @@ organoid_fs_merged_intra_patient_df = organoid_intra_mAP_df.merge(
     on=["treatment", "patient"],
     how="left",
 ).drop(columns=["indices"])
-# organoid_fs_merged_intra_patient_df.head()
 
 
 # ## Single cell fs inter patient mAP and distance metrics
 
-# In[5]:
+# In[ ]:
 
 
 sc_inter_metric_df = pd.read_parquet(
@@ -181,12 +179,11 @@ sc_fs_merged_inter_patient_df = sc_inter_mAP_df.merge(
     on=["treatment"],
     how="left",
 ).drop(columns=["indices"])
-# sc_fs_merged_inter_patient_df.head()
 
 
 # ## Single cell fs intra patient mAP and distance metrics
 
-# In[6]:
+# In[ ]:
 
 
 sc_intra_patient_metric_df = pd.read_parquet(
@@ -201,7 +198,6 @@ sc_fs_merged_intra_patient_df = sc_intra_patient_mAP_df.merge(
     on=["treatment", "patient"],
     how="left",
 ).drop(columns=["indices"])
-# sc_fs_merged_intra_patient_df.head()
 
 
 # ## Save the merged metrics
@@ -275,12 +271,11 @@ pd.DataFrame(drug_hits["treatment"].unique(), columns=["treatment"]).to_parquet(
 
 # ## Organoid fs intra patient drug hit merged metrics
 
-# In[9]:
+# In[ ]:
 
 
 # intra patient metrics
 # generate drug hits on the per patient basis
-organoid_fs_merged_intra_patient_df.head()
 intra_patient_drug_hit_dict = {
     "patient": [],
     "treatment": [],
