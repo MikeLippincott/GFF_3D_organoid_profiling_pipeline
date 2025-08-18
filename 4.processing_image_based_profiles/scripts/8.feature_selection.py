@@ -84,14 +84,14 @@ sc_normalized = pd.read_parquet(sc_normalized_path)
 organoid_normalized = pd.read_parquet(organoid_normalized_path)
 
 
-# In[5]:
+# In[ ]:
 
 
 feature_select_ops = [
-    # "variance_threshold",
     "drop_na_columns",
-    # "correlation_threshold",
     "blocklist",
+    # "correlation_threshold", # comment out to remove correlation thresholding
+    # "variance_threshold", # comment out to remove variance thresholding
 ]
 
 
