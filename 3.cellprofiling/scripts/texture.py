@@ -1,17 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
-import argparse
 import gc
-import multiprocessing
 import os
 import pathlib
 import sys
 import time
-from functools import partial
 from itertools import product
 
 import pandas as pd
@@ -52,8 +49,7 @@ from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 from texture_utils import measure_3D_texture
 
-
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -64,10 +60,10 @@ if not in_notebook:
     compartment = arguments_dict["compartment"]
     processor_type = arguments_dict["processor_type"]
 else:
-    well_fov = "D7-4"
+    well_fov = "E10-3"
     patient = "NF0030"
-    channel = "DNA"
-    compartment = "Cell"
+    channel = "BF"
+    compartment = "Organoid"
     processor_type = "CPU"
 
 image_set_path = pathlib.Path(
@@ -79,7 +75,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[3]:
 
 
 channel_mapping = {
@@ -95,7 +91,7 @@ channel_mapping = {
 }
 
 
-# In[ ]:
+# In[4]:
 
 
 start_time = time.time()
@@ -103,7 +99,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[5]:
 
 
 image_set_loader = ImageSetLoader(
@@ -113,7 +109,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 object_loader = ObjectLoader(
@@ -153,7 +149,7 @@ output_file.parent.mkdir(parents=True, exist_ok=True)
 final_df.to_parquet(output_file)
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -173,4 +169,3 @@ get_mem_and_time_profiling(
         f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_{channel}_{compartment}_Texture_CPU.parquet"
     ),
 )
-

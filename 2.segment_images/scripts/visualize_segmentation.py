@@ -197,6 +197,3 @@ viewer = view_ometiff_with_napari(
 
 # screenshot the napari viewer
 nbscreenshot(viewer)
-
-
-# In[ ]:

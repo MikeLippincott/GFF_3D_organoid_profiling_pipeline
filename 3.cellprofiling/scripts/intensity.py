@@ -4,13 +4,10 @@
 # In[1]:
 
 
-import argparse
-import multiprocessing
 import os
 import pathlib
 import sys
 import time
-from functools import partial
 from itertools import product
 
 import pandas as pd
@@ -49,7 +46,6 @@ from intensity_utils import measure_3D_intensity_CPU, measure_3D_intensity_gpu
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-
 # In[2]:
 
 
@@ -63,11 +59,11 @@ if not in_notebook:
 
 
 else:
-    well_fov = "C4-2"
-    patient = "NF0014"
-    channel = "DNA"
+    well_fov = "G4-6"
+    patient = "NF0021"
+    channel = "AGP"
     compartment = "Nuclei"
-    processor_type = "GPU"
+    processor_type = "CPU"
 
 image_set_path = pathlib.Path(
     f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
@@ -175,4 +171,3 @@ get_mem_and_time_profiling(
         f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_{channel}_{compartment}_Intensity_{processor_type}.parquet"
     ),
 )
-

@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# This notebook validates that the featurization is equivalent on both CPU and GPU.
+# Regardless of the processor used, the output should be the same.
+
 # In[11]:
 
 
-import argparse
-import os
 import pathlib
 import sys
-import time
 
 import numpy as np
 import pandas as pd
@@ -45,7 +45,6 @@ if root_dir is None:
     raise FileNotFoundError("No Git root directory found.")
 sys.path.append(str(root_dir / "3.cellprofiling" / "featurization_utils"))
 from featurization_parsable_arguments import parse_featurization_args
-
 
 # In[12]:
 
@@ -184,4 +183,3 @@ features_df.insert(
     features_df.apply(lambda row: row["CPU_sha256"] == row["GPU_sha256"], axis=1),
 )
 features_df
-
