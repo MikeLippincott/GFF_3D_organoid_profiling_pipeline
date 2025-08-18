@@ -16,7 +16,11 @@ if [ -z "$git_root" ]; then
 fi
 
 log_file="$git_root/4.processing_image_based_profiles/logs/${patient}_${well_fov}.log"
-touch "$log_file"  # create the log file if it doesn't exist
+# if the file is present, first remove it
+if [ -f "$log_file" ]; then
+    rm "$log_file"
+fi
+mkdir -p "$git_root/4.processing_image_based_profiles/logs"
 {
     python "$git_root"/4.processing_image_based_profiles/scripts/1.merge_feature_parquets.py --patient "$patient" --well_fov "$well_fov"
     python "$git_root"/4.processing_image_based_profiles/scripts/2.merge_sc.py --patient "$patient" --well_fov "$well_fov"

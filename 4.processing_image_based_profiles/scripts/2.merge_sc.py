@@ -109,20 +109,20 @@ cells_table = cells_table[cells_table["object_id"].isin(intersection_set)]
 cytoplasm_table = cytoplasm_table[cytoplasm_table["object_id"].isin(intersection_set)]
 
 
-# In[6]:
+# In[ ]:
 
 
 # connect to DuckDB and register the tables
 with duckdb.connect() as con:
-    con.register("df1", nuclei_table)
-    con.register("df2", cells_table)
-    con.register("df3", cytoplasm_table)
+    con.register("nuclei", nuclei_table)
+    con.register("cells", cells_table)
+    con.register("cytoplasm", cytoplasm_table)
     # Merge them with SQL
     merged_df = con.execute("""
         SELECT *
-        FROM df1
-        LEFT JOIN df2 USING (object_id)
-        LEFT JOIN df3 USING (object_id)
+        FROM nuclei
+        LEFT JOIN cells USING (object_id)
+        LEFT JOIN cytoplasm USING (object_id)
     """).df()
 
 
