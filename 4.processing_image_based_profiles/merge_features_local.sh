@@ -51,6 +51,18 @@ for patient in "${patient_array[@]}"; do
             python "$git_root"/4.processing_image_based_profiles/scripts/3.organoid_cell_relationship.py --patient "$patient" --well_fov "$well_fov"
         } >> "$log_file" 2>&1
     done
+    patient_log_file="$git_root/4.processing_image_based_profiles/logs/patients/${patient}.log"
+    mkdir -p "$(dirname "$patient_log_file")"  # create the patients directory if it doesn't exist
+    touch "$patient_log_file"  # create the patient log file if it doesn't exist
+    {
+        python "$git_root"/4.processing_image_based_profiles/scripts/5.combining_profiles.py --patient "$patient"
+        python "$git_root"/4.processing_image_based_profiles/scripts/6.annotation.py --patient "$patient"
+        python "$git_root"/4.processing_image_based_profiles/scripts/7.normalization.py --patient "$patient"
+        python "$git_root"/4.processing_image_based_profiles/scripts/8.feature_selection.py --patient "$patient"
+        python "$git_root"/4.processing_image_based_profiles/scripts/9.aggregation.py --patient "$patient"
+        python "$git_root"/4.processing_image_based_profiles/scripts/10.merge_consensus_profiles.py --patient "$patient"
+    } >> "$patient_log_file" 2>&1
+
 done
 
 conda deactivate
