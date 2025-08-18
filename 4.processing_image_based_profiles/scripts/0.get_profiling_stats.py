@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import pathlib
@@ -45,7 +45,7 @@ patients = pd.read_csv(patient_data_path, header=None, names=["patient_ID"])[
 ].tolist()
 
 
-# In[3]:
+# In[ ]:
 
 
 stats_files = []
@@ -151,3 +151,4 @@ if in_notebook:
     plt.legend(title="Feature Type", bbox_to_anchor=(1.05, 1), loc="upper left")
 
     plt.show()
+

@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
+import os
 import pathlib
+import pprint
+import sqlite3
+from contextlib import closing
 from functools import reduce
 
 import duckdb
