@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# For the purposes of this notebook and those following the "DB_structure" is a blank dataframe that is used to store the results of the profiling pipeline.
+# This is used to insert blank dataframes into the final dataframe dictionary for each compartment and feature type if the record is empty so that a final df can be created and merged on the same columns.
+
 # In[1]:
 
 
@@ -35,7 +38,7 @@ if root_dir is None:
     raise FileNotFoundError("No Git root directory found.")
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -63,11 +66,11 @@ else:
 result_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}"
 ).resolve(strict=True)
-# schema save path
-schema_path = pathlib.Path(
-    f"{root_dir}/4.processing_image_based_profiles/data/schemas/schema_db.duckdb"
+# DB_structure save path
+DB_structure_path = pathlib.Path(
+    f"{root_dir}/4.processing_image_based_profiles/data/DB_structures/DB_structure_db.duckdb"
 ).resolve()
-schema_path.parent.mkdir(parents=True, exist_ok=True)
+DB_structure_path.parent.mkdir(parents=True, exist_ok=True)
 
 
 # get a list of all parquets in the directory recursively
@@ -76,7 +79,7 @@ parquet_files.sort()
 print(len(parquet_files), "parquet files found")
 
 
-# In[3]:
+# In[ ]:
 
 
 # create the nested dictionary to hold the feature types and compartments
@@ -97,10 +100,12 @@ merged_df_dict = {cmp: {ft: [] for ft in feature_types} for cmp in compartments}
 
 
 for file in parquet_files:
-    for compartment in feature_types_dict.keys():
-        for feature_type in feature_types_dict[compartment].keys():
-            if compartment in str(file) and feature_type in str(file):
-                feature_types_dict[compartment][feature_type].append(file)
+    [
+        feature_types_dict[compartment][feature_type].append(file)
+        for compartment in feature_types_dict.keys()
+        for feature_type in feature_types_dict[compartment].keys()
+        if compartment in str(file) and feature_type in str(file)
+    ]
 
 
 # In[4]:
@@ -160,27 +165,19 @@ for compartment in feature_types_dict.keys():
                         continue
 
 
-# In[5]:
+# In[ ]:
 
-
-feature_types = [
-    "AreaSize_Shape",
-    "Colocalization",
-    "Intensity",
-    "Granularity",
-    "Neighbor",
-    "Texture",
-]
-compartments = ["Organoid", "Nuclei", "Cell", "Cytoplasm"]
 
 final_df_dict = {
     cmp: {ft: pd.DataFrame() for ft in feature_types} for cmp in compartments
 }
 
 
-# In[6]:
+# In[ ]:
 
 
+# loop through the compartment, feature type, and the respective dataframes
+# merge the dataframes for each compartment and feature type on object id and image_set
 for compartment in merged_df_dict.keys():
     for feature_type in merged_df_dict[compartment].keys():
         for df in merged_df_dict[compartment][feature_type]:
@@ -218,17 +215,19 @@ compartment_merged_dict = {
 }
 
 
-# In[9]:
+# In[ ]:
 
 
 for compartment in final_df_dict.keys():
     print(f"Processing compartment: {compartment}")
     for feature_type in final_df_dict[compartment].keys():
+        # skip if the compartment is "Nuclei" and the feature type is "Neighbor"
         if compartment != "Nuclei" and feature_type == "Neighbor":
             print(
                 f"Skipping {compartment} {feature_type} as it is not applicable for this compartment."
             )
             continue
+        # if the compartment df is empty then copy a blank dataframe in
         if compartment_merged_dict[compartment].empty:
             compartment_merged_dict[compartment] = final_df_dict[compartment][
                 feature_type
@@ -242,10 +241,10 @@ for compartment in final_df_dict.keys():
             )
 
 
-# In[10]:
+# In[ ]:
 
 
-with duckdb.connect(schema_path) as cx:
+with duckdb.connect(DB_structure_path) as cx:
     for compartment, df in compartment_merged_dict.items():
         df = df.head(0)
         cx.register("temp_df", df)
