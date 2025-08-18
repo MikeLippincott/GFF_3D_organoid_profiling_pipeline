@@ -11,7 +11,6 @@ for (package in list_of_packages) {
         )
     )
 }
-figures_path <- file.path("../figures/NF0014/")
 # Get the current working directory and find Git root
 find_git_root <- function() {
     # Get current working directory
@@ -40,6 +39,7 @@ find_git_root <- function() {
 root_dir <- find_git_root()
 cat("Git root directory:", root_dir, "\n")
 
+# get the profiling stats and load into a dataframe
 profiling_path <- file.path(
     root_dir,
     "data/all_patient_profiles/all_patient_featurization_stats.parquet"
@@ -57,6 +57,8 @@ if (!dir.exists(figures_path)) {
 width <- 12
 height <- 6
 options(repr.plot.width = width, repr.plot.height = height)
+# plot the time taken for each sub-image set
+# where a sub-image set is a channel-compartment-image-set combination
 time_plot <- (
     ggplot(
         profiling_stats_df,
@@ -85,8 +87,9 @@ time_plot <- (
         y = "Time Taken (minutes)",
     )
 )
-
+# add a break in the y-axis to highlight the outliers
 time_plot <- time_plot + scale_y_break(c(15, 16),scales = 0.3, space = 0.05)
+# save the plot to the figures directory
 ggsave(
     filename = file.path(figures_path, "profiling_time_per_feature_type.png"),
     plot = time_plot,
@@ -95,6 +98,8 @@ ggsave(
     dpi = 300
 )
 
+# plot the memory usage for each sub-image set
+# where a sub-image set is a channel-compartment-image-set combination
 mem_plot <- (
     ggplot(
         profiling_stats_df,

@@ -29,7 +29,7 @@ mkdir -p "$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/" #
 
 for patient in "${patient_array[@]}"; do
 
-    # python "$git_root"/4.processing_image_based_profiles/scripts/0.get_profiling_stats.py --patient "$patient"
+    python "$git_root"/4.processing_image_based_profiles/scripts/0.get_profiling_stats.py --patient "$patient"
     # get the list of all dirs in the parent_dir
     parent_dir="$git_root/data/$patient/extracted_features"
     # get the list of all dirs in the parent_dir

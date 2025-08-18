@@ -65,10 +65,13 @@ stats_files.sort()
 print(f"Found {len(stats_files)} stats files for {len(patients)} patients.")
 
 
-# In[4]:
+# In[ ]:
 
 
 def safe_read_parquet(stats_file):
+    """Safely read a Parquet file and handle errors.
+    This is primarily to continue through code in the event of corrupted files."""
+
     try:
         return pd.read_parquet(stats_file)
     except ValueError as e:
