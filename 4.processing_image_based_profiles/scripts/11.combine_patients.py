@@ -71,14 +71,14 @@ for patient in patients:
             levels_to_merge_dict["organoid"].append(file)
 
 
-# In[5]:
+# In[ ]:
 
 
 feature_select_ops = [
-    # "variance_threshold",
     "drop_na_columns",
-    # "correlation_threshold",
     "blocklist",
+    # "variance_threshold", # comment out to remove variance thresholding
+    # "correlation_threshold", # comment out to remove correlation thresholding
 ]
 metadata_cols = [
     "patient",
@@ -99,7 +99,7 @@ freq_cut = 0.01
 unique_cut = 0.01
 
 
-# In[6]:
+# In[ ]:
 
 
 for compartment, files in levels_to_merge_dict.items():
@@ -149,9 +149,9 @@ for compartment, files in levels_to_merge_dict.items():
             features=feature_columns,
             blocklist_file=blocklist_path,
             na_cutoff=na_cutoff,
-            # corr_threshold=corr_threshold,
-            # freq_cut=freq_cut,
-            # unique_cut=unique_cut,
+            # corr_threshold=corr_threshold, # comment out to use default value
+            # freq_cut=freq_cut, # comment out to use default value
+            # unique_cut=unique_cut, # comment out to use default value
         )
         original_data_shape = features_df.shape
         # apply feature selection to all profiles
