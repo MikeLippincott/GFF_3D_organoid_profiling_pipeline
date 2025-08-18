@@ -4,6 +4,7 @@
 # In[ ]:
 
 
+import argparse
 import os
 import pathlib
 import sys
@@ -48,6 +49,7 @@ from loading_classes import ImageSetLoader, ObjectLoader
 from neighbors_utils import measure_3D_number_of_neighbors
 from resource_profiling_util import get_mem_and_time_profiling
 
+
 # In[ ]:
 
 
@@ -65,7 +67,9 @@ else:
     compartment = "Nuclei"
     processor_type = "CPU"
 
-image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+image_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
+)
 output_parent_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
 )
@@ -159,3 +163,4 @@ get_mem_and_time_profiling(
         f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_{channel}_{compartment}_Neighbors_CPU.parquet"
     ),
 )
+
