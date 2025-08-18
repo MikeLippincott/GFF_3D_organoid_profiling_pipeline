@@ -124,3 +124,4 @@ if in_notebook:
     plt.legend(title="Feature Type", bbox_to_anchor=(1.05, 1), loc="upper left")
 
     plt.show()
+
