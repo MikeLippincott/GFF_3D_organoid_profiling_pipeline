@@ -41,7 +41,7 @@ The child process ultimately recieves arguments from the parent process to run t
 
 - Grandparent process spins of the parent process for Well 1, FOV 1
 - Parent process spins off the child process for AreaSizeShape feauture extraction
-- The child process runs the AreaSizeShape feature extraction function for teach channel and compartment and saves the results to a parquet file
+- The child process runs the AreaSizeShape feature extraction function for each channel and compartment and saves the results to a parquet file
 
 For this dataset we have:
 
