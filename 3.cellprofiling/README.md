@@ -76,7 +76,7 @@ This ensures efficient resource management and prevents overloading the system.
 Thus we will be taking steps to ensure that we never exceed this limit.
 Additionally, there is a compute max wall time of 7 days for each job.
 To prevent exceeding this limit, we will ensure that the great grandparent and grandparent jobs are prioritized to finish prior to submiting the parent and child jobs.
-What his looks like in practice is limiting the submission based on the current number of jobs running and queued.
+What this looks like in practice is limiting the submissions based on the current number of jobs running and queued.
 Greatgrandparent jobs will be submitted when the total number of jobs drops below 500.
 Grandparent jobs will be submitted when the total number of jobs drops below 990.
 Parent jobs take no such precautions as they are only submitting a single child job and thus will not exceed the 999 job limit as there should be a 1:1 job replacement.
