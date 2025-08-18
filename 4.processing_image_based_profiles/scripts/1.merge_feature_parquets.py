@@ -36,21 +36,6 @@ if root_dir is None:
     raise FileNotFoundError("No Git root directory found.")
 
 
-if (cwd / ".git").is_dir():
-    root_dir = cwd
-
-else:
-    root_dir = None
-    for parent in cwd.parents:
-        if (parent / ".git").is_dir():
-            root_dir = parent
-            break
-
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
-
-
 # In[ ]:
 
 
@@ -85,8 +70,8 @@ database_path = pathlib.Path(
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
 sqlite_path = database_path / f"{well_fov}.duckdb"
-schema_path = pathlib.Path(
-    f"{root_dir}/4.processing_image_based_profiles/data/schemas/schema_db.duckdb"
+DB_structue_path = pathlib.Path(
+    f"{root_dir}/4.processing_image_based_profiles/data/DB_structues/DB_structue_db.duckdb"
 ).resolve(strict=True)
 
 # get a list of all parquets in the directory recursively
@@ -179,18 +164,8 @@ for compartment in feature_types_dict.keys():
                         continue
 
 
-# In[5]:
+# In[ ]:
 
-
-feature_types = [
-    "AreaSizeShape",
-    "Colocalization",
-    "Intensity",
-    "Granularity",
-    "Neighbor",
-    "Texture",
-]
-compartments = ["Organoid", "Nuclei", "Cell", "Cytoplasm"]
 
 final_df_dict = {
     cmp: {ft: pd.DataFrame() for ft in feature_types} for cmp in compartments
@@ -268,16 +243,16 @@ for compartment, df in compartment_merged_dict.items():
     print(compartment, df.shape)
 
 
-# In[11]:
+# In[ ]:
 
 
-with duckdb.connect(schema_path) as cx:
+with duckdb.connect(DB_structue_path) as cx:
     organoid_table = cx.execute("SELECT * FROM Organoid").df()
     cell_table = cx.execute("SELECT * FROM Cell").df()
     nuclei_table = cx.execute("SELECT * FROM Nuclei").df()
     cytoplasm_table = cx.execute("SELECT * FROM Cytoplasm").df()
 
-dict_of_schemas = {
+dict_of_DB_structues = {
     "Organoid": organoid_table,
     "Cell": cell_table,
     "Nuclei": nuclei_table,
@@ -285,14 +260,14 @@ dict_of_schemas = {
 }
 
 
-# In[12]:
+# In[ ]:
 
 
-# get the table from the schema
+# get the table from the DB_structue
 with duckdb.connect(sqlite_path) as cx:
     for compartment, df in compartment_merged_dict.items():
         if df.empty:
-            cx.register("temp_df", dict_of_schemas[compartment])
+            cx.register("temp_df", dict_of_DB_structues[compartment])
             cx.execute(
                 f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df"
             )

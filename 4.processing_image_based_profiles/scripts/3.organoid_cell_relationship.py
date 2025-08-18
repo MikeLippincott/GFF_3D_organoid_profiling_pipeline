@@ -212,6 +212,10 @@ sc_count = organoid_profile_df.pop("single_cell_count")
 organoid_profile_df.insert(2, "single_cell_count", sc_count)
 
 
+# Even if the file is empty we still want to add it to the final dataframe dictionary so that we can merge on the same columns later.
+# This will help with file-based checking and merging.
+#
+
 # In[11]:
 
 
