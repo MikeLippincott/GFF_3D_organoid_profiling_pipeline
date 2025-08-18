@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
@@ -12,6 +12,7 @@ import pandas as pd
 from cytotable import convert, presets
 
 sys.path.append("../../../utils")
+import uuid
 
 import duckdb
 from parsl.config import Config
@@ -66,7 +67,7 @@ else:
     well_fov = "C4-2"
 
 
-# In[3]:
+# In[ ]:
 
 
 input_sqlite_file = pathlib.Path(
@@ -142,3 +143,4 @@ print(f"Final merged single cell dataframe shape: {merged_df.shape}")
 # save the sc data as parquet
 merged_df.to_parquet(destination_sc_parquet_file, index=False)
 merged_df.head()
+
