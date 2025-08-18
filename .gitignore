@@ -185,6 +185,6 @@ nextflow_pipeline/.nextflow/*
 nextflow_pipeline/work/*
 nextflow_pipeline/.nextflow.log*
 .nextflow*
-6.dynamic_viz_Rshiny/.Renviron
 5.EDA/results/*
+6.dynamic_viz_Rshiny/.Renviron
 *Rplots.pdf
