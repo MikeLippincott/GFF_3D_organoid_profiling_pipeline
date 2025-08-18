@@ -203,9 +203,9 @@ for patient in patient_ids:
         if dir.name != "run_stats":
             dir = pathlib.Path(
                 f"{root_dir}/data/{patient}/extracted_features/{dir.name}"
-            ).resolve()
+            ).resolve(strict=True)
             total_files += len(feature_list)
-            if not check_number_of_files(dir, feature_list):
+            if not check_number_of_files(dir, len(feature_list)):
                 # find the missing files
                 # cross reference the files in the directory
                 # with the expected feature list
@@ -254,7 +254,7 @@ for patient in patient_ids:
                             missing_file.split("_")[1]
                         )
             else:
-                existing_files += [f.stem for f in dir.glob("*") if f.is_file()]
+                files_present += len([f.stem for f in dir.glob("*") if f.is_file()])
 
 
 # In[9]:

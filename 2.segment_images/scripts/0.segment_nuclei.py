@@ -151,7 +151,7 @@ print("2.5D image stack shape:", image_stack_2_5D.shape)
 
 # ## Cellpose
 
-# In[6]:
+# In[ ]:
 
 
 use_GPU = torch.cuda.is_available()
@@ -167,7 +167,9 @@ output_dict = {
 for slice in tqdm.tqdm(range(imgs.shape[0])):
     # Perform segmentation
     output_dict["slice"].append(slice)
-    labels, details, _ = model.eval(imgs[slice, :, :], channels=[0, 0])
+    labels, details, _ = model.eval(
+        imgs[slice, :, :], channels=[0, 0]
+    )  # no diamter needed for CP 4.0
     output_dict["labels"].append(labels)
     output_dict["details"].append(details)
 
