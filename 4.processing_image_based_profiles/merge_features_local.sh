@@ -4,6 +4,9 @@ module load anaconda
 conda init bash
 conda activate nf1_image_based_profiling_env
 
+
+
+
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
     echo "Error: Could not find the git root directory."
@@ -21,11 +24,10 @@ else
 fi
 
 # setup the logs dir
-if [ -d "$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/" ]; then
-    rm -rf "$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/"
+if [ -d "$git_root/4.processing_image_based_profiles/logs" ]; then
+    rm -rf "$git_root/4.processing_image_based_profiles/logs"
 fi
-mkdir -p "$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/" # create the patients directory if it doesn't exist
-
+mkdir "$git_root/4.processing_image_based_profiles/logs"
 
 for patient in "${patient_array[@]}"; do
 
@@ -40,14 +42,14 @@ for patient in "${patient_array[@]}"; do
         if [[ $well_fov == *"run_stats"* ]]; then
             continue
         fi
-        # echo "$patient - $well_fov"
-        log_file="$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/${patient}_${well_fov}.log"
+        echo "$patient - $well_fov"
+        log_file="$git_root/4.processing_image_based_profiles/logs/${patient}_${well_fov}.log"
         touch "$log_file"  # create the log file if it doesn't exist
-        # {
+        {
             python "$git_root"/4.processing_image_based_profiles/scripts/1.merge_feature_parquets.py --patient "$patient" --well_fov "$well_fov"
             python "$git_root"/4.processing_image_based_profiles/scripts/2.merge_sc.py --patient "$patient" --well_fov "$well_fov"
             python "$git_root"/4.processing_image_based_profiles/scripts/3.organoid_cell_relationship.py --patient "$patient" --well_fov "$well_fov"
-        # } >> "$log_file" 2>&1
+        } >> "$log_file" 2>&1
     done
     patient_log_file="$git_root/4.processing_image_based_profiles/logs/patients/${patient}.log"
     mkdir -p "$(dirname "$patient_log_file")"  # create the patients directory if it doesn't exist
@@ -62,8 +64,6 @@ for patient in "${patient_array[@]}"; do
     } >> "$patient_log_file" 2>&1
 
 done
-
-python "$git_root"/4.processing_image_based_profiles/scripts/11.combine_patients.py
 
 conda deactivate
 

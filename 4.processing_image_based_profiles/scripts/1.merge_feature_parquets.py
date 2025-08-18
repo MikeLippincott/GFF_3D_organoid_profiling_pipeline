@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
+import os
 import pathlib
+import pprint
+import sqlite3
+from contextlib import closing
 from functools import reduce
 
 import duckdb
@@ -35,7 +39,7 @@ if root_dir is None:
     raise FileNotFoundError("No Git root directory found.")
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -56,8 +60,8 @@ if not in_notebook:
     well_fov = args.well_fov
     patient = args.patient
 else:
-    well_fov = "C4-2"
-    patient = "NF0014"
+    well_fov = "G7-5"
+    patient = "SARCO361"
 
 
 result_path = pathlib.Path(
@@ -69,7 +73,9 @@ database_path = pathlib.Path(
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
 sqlite_path = database_path / f"{well_fov}.duckdb"
-
+DB_structue_path = pathlib.Path(
+    f"{root_dir}/4.processing_image_based_profiles/data/DB_structues/DB_structue_db.duckdb"
+).resolve(strict=True)
 
 # get a list of all parquets in the directory recursively
 parquet_files = list(result_path.rglob("*.parquet"))
@@ -82,7 +88,7 @@ print(len(parquet_files), "parquet files found")
 
 # create the nested dictionary to hold the feature types and compartments
 feature_types = [
-    "AreaSize_Shape",
+    "AreaSizeShape",
     "Colocalization",
     "Intensity",
     "Granularity",
@@ -161,18 +167,8 @@ for compartment in feature_types_dict.keys():
                         continue
 
 
-# In[5]:
+# In[ ]:
 
-
-feature_types = [
-    "AreaSize_Shape",
-    "Colocalization",
-    "Intensity",
-    "Granularity",
-    "Neighbor",
-    "Texture",
-]
-compartments = ["Organoid", "Nuclei", "Cell", "Cytoplasm"]
 
 final_df_dict = {
     cmp: {ft: pd.DataFrame() for ft in feature_types} for cmp in compartments
@@ -246,8 +242,42 @@ for compartment in final_df_dict.keys():
 # In[10]:
 
 
+for compartment, df in compartment_merged_dict.items():
+    print(compartment, df.shape)
+
+
+# In[ ]:
+
+
+with duckdb.connect(DB_structue_path) as cx:
+    organoid_table = cx.execute("SELECT * FROM Organoid").df()
+    cell_table = cx.execute("SELECT * FROM Cell").df()
+    nuclei_table = cx.execute("SELECT * FROM Nuclei").df()
+    cytoplasm_table = cx.execute("SELECT * FROM Cytoplasm").df()
+
+dict_of_DB_structues = {
+    "Organoid": organoid_table,
+    "Cell": cell_table,
+    "Nuclei": nuclei_table,
+    "Cytoplasm": cytoplasm_table,
+}
+
+
+# In[ ]:
+
+
+# get the table from the DB_structue
 with duckdb.connect(sqlite_path) as cx:
     for compartment, df in compartment_merged_dict.items():
-        cx.register("temp_df", df)
-        cx.execute(f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df")
-        cx.unregister("temp_df")
+        if df.empty:
+            cx.register("temp_df", dict_of_DB_structues[compartment])
+            cx.execute(
+                f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df"
+            )
+            cx.unregister("temp_df")
+        else:
+            cx.register("temp_df", df)
+            cx.execute(
+                f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df"
+            )
+            cx.unregister("temp_df")
