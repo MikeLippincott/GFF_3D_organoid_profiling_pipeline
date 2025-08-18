@@ -95,7 +95,7 @@ sc_fs_inter_patient_mAP_plot_path <- file.path(
 )
 
 
-width <- 10
+width <- 12
 height <- 6
 options(repr.plot.width = width, repr.plot.height = height)
 organoid_intra_plot <- (
@@ -117,6 +117,8 @@ organoid_intra_plot <- (
         plot.title = element_text(hjust = 0.5, size = 14),
         axis.title.x = element_text(size = 16),
         axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
         legend.position = "bottom",
         legend.title = element_blank(),
         legend.text = element_text(size = 16)
@@ -170,6 +172,8 @@ organoid_inter_plot <- (
         plot.title = element_text(hjust = 0.5, size = 14),
         axis.title.x = element_text(size = 16),
         axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
         legend.position = "bottom",
         legend.title = element_blank(),
         legend.text = element_text(size = 16)
@@ -220,6 +224,8 @@ sc_intra_plot <- (
         plot.title = element_text(hjust = 0.5, size = 14),
         axis.title.x = element_text(size = 16),
         axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
         legend.position = "bottom",
         legend.title = element_blank(),
         legend.text = element_text(size = 16)
@@ -273,6 +279,8 @@ sc_inter_plot <- (
         plot.title = element_text(hjust = 0.5, size = 14),
         axis.title.x = element_text(size = 16),
         axis.title.y = element_text(size = 16),
+        axis.text.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
         legend.position = "bottom",
         legend.title = element_blank(),
         legend.text = element_text(size = 16)
@@ -432,6 +440,7 @@ plot <- (
         point.padding = 0.5,
         max.overlaps = 10
     )
+    + xlim(0, 1)
 )
 ggsave(
     filename = file.path(figures_path, "organoid_fs_mAP_inter_vs_intra.png"),
@@ -531,7 +540,7 @@ ggsave(
 plot
 
 width <- 10
-height <- 6
+height <- 7
 options(repr.plot.width = width, repr.plot.height = height)
 plot <- (ggplot(
     data = organoid_fs_intra_patient_distance_metrics_df,
@@ -571,6 +580,8 @@ plot <- (ggplot(
     + facet_wrap(~patient, ncol = 4,
         scales = "free"
     )
+    + scale_x_continuous(breaks = scales::pretty_breaks(n = 4))
+    + theme(axis.text.x = element_text(size = 14, angle = 45, hjust = 1))
 )
 ggsave(
     filename = file.path(figures_path, "organoid_fs_intra_patient_distance_metrics.png"),
@@ -619,6 +630,7 @@ plot <- (ggplot(
         point.padding = 0.5,
         max.overlaps = 10
     )
+
 )
 ggsave(
     filename = file.path(figures_path, "single_cell_fs_inter_patient_distance_metrics.png"),
@@ -630,7 +642,7 @@ ggsave(
 plot
 
 width <- 10
-height <- 6
+height <- 7
 options(repr.plot.width = width, repr.plot.height = height)
 plot <- (ggplot(
     data = single_cell_fs_intra_patient_distance_metrics_df,
@@ -670,6 +682,8 @@ plot <- (ggplot(
     + facet_wrap(~patient, ncol = 4,
         scales = "free"
     )
+    + scale_x_continuous(breaks = scales::pretty_breaks(n = 4))
+    + theme(axis.text.x = element_text(size = 14, angle = 45, hjust = 1))
 )
 ggsave(
     filename = file.path(figures_path, "single_cell_fs_intra_patient_distance_metrics.png"),
