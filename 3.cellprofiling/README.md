@@ -33,8 +33,7 @@ Where each child process is responsible for a given cell compartment and channel
 
 ### The child process
 
-The child process is responsible for running the feature extraction functions.
-Where each feature extraction function is run in a separate process.
+The child process is responsible for running the feature extraction functions, where each feature extraction function is run in a separate process.
 The child process is responsible for saving the results to a parquet file.
 The child process ultimately recieves arguments from the parent process to run the feature extraction functions on either CPU or GPU.
 
