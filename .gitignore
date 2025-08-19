@@ -178,7 +178,6 @@ data/*
 3.cellprofiling/analysis_output/*
 3.cellprofiling/results/*
 
-4.processing_image_based_profiles/data/*
 4.processing_image_based_profiles/notebooks/runinfo/*
 4.processing_image_based_profiles/scripts/runinfo/*
 4.processing_image_based_profiles/results/*
@@ -186,7 +185,6 @@ nextflow_pipeline/.nextflow/*
 nextflow_pipeline/work/*
 nextflow_pipeline/.nextflow.log*
 .nextflow*
-
-*Rplots.pdf
 5.EDA/results/*
 6.dynamic_viz_Rshiny/.Renviron
+*Rplots.pdf
