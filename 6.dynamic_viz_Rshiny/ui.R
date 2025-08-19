@@ -17,7 +17,7 @@ ui <- fluidPage(
     ),
 
     mainPanel(
-      plotOutput("umapPlot", width = "100%", height = "600px")
+      plotOutput("umapPlot", width = "100%", height = "900px")
     )
   )
 )
