@@ -218,6 +218,11 @@ for (patient_id in patients) {
     for (treatment_id in treatments) {
         sc_fs_lm_results_df_patient_drug <- sc_fs_lm_results_df_patient %>%
             filter(treatment == treatment_id)
+        # drop the NA in Compartment
+        sc_fs_lm_results_df_patient_drug <- sc_fs_lm_results_df_patient_drug %>%
+            filter(!is.na(Compartment))
+        # change NA in the Channel to None
+        sc_fs_lm_results_df_patient_drug$Channel[is.na(sc_fs_lm_results_df_patient_drug$Channel)] <- "None"
         # isolate the Colocalization feature type
         sc_fs_lm_results_df_patient_drug_coloc <- sc_fs_lm_results_df_patient_drug %>%
             filter(Feature_type == "Colocalization")
@@ -236,7 +241,7 @@ for (patient_id in patients) {
             )
             + theme_bw()
             + labs(
-                x = "Feature type",
+                x = "Channel",
                 y = "Coefficient",
                 title = paste0(
                     "Linear modeling results for ", patient_id, " and ", treatment_id)
@@ -260,6 +265,8 @@ for (patient_id in patients) {
             + guides(
                 fill = guide_legend(title = "")
             )
+            # remove the x axis title
+            + theme(axis.title.x = element_blank())
 
         )
         width <- 10
@@ -274,10 +281,8 @@ for (patient_id in patients) {
             )
             + theme_bw()
             + labs(
-                x = "Feature type",
+                x = "Channel",
                 y = "Coefficient",
-                title = paste0(
-                    "Linear modeling results for ", patient_id, " and ", treatment_id)
             )
             + ylim(
                 quantile(sc_fs_lm_results_df_patient_drug_coloc$coefficient, 0.01),
@@ -300,7 +305,7 @@ for (patient_id in patients) {
             )
 
         )
-        height <- 10
+        height <- 12
         width <- 10
         options(repr.plot.width = width, repr.plot.height = height)
 

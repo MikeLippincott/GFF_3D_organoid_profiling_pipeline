@@ -9,6 +9,7 @@ import warnings
 
 import pandas as pd
 import statsmodels.formula.api as smf
+from statsmodels.stats.multitest import multipletests
 
 warnings.filterwarnings("ignore")  # Ignore all warnings
 warnings.simplefilter("ignore")  # Additional suppression method
@@ -101,6 +102,11 @@ profile_dict = {
 # $\beta_1$ = The coefficient for the treatment
 # $\epsilon$ = The error term
 #
+# For each model(feature), we get the following statistics:
+# - **R-squared**: Proportion of variance explained by the model.
+# - **p-value**: Significance of the model.
+# - **F-statistic**: Overall significance of the model.
+# - **Coefficients**: Effect size of each predictor.
 
 # In[3]:
 
@@ -124,7 +130,9 @@ for profile in tqdm(profile_dict.keys(), desc="Loading profiles"):
     # rename feature columns as the "." dod not play nice with the formula
     for col in df.columns:
         new_col = col.replace(
-            ".", ""
+            ".",
+            "",  # we replace the "." with an empty string because it causes issues in the formula
+            # the linear model interprets the "." as an operator and not as part of the column name
         )  # Replace . with empty string for compatibility in formula
         df.rename(columns={col: new_col}, inplace=True)
 
@@ -158,10 +166,11 @@ for profile in tqdm(profile_dict.keys(), desc="Loading profiles"):
             for col in df_patient_trt.columns:
                 if col not in metadata_columns:
                     # Prepare the formula for the linear model
-                    formula = f"{col} ~ C(treatment) + C(patient)"
+                    formula = f"{col} ~ C(treatment)"
                     # Import statsmodels and run the linear model
                     model = smf.ols(formula=formula, data=df_patient_trt)
                     results = model.fit()
+
                     linear_modeling_results_dict["patient"].append(patient)
                     linear_modeling_results_dict["treatment"].append(combo[1])
                     linear_modeling_results_dict["feature"].append(col)
@@ -188,6 +197,7 @@ for profile in tqdm(profile_dict.keys(), desc="Loading profiles"):
 
     # if feature type is area shape then make the measurement the channel and
     # set the channel to None
+    # this because area size shape features are not channel specific
     linear_modeling_results_df.loc[
         linear_modeling_results_df["Feature_type"] == "AreaSizeShape", "Measurement"
     ] = linear_modeling_results_df["Channel"]
@@ -195,10 +205,19 @@ for profile in tqdm(profile_dict.keys(), desc="Loading profiles"):
         linear_modeling_results_df["Feature_type"] == "AreaSizeShape", "Channel"
     ] = None
     # set compartment to None if is adjacent
+    # this is because adjacent features are not compartment specific
     linear_modeling_results_df.loc[
         linear_modeling_results_df["Compartment"] == "adjacent", "Compartment"
     ] = None
 
+    # run FDR on the p-values
+    pvals = linear_modeling_results_df["pvalue"].values
+    _, pvals_fdr, _, _ = multipletests(pvals, method="fdr_bh")
+    linear_modeling_results_df["pvalue_fdr"] = pvals_fdr
+    # Save the updated DataFrame with FDR p-values
+    linear_modeling_results_df.to_parquet(
+        profile_dict[profile]["output_profile_path"], index=False
+    )
     profile_dict[profile]["output_profile_path"].parent.mkdir(
         parents=True, exist_ok=True
     )

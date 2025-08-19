@@ -103,10 +103,10 @@ print(df.shape)
 # In[4]:
 
 
-pvalue_threshold_max = 0.05
-rsquared_threshold_min = 0.5
-rsquared_adj_threshold_min = 0
-coefficient_threshold_min = 1
+pvalue_threshold_max = 0.05  # significance threshold for p-values
+rsquared_threshold_min = 0.5  # 50% of variance explained by the model
+rsquared_adj_threshold_min = 0  # the model performs better than the null model
+coefficient_threshold_min = 1  # minimum effect size of 1
 
 
 # In[5]:
