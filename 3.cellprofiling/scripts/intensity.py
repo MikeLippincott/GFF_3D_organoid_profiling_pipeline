@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -46,7 +46,7 @@ from intensity_utils import measure_3D_intensity_CPU, measure_3D_intensity_gpu
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -59,13 +59,15 @@ if not in_notebook:
 
 
 else:
-    well_fov = "C4-2"
-    patient = "NF0014"
-    channel = "DNA"
+    well_fov = "G4-6"
+    patient = "NF0021"
+    channel = "AGP"
     compartment = "Nuclei"
     processor_type = "CPU"
 
-image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+image_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
+)
 output_parent_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
 )
@@ -106,7 +108,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 object_loader = ObjectLoader(
@@ -149,7 +151,7 @@ output_file.parent.mkdir(parents=True, exist_ok=True)
 final_df.to_parquet(output_file)
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

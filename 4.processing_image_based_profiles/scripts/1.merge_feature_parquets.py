@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import argparse
+import os
 import pathlib
+import pprint
+import sqlite3
+from contextlib import closing
+from functools import reduce
 
 import duckdb
 import pandas as pd
@@ -16,8 +21,25 @@ try:
 except NameError:
     in_notebook = False
 
+    # Get the current working directory
+cwd = pathlib.Path.cwd()
 
-# In[2]:
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+# Check if a Git root directory was found
+if root_dir is None:
+    raise FileNotFoundError("No Git root directory found.")
+
+
+# In[ ]:
 
 
 if not in_notebook:
@@ -38,20 +60,22 @@ if not in_notebook:
     well_fov = args.well_fov
     patient = args.patient
 else:
-    well_fov = "C4-2"
-    patient = "NF0014"
+    well_fov = "G7-5"
+    patient = "SARCO361"
 
 
 result_path = pathlib.Path(
-    f"../../data/{patient}/extracted_features/{well_fov}"
+    f"{root_dir}/data/{patient}/extracted_features/{well_fov}"
 ).resolve(strict=True)
 database_path = pathlib.Path(
-    f"../../data/{patient}/converted_profiles/{well_fov}"
+    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}"
 ).resolve()
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
 sqlite_path = database_path / f"{well_fov}.duckdb"
-
+DB_structue_path = pathlib.Path(
+    f"{root_dir}/4.processing_image_based_profiles/data/DB_structues/DB_structue_db.duckdb"
+).resolve(strict=True)
 
 # get a list of all parquets in the directory recursively
 parquet_files = list(result_path.rglob("*.parquet"))
@@ -62,40 +86,23 @@ print(len(parquet_files), "parquet files found")
 # In[3]:
 
 
-feature_types_dict = {
-    "Organoid": {
-        "AreaSize_Shape": [],
-        "Colocalization": [],
-        "Intensity": [],
-        "Granularity": [],
-        "Neighbor": [],
-        "Texture": [],
-    },
-    "Cell": {
-        "AreaSize_Shape": [],
-        "Colocalization": [],
-        "Intensity": [],
-        "Granularity": [],
-        "Neighbor": [],
-        "Texture": [],
-    },
-    "Nuclei": {
-        "AreaSize_Shape": [],
-        "Colocalization": [],
-        "Intensity": [],
-        "Granularity": [],
-        "Neighbor": [],
-        "Texture": [],
-    },
-    "Cytoplasm": {
-        "AreaSize_Shape": [],
-        "Colocalization": [],
-        "Intensity": [],
-        "Granularity": [],
-        "Neighbor": [],
-        "Texture": [],
-    },
-}
+# create the nested dictionary to hold the feature types and compartments
+feature_types = [
+    "AreaSizeShape",
+    "Colocalization",
+    "Intensity",
+    "Granularity",
+    "Neighbor",
+    "Texture",
+]
+compartments = ["Organoid", "Nuclei", "Cell", "Cytoplasm"]
+
+feature_types_dict = {cmp: {ft: [] for ft in feature_types} for cmp in compartments}
+# copy the feature types dictionary to another blank dictionary that will hold the parquet files
+
+merged_df_dict = {cmp: {ft: [] for ft in feature_types} for cmp in compartments}
+
+
 for file in parquet_files:
     for compartment in feature_types_dict.keys():
         for feature_type in feature_types_dict[compartment].keys():
@@ -105,42 +112,6 @@ for file in parquet_files:
 
 # In[4]:
 
-
-# create a record for each compartment
-merged_df_dict = {
-    "Organoid": {
-        "AreaSize_Shape": [],
-        "Colocalization": [],
-        "Intensity": [],
-        "Granularity": [],
-        "Neighbor": [],
-        "Texture": [],
-    },
-    "Cell": {
-        "AreaSize_Shape": [],
-        "Colocalization": [],
-        "Intensity": [],
-        "Granularity": [],
-        "Neighbor": [],
-        "Texture": [],
-    },
-    "Nuclei": {
-        "AreaSize_Shape": [],
-        "Colocalization": [],
-        "Intensity": [],
-        "Granularity": [],
-        "Neighbor": [],
-        "Texture": [],
-    },
-    "Cytoplasm": {
-        "AreaSize_Shape": [],
-        "Colocalization": [],
-        "Intensity": [],
-        "Granularity": [],
-        "Neighbor": [],
-        "Texture": [],
-    },
-}
 
 for compartment in feature_types_dict.keys():
     for feature_type in feature_types_dict[compartment].keys():
@@ -196,51 +167,15 @@ for compartment in feature_types_dict.keys():
                         continue
 
 
-# In[5]:
-
-
-from functools import reduce
-
-# In[6]:
+# In[ ]:
 
 
 final_df_dict = {
-    "Organoid": {
-        "AreaSize_Shape": pd.DataFrame(),
-        "Colocalization": pd.DataFrame(),
-        "Intensity": pd.DataFrame(),
-        "Granularity": pd.DataFrame(),
-        "Neighbor": pd.DataFrame(),
-        "Texture": pd.DataFrame(),
-    },
-    "Cell": {
-        "AreaSize_Shape": pd.DataFrame(),
-        "Colocalization": pd.DataFrame(),
-        "Intensity": pd.DataFrame(),
-        "Granularity": pd.DataFrame(),
-        "Neighbor": pd.DataFrame(),
-        "Texture": pd.DataFrame(),
-    },
-    "Nuclei": {
-        "AreaSize_Shape": pd.DataFrame(),
-        "Colocalization": pd.DataFrame(),
-        "Intensity": pd.DataFrame(),
-        "Granularity": pd.DataFrame(),
-        "Neighbor": pd.DataFrame(),
-        "Texture": pd.DataFrame(),
-    },
-    "Cytoplasm": {
-        "AreaSize_Shape": pd.DataFrame(),
-        "Colocalization": pd.DataFrame(),
-        "Intensity": pd.DataFrame(),
-        "Granularity": pd.DataFrame(),
-        "Neighbor": pd.DataFrame(),
-        "Texture": pd.DataFrame(),
-    },
+    cmp: {ft: pd.DataFrame() for ft in feature_types} for cmp in compartments
 }
 
 
-# In[7]:
+# In[6]:
 
 
 for compartment in merged_df_dict.keys():
@@ -258,7 +193,7 @@ for compartment in merged_df_dict.keys():
             )
 
 
-# In[8]:
+# In[7]:
 
 
 merged_df = pd.DataFrame(
@@ -269,7 +204,7 @@ merged_df = pd.DataFrame(
 )
 
 
-# In[9]:
+# In[8]:
 
 
 compartment_merged_dict = {
@@ -280,7 +215,7 @@ compartment_merged_dict = {
 }
 
 
-# In[10]:
+# In[9]:
 
 
 for compartment in final_df_dict.keys():
@@ -304,11 +239,45 @@ for compartment in final_df_dict.keys():
             )
 
 
-# In[11]:
+# In[10]:
 
 
+for compartment, df in compartment_merged_dict.items():
+    print(compartment, df.shape)
+
+
+# In[ ]:
+
+
+with duckdb.connect(DB_structue_path) as cx:
+    organoid_table = cx.execute("SELECT * FROM Organoid").df()
+    cell_table = cx.execute("SELECT * FROM Cell").df()
+    nuclei_table = cx.execute("SELECT * FROM Nuclei").df()
+    cytoplasm_table = cx.execute("SELECT * FROM Cytoplasm").df()
+
+dict_of_DB_structues = {
+    "Organoid": organoid_table,
+    "Cell": cell_table,
+    "Nuclei": nuclei_table,
+    "Cytoplasm": cytoplasm_table,
+}
+
+
+# In[ ]:
+
+
+# get the table from the DB_structue
 with duckdb.connect(sqlite_path) as cx:
     for compartment, df in compartment_merged_dict.items():
-        cx.register("temp_df", df)
-        cx.execute(f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df")
-        cx.unregister("temp_df")
+        if df.empty:
+            cx.register("temp_df", dict_of_DB_structues[compartment])
+            cx.execute(
+                f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df"
+            )
+            cx.unregister("temp_df")
+        else:
+            cx.register("temp_df", df)
+            cx.execute(
+                f"CREATE OR REPLACE TABLE {compartment} AS SELECT * FROM temp_df"
+            )
+            cx.unregister("temp_df")
