@@ -5,7 +5,7 @@ mamba env create -f <github_repo>/environments/R_shiny.yml
 
 Then, run the app using:
 ```bash
-source deploy_app.sh
+source 6.dynamic_viz_Rshiny/deploy_app.sh
 ```
 
 You will also need to set up the `.Renviron` file with the necessary environment variables. This file should contain:
