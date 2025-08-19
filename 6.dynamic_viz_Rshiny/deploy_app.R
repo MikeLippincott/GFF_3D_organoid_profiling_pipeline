@@ -25,7 +25,7 @@ if (!testing) {
 
     rsconnect::deployApp(
         appDir = "./",
-        appName = "NF1_Patient_Derived_Organoid_Image_based_profiles",
+        appName = "NF1_Patient_Organoid_Dashboard",
         account = Sys.getenv("RSCONNECT_NAME"),
         launch.browser = TRUE
         )
