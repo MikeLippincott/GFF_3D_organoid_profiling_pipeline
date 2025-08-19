@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Create z-stack images from the individual z-slice images for each FOV per well
+# # Check the files for corrupted files, or files that were not copied over correctly.
 
 # ## Import libraries
 
-# In[1]:
+# In[ ]:
 
 
 import pathlib
@@ -15,11 +15,29 @@ import numpy as np
 import tifffile as tiff
 
 # check if in a jupyter notebook
+
 try:
     cfg = get_ipython().config
     in_notebook = True
 except NameError:
     in_notebook = False
+
+    # Get the current working directory
+cwd = pathlib.Path.cwd()
+
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+# Check if a Git root directory was found
+if root_dir is None:
+    raise FileNotFoundError("No Git root directory found.")
 
 if in_notebook:
     import tqdm.notebook as tqdm
@@ -27,7 +45,7 @@ else:
     import tqdm
 
 
-# In[2]:
+# In[ ]:
 
 
 def max_z_projection(patient: str, well_fov: str) -> None:
@@ -49,12 +67,12 @@ def max_z_projection(patient: str, well_fov: str) -> None:
     channel_images = {
         channel_name: {"filename": [], "filepath": []} for channel_name in channel_names
     }
-    raw_images_path = pathlib.Path(f"../../data/{patient}/raw_images").resolve(
+    raw_images_path = pathlib.Path(f"{root_dir}/data/{patient}/raw_images").resolve(
         strict=True
     )
-    zstack_output_path = pathlib.Path(f"../../data/{patient}/zstack_images").resolve(
-        strict=True
-    )
+    zstack_output_path = pathlib.Path(
+        f"{root_dir}/data/{patient}/zstack_images"
+    ).resolve(strict=True)
     well_fov_dir = raw_images_path / well_fov
     channel_images = {
         channel_name: {"filename": [], "filepath": []} for channel_name in channel_names
@@ -95,7 +113,7 @@ def max_z_projection(patient: str, well_fov: str) -> None:
 
 # ## Set input and output directories
 
-# In[3]:
+# In[ ]:
 
 
 list_of_patients = [  # will be in a separate file in the future
@@ -110,21 +128,28 @@ list_of_patients = [  # will be in a separate file in the future
 ]
 
 
-# In[4]:
+# In[ ]:
 
 
 patient_input_dict = {}
 for patient in list_of_patients:
     patient_input_dict[patient] = {
-        "raw_images": pathlib.Path(f"../../data/{patient}/raw_images").resolve(),
-        "zstack_output": pathlib.Path(f"../../data/{patient}/zstack_images").resolve(),
+        "raw_images": pathlib.Path(f"{root_dir}/data/{patient}/raw_images").resolve(),
+        "zstack_output": pathlib.Path(
+            f"{root_dir}/data/{patient}/zstack_images"
+        ).resolve(),
     }
 pprint.pprint(patient_input_dict)
 
 
 # ## Create list of the well-site folders
+# Create a list of the well-site folders in the stack directory.
+# Then loop through each well-site folder and create a list of the channel images.
+# Then find (if any) corrupted files in the channel images.
+# This is done by checking if the size of the channel images for a given well-fov is the same as the size of the channel images for the other well-fovs.
+# If the size is different, then the file is corrupted.
 
-# In[5]:
+# In[ ]:
 
 
 patient_well_fovs_to_fix = []
@@ -157,7 +182,10 @@ print(
 pprint.pprint(patient_well_fovs_to_fix)
 
 
-# In[6]:
+# ## With the list of corrupted files, recreate the z-stack images
+# This is the point where the z-stack images are created from the individual z-slice images for each FOV per well.
+
+# In[ ]:
 
 
 for patient_well_fov in patient_well_fovs_to_fix:
