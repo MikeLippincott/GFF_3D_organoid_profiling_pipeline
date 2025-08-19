@@ -2,8 +2,13 @@ library(dplyr)
 library(ggplot2)
 library(shiny)
 library(rsconnect)
+library(argparser)
 
-testing <- TRUE
+# Parse command line arguments
+parser <- argparser::arg_parser(description = "Deploy R Shiny app")
+parser <- argparser::add_argument(parser, "--testing", flag = TRUE, help = "Run in testing mode without deployment")
+args <- argparser::parse_args(parser)
+testing <- args$testing
 
 if (!testing) {
 
