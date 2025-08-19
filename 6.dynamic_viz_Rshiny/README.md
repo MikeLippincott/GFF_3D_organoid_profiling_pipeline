@@ -19,6 +19,6 @@ This file is used to authenticate your deployment to the shiny server. Make sure
 This file should not be committed to version control as it contains sensitive information.
 Make sure to add `.Renviron` to your `.gitignore` file to prevent it from being tracked by git.
 
-Note: The app is hosted for free on shinyapps.io, which is a service provided by Posit.
+Note: The app is optionally hosted for free on shinyapps.io, which is a service provided by Posit.
 The free tier has some limitations, such as a maximum of 25 active hours per month and a maximum of 5 applications.
 You can upgrade to a paid plan if you need more resources or features.
