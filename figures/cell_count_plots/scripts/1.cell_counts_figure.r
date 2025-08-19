@@ -187,7 +187,7 @@ for (patient_id in unique(df$patient)) {
     plot <- (raw_map(data = patient_df$organoid_count,
             well = patient_df$Well,
             plate = 96)
-        + ggtitle(paste0("Patient single-cell counts: ", patient_id))
+        + ggtitle(paste0("Patient organoid counts: ", patient_id))
         + theme_dark())
     ggsave(
         filename = file.path(figures_path, paste0("platemap_organoid_counts_", patient_id, ".png")),
