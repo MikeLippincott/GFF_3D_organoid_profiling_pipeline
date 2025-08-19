@@ -46,6 +46,14 @@ if (!dir.exists(figures_path)) {
   dir.create(figures_path, recursive = TRUE)
 }
 
+umap_theme <- theme(
+        plot.title = element_text(hjust = 0.5, size = 16),
+        axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.title = element_text(size = 14, hjust = 0.5),
+        legend.text = element_text(size = 12)
+    )
+
 organoid_umap_results <- arrow::read_parquet(file.path(root_dir,"5.EDA/results/organoid_fs_umap.parquet"))
 head(organoid_umap_results)
 sc_umap_results <- arrow::read_parquet(file.path(root_dir,"5.EDA/results/sc_fs_umap.parquet"))
@@ -86,34 +94,21 @@ umap_organoid_plot <- (
     ggplot(organoid_umap_results, aes(x = UMAP1, y = UMAP2, color = Target, size = single_cell_count))
     + geom_point(alpha = 0.5)
     + scale_color_manual(values = custom_MOA_palette)
-    + labs(title = "UMAP of Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + labs(title = "All patients: Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
     + theme_bw()
-    + theme(
-        plot.title = element_text(hjust = 0.5, size = 16),
-        axis.title.x = element_text(size = 14),
-        axis.title.y = element_text(size = 14),
-        legend.title = element_text(size = 14, hjust = 0.5),
-        legend.text = element_text(size = 12)
-    )
+    + umap_theme
+
     + guides(
         size = guide_legend(
             title = "Single Cell Count",
             text = element_text(size = 16, hjust = 0.5, position = "top"),
-            # make two columns for the legend
             nrow = 1,
-            # title position to top
-
-            # move to bottom
-            # position = "bottom"
-
             ),
         color = guide_legend(
-            title = "MOA",
+            title = "Target",
             text = element_text(size = 16, hjust = 0.5),
             override.aes = list(alpha = 1,size = 5),
-            # nrow = 2,
             ncol = 1
-            # position = "bottom"
         )
     )
     + facet_wrap(~patient, nrow = 2)
@@ -142,37 +137,23 @@ umap_organoid_plot <- (
     ggplot(organoid_umap_results, aes(x = UMAP1, y = UMAP2, color = patient, size = single_cell_count))
     + geom_point(alpha = 0.7)
     + scale_color_manual(values = patient_color_palette)
-    + labs(title = "UMAP of Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + labs(title = "All patients: Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
     + theme_bw()
-    + theme(
-        plot.title = element_text(hjust = 0.5, size = 16),
-        axis.title.x = element_text(size = 14),
-        axis.title.y = element_text(size = 14),
-        legend.title = element_text(size = 14, hjust = 0.5),
-        legend.text = element_text(size = 12)
-    )
+    + umap_theme
     + guides(
         size = guide_legend(
             title = "Single Cell Count",
             text = element_text(size = 16, hjust = 0.5, position = "top"),
-            # make two columns for the legend
             nrow = 1,
-            # title position to top
-
-            # move to bottom
-            # position = "bottom"
-
             ),
         color = guide_legend(
             title = "Patient",
             text = element_text(size = 16, hjust = 0.5),
             override.aes = list(alpha = 1,size = 5),
-            # nrow = 2,
             ncol = 1
-            # position = "bottom"
         )
     )
-    + facet_wrap(~Target, nrow = 3)
+    + facet_wrap(~Target, nrow = 4)
 )
 organoid_features_path <- file.path(figures_path, "all_patients_umap_organoid_features_facet_by_target.png")
 
@@ -189,34 +170,21 @@ umap_organoid_plot <- (
     ggplot(organoid_umap_results_dmsos, aes(x = UMAP1, y = UMAP2, color = patient, size = single_cell_count))
     + geom_point(alpha = 0.7)
     + scale_color_manual(values = patient_color_palette)
-    + labs(title = "UMAP of Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + labs(title = "All patients: Organoid FS Profiles", x = "UMAP 0", y = "UMAP 1")
     + theme_bw()
-    + theme(
-        plot.title = element_text(hjust = 0.5, size = 16),
-        axis.title.x = element_text(size = 14),
-        axis.title.y = element_text(size = 14),
-        legend.title = element_text(size = 14, hjust = 0.5),
-        legend.text = element_text(size = 12)
-    )
+    + umap_theme
+
     + guides(
         size = guide_legend(
             title = "Single Cell Count",
             text = element_text(size = 16, hjust = 0.5, position = "top"),
-            # make two columns for the legend
             nrow = 1,
-            # title position to top
-
-            # move to bottom
-            # position = "bottom"
-
             ),
         color = guide_legend(
             title = "Patients",
             text = element_text(size = 16, hjust = 0.5),
             override.aes = list(alpha = 1,size = 5),
-            # nrow = 2,
             ncol = 1
-            # position = "bottom"
         )
     )
 )
@@ -232,23 +200,16 @@ umap_sc_plot <- (
     ggplot(sc_umap_results, aes(x = UMAP1, y = UMAP2, color = Target))
     + geom_point(alpha = 0.5, size = 1)
     + scale_color_manual(values = custom_MOA_palette)
-    + labs(title = "UMAP of Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + labs(title = "All patients: Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
     + theme_bw()
-    + theme(
-        plot.title = element_text(hjust = 0.5, size = 16),
-        axis.title.x = element_text(size = 14),
-        axis.title.y = element_text(size = 14),
-        legend.title = element_text(size = 14, hjust = 0.5),
-        legend.text = element_text(size = 12)
-    )
+    + umap_theme
+
     + guides(
         color = guide_legend(
-            title = "MOA",
+            title = "Target",
             text = element_text(size = 16, hjust = 0.5),
             override.aes = list(alpha = 1,size = 5),
-            # nrow = 2,
             ncol = 1
-            # position = "bottom"
         )
     )
     + facet_wrap(~patient, nrow = 2)
@@ -271,21 +232,16 @@ hex_codes <- c(
 patient_color_palette <- setNames(hex_codes[1:length(patients)], patients)
 
 width <- 10
-height <- 5
+height <- 8
 options(repr.plot.width = width, repr.plot.height = height)
 umap_sc_plot <- (
     ggplot(sc_umap_results, aes(x = UMAP1, y = UMAP2, color = patient))
     + geom_point(alpha = 0.7, size = 1)
     + scale_color_manual(values = patient_color_palette)
-    + labs(title = "UMAP of Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + labs(title = "All patients: Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
     + theme_bw()
-    + theme(
-        plot.title = element_text(hjust = 0.5, size = 16),
-        axis.title.x = element_text(size = 14),
-        axis.title.y = element_text(size = 14),
-        legend.title = element_text(size = 14, hjust = 0.5),
-        legend.text = element_text(size = 12)
-    )
+    + umap_theme
+
     + guides(
         color = guide_legend(
             title = "Patient",
@@ -296,7 +252,7 @@ umap_sc_plot <- (
             # position = "bottom"
         )
     )
-    + facet_wrap(~Target, nrow = 3)
+    + facet_wrap(~Target, nrow = 4)
 )
 sc_features_path <- file.path(figures_path, "all_patients_umap_sc_features_facet_by_target.png")
 
@@ -313,15 +269,10 @@ umap_sc_plot <- (
     ggplot(sc_umap_results_dmsos, aes(x = UMAP1, y = UMAP2, color = patient))
     + geom_point(alpha = 0.7, size = 1)
     + scale_color_manual(values = patient_color_palette)
-    + labs(title = "UMAP of Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
+    + labs(title = "All patients: Single Cell FS Profiles", x = "UMAP 0", y = "UMAP 1")
     + theme_bw()
-    + theme(
-        plot.title = element_text(hjust = 0.5, size = 16),
-        axis.title.x = element_text(size = 14),
-        axis.title.y = element_text(size = 14),
-        legend.title = element_text(size = 14, hjust = 0.5),
-        legend.text = element_text(size = 12)
-    )
+    + umap_theme
+
     + guides(
         color = guide_legend(
             title = "Patients",
@@ -350,16 +301,10 @@ for (patient in patients) {
         ggplot(umap_results_patient, aes(x = UMAP1, y = UMAP2, color = Target, size = single_cell_count))
         + geom_point(alpha = 0.7)
         + scale_color_manual(values = custom_MOA_palette)
-        + labs(title = paste("UMAP of Organoid FS Profiles -", patient)
-        , x = "UMAP 0", y = "UMAP 1")
+        + labs(title = paste(patient," - Organoid FS Profiles"), x = "UMAP 0", y = "UMAP 1")
         + theme_bw()
-        + theme(
-            plot.title = element_text(hjust = 0.5, size = 16),
-            axis.title.x = element_text(size = 14),
-            axis.title.y = element_text(size = 14),
-            legend.title = element_text(size = 14, hjust = 0.5),
-            legend.text = element_text(size = 12)
-        )
+        + umap_theme
+
         + guides(
             size = guide_legend(
                 title = "Single Cell Count",
@@ -395,15 +340,9 @@ for (patient in patients) {
         + geom_point(alpha = 0.7)
         # make the colors continuous
         + scale_color_manual(values = custom_MOA_palette)
-        + labs(title = paste0("UMAP of single-cells FS Profiles - ", patient), x = "UMAP 0", y = "UMAP 1")
+        + labs(title = paste0(patient," - Single-cells FS Profiles"), x = "UMAP 0", y = "UMAP 1")
         + theme_bw()
-        + theme(
-            plot.title = element_text(hjust = 0.5, size = 16),
-            axis.title.x = element_text(size = 14),
-            axis.title.y = element_text(size = 14),
-            legend.title = element_text(size = 14, hjust = 0.5),
-            legend.text = element_text(size = 12)
-        )
+        + umap_theme
         + guides(
             color = guide_legend(
                 title = "Target",
@@ -418,15 +357,15 @@ for (patient in patients) {
     )
     print(umap_sc_color_by_target_plot)
 
-    width <- 10
-    height <- 5
+ width <- 10
+height <- 8
     options(repr.plot.width = width, repr.plot.height = height)
     umap_sc_color_by_parent_organoid <- (
         ggplot(umap_results_patient, aes(x = UMAP1, y = UMAP2, color = parent_organoid))
         + geom_point(alpha = 0.7)
         # make the colors continuous
         + scale_color_gradient(low = "lightblue", high = "darkblue")
-        + labs(title = paste0("UMAP of single-cells FS Profiles - ", patient), x = "UMAP 0", y = "UMAP 1")
+        + labs(title = paste0(patient," - Single-cells FS Profiles"), x = "UMAP 0", y = "UMAP 1")
         + theme_bw()
         + theme(
             plot.title = element_text(hjust = 0.5, size = 16),
@@ -437,12 +376,12 @@ for (patient in patients) {
         )
         + guides(
             color = guide_colorbar(
-                title = "Parent Organoid",
+                title = "Parent\nOrganoid",
                 title.position = "top",
                 title.hjust = 0.5
             )
         )
-        + facet_wrap(~Target, nrow = 3)
+        + facet_wrap(~Target, nrow = 4)
 
     )
     print(umap_sc_color_by_parent_organoid)
