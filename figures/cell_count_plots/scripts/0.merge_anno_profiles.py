@@ -134,11 +134,19 @@ print("Organoid counts shape:", organoid_counts.shape)
 # In[8]:
 
 
+single_cell_counts
+
+
+# In[9]:
+
+
 organoid_counts.drop_duplicates(
-    subset=["patient", "Well", "single_cell_count"], inplace=True, ignore_index=True
+    subset=["patient", "image_set", "single_cell_count"],
+    inplace=True,
+    ignore_index=True,
 )
 organoid_counts = (
-    organoid_counts.groupby(["patient", "unit", "dose", "treatment", "Well"])
+    organoid_counts.groupby(["patient", "unit", "dose", "treatment", "image_set"])
     .sum(numeric_only=True)
     .reset_index()
 )
@@ -148,20 +156,20 @@ organoid_counts["cell_density"] = (
 )
 
 
-# In[9]:
+# In[10]:
 
 
 sc_counts.drop_duplicates(
     subset=["patient", "Well", "parent_organoid"], inplace=True, ignore_index=True
 )
 sc_counts = (
-    sc_counts.groupby(["patient", "unit", "dose", "treatment", "Well"])
+    sc_counts.groupby(["patient", "unit", "dose", "treatment", "image_set"])
     .size()
     .reset_index(name="organoid_count")
 )
 
 
-# In[10]:
+# In[11]:
 
 
 sc_and_organoid_counts = pd.merge(
@@ -173,12 +181,12 @@ sc_and_organoid_counts = pd.merge(
         "unit",
         "dose",
         "treatment",
-        "Well",
+        "image_set",
     ],
 )
 
 
-# In[11]:
+# In[12]:
 
 
 # save the merged profile counts

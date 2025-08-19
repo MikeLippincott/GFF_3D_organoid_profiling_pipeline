@@ -43,12 +43,53 @@ if (!dir.exists(figures_path)) {
     dir.create(figures_path, recursive = TRUE)
 }
 
+cell_counts_theme <- theme(
+        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.x = element_text(size = 18),
+        axis.title.y = element_text(size = 18),
+        plot.title = element_text(size = 20, hjust = 0.5),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 16),
+        strip.text = element_text(size = 16),
+        legend.position = "none"
+    )
+
 sc_organoid_profile_path <- file.path(
     root_dir,
     "figures/cell_count_plots/results/sc_and_organoid_counts.parquet"
 )
 df <- arrow::read_parquet(sc_organoid_profile_path)
 head(df)
+
+df$treatment <- factor(
+    df$treatment,
+    levels = c(
+        'DMSO',
+        'Staurosporine',
+        'Binimetinib',
+        'Cabozantinib',
+        'Copanlisib',
+        'Digoxin',
+        'Everolimus',
+        'Fimepinostat',
+        'Imatinib',
+        'Ketotifen',
+        'Linsitinib',
+        'Mirdametinib',
+        'Nilotinib',
+        'Onalespib',
+        'Rapamycin',
+        'Selumetinib',
+        'Trametinib',
+        'ARV-825',
+        'Panobinostat',
+        'Sapanisertib',
+        'Trabectedin',
+        'Vistusertib'
+    )
+)
+
 
 width <- 14
 height <- 14
@@ -73,17 +114,7 @@ single_cell_counts_plot <- (
         y = "Single-cell count"
     )
     + theme_bw()
-    + theme(
-        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title.x = element_text(size = 18),
-        axis.title.y = element_text(size = 18),
-        plot.title = element_text(size = 20, hjust = 0.5),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 16),
-        strip.text = element_text(size = 16),
-        legend.position = "none"
-    )
+    + cell_counts_theme
     + facet_wrap(~ treatment, ncol = 5)
 )
 ggsave(
@@ -117,17 +148,7 @@ organoid_cell_counts_plot <- (
         y = "Organoid count"
     )
     + theme_bw()
-    + theme(
-        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title.x = element_text(size = 18),
-        axis.title.y = element_text(size = 18),
-        plot.title = element_text(size = 20, hjust = 0.5),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 16),
-        strip.text = element_text(size = 16),
-        legend.position = "none"
-    )
+    + cell_counts_theme
     + facet_wrap(~ treatment, ncol = 5)
 )
 ggsave(
@@ -160,14 +181,8 @@ cell_count_volume_ratio_plot <- (
     )
     + theme_bw()
     + ylim(c(0, quantile(df$cell_density, 0.99, na.rm = TRUE)))  # Fixed: added na.rm = TRUE
-    + theme(
-        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 16),
-        axis.text.y = element_text(size = 16),
-        axis.title.x = element_text(size = 18),
-        axis.title.y = element_text(size = 18),
-        plot.title = element_text(size = 20, hjust = 0.5),
-        legend.position = "none",
-    )
+    + cell_counts_theme
+
     + facet_wrap(~ treatment, ncol = 5)
 )
 ggsave(
@@ -177,37 +192,3 @@ ggsave(
     height = height
 )
 cell_count_volume_ratio_plot
-
-width <- 6
-height <- 6
-options(repr.plot.width = width, repr.plot.height = height)
-for (patient_id in unique(df$patient)) {
-    patient_df <- df[df$patient == patient_id, ]
-
-    plot <- (raw_map(data = patient_df$organoid_count,
-            well = patient_df$Well,
-            plate = 96)
-        + ggtitle(paste0("Patient organoid counts: ", patient_id))
-        + theme_dark())
-    ggsave(
-        filename = file.path(figures_path, paste0("platemap_organoid_counts_", patient_id, ".png")),
-        plot = plot,
-        width = width,
-        height = height
-    )
-    print(plot)
-    plot <- (raw_map(data = patient_df$single_cell_count,
-            well = patient_df$Well,
-            plate = 96)
-        + ggtitle(paste0("Patient single-cell counts: ", patient_id))
-        + theme_dark())
-    ggsave(
-        filename = file.path(figures_path, paste0("platemap_sc_counts_", patient_id, ".png")),
-        plot = plot,
-        width = width,
-        height = height
-    )
-    print(plot)
-}
-
-
