@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
+import argparse
 import os
 import pathlib
 import sys
@@ -50,7 +51,8 @@ from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[ ]:
+
+# In[2]:
 
 
 if not in_notebook:
@@ -62,13 +64,15 @@ if not in_notebook:
     processor_type = arguments_dict["processor_type"]
 
 else:
-    well_fov = "C4-2"
+    well_fov = "F3-1"
     patient = "NF0014"
-    compartment = "Nuclei"
+    compartment = "Organoid"
     channel = "DNA"
     processor_type = "CPU"
 
-image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+image_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
+)
 
 output_parent_path = pathlib.Path(
     f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
@@ -136,22 +140,29 @@ else:
     raise ValueError(
         f"Processor type {processor_type} is not supported. Use 'CPU' or 'GPU'."
     )
+
+
+# In[ ]:
+
+
 final_df = pd.DataFrame(size_shape_dict)
 
 # prepend compartment and channel to column names
 for col in final_df.columns:
     if col not in ["object_id"]:
+        final_df[col] = final_df[col].astype(np.float32)
         final_df.rename(
             columns={col: f"Area.Size.Shape_{compartment}_{col}"},
             inplace=True,
         )
+
 final_df.insert(1, "image_set", image_set_loader.image_set_name)
 
 output_file = pathlib.Path(
     output_parent_path
-    / f"AreaSize_Shape_{compartment}_{processor_type}_features.parquet"
+    / f"AreaSizeShape_{compartment}_{processor_type}_features.parquet"
 )
-final_df.to_parquet(output_file)
+final_df.to_parquet(output_file, index=False)
 final_df.head()
 
 
@@ -175,3 +186,4 @@ get_mem_and_time_profiling(
         f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_AreaSizeShape_DNA_{compartment}_{processor_type}.parquet"
     ),
 )
+
