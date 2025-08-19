@@ -32,20 +32,20 @@ for patient in "${patient_array[@]}"; do
 #     Rscript "$git_root"/5.EDA/scripts/2.consensus_profiles.r --patient "$patient"
 done
 
-# conda deactivate
-# conda activate GFF_analysis
+conda deactivate
+conda activate GFF_analysis
 
-# python "$git_root"/5.EDA/scripts/4.calculate_inter_intra_patient_distances.py
-# python "$git_root"/5.EDA/scripts/5.calculate_mAP.py
+python "$git_root"/5.EDA/scripts/4.calculate_inter_intra_patient_distances.py
+python "$git_root"/5.EDA/scripts/5.calculate_mAP.py
 
-# conda deactivate
-# conda activate gff_figure_env
-# Rscript "$git_root"/5.EDA/scripts/6.plot_metrics_and_mAP.r
-# Rscript "$git_root"/5.EDA/scripts/7.visualize_hits.r
+conda deactivate
+conda activate gff_figure_env
+Rscript "$git_root"/5.EDA/scripts/6.plot_metrics_and_mAP.r
+Rscript "$git_root"/5.EDA/scripts/7.visualize_hits.r
 
-# conda deactivate
-# conda activate GFF_analysis
-# python "$git_root"/5.EDA/scripts/8.threshold_hits.py
+conda deactivate
+conda activate GFF_analysis
+python "$git_root"/5.EDA/scripts/8.threshold_hits.py
 
 conda activate GFF_analysis
 
@@ -55,6 +55,7 @@ python "$git_root"/5.EDA/scripts/11.find_significant_features.py
 conda deactivate
 conda activate gff_figure_env
 Rscript "$git_root"/5.EDA/scripts/10.plot_linear_modeling_results.r
+
 
 conda deactivate
 
