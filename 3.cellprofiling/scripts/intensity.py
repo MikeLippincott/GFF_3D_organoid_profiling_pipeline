@@ -46,7 +46,7 @@ from intensity_utils import measure_3D_intensity_CPU, measure_3D_intensity_gpu
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -60,7 +60,7 @@ if not in_notebook:
 
 else:
     well_fov = "G4-6"
-    patient = "NF0021"
+    patient = "NF0014_T1"
     channel = "AGP"
     compartment = "Nuclei"
     processor_type = "CPU"

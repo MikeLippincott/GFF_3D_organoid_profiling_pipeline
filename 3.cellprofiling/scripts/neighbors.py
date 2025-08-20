@@ -4,7 +4,6 @@
 # In[ ]:
 
 
-import argparse
 import os
 import pathlib
 import sys
@@ -49,7 +48,6 @@ from loading_classes import ImageSetLoader, ObjectLoader
 from neighbors_utils import measure_3D_number_of_neighbors
 from resource_profiling_util import get_mem_and_time_profiling
 
-
 # In[ ]:
 
 
@@ -62,7 +60,7 @@ if not in_notebook:
     processor_type = arguments_dict["processor_type"]
 else:
     well_fov = "C4-2"
-    patient = "NF0014"
+    patient = "NF0014_T1"
     channel = "DNA"
     compartment = "Nuclei"
     processor_type = "CPU"
@@ -163,4 +161,3 @@ get_mem_and_time_profiling(
         f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_{channel}_{compartment}_Neighbors_CPU.parquet"
     ),
 )
-

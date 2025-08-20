@@ -61,7 +61,7 @@ if not in_notebook:
     patient = args["patient"]
 else:
     print("Running in a notebook")
-    patient = "NF0014"
+    patient = "NF0014_T1"
     well_fov = "E10-2"
     window_size = 3
     clip_limit = 0.05

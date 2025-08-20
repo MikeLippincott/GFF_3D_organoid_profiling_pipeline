@@ -43,7 +43,7 @@ if not in_notebook:
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 
 input_dir = pathlib.Path(

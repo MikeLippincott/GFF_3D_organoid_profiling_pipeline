@@ -51,7 +51,7 @@ if not in_notebook:
     patient = args["patient"]
 else:
     print("Running in a notebook")
-    patient = "NF0014"
+    patient = "NF0014_T1"
     well_fov = "C4-2"
 
 image_dir = pathlib.Path(

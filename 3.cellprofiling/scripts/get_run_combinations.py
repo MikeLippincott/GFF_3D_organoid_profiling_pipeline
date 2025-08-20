@@ -37,7 +37,6 @@ if root_dir is None:
 sys.path.append(f"{root_dir}/3.cellprofiling/featurization_utils/")
 from loading_classes import ImageSetLoader
 
-
 # In[2]:
 
 
@@ -85,7 +84,7 @@ channel_mapping = {
 
 
 # example image set path to get the image set loader working
-image_set_path = pathlib.Path(f"{root_dir}/data/NF0014/profiling_input_images/C2-1/")
+image_set_path = pathlib.Path(f"{root_dir}/data/NF0014_T1/profiling_input_images/C2-1/")
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
     anisotropy_spacing=(1, 0.1, 0.1),
@@ -126,8 +125,9 @@ for patient in patients:
         f"{root_dir}/data/{patient}/profiling_input_images/"
     ).glob("*")
     for well_fov in patient_well_fovs:
-        print(f"Processing patient: {patient}, well_fov: {well_fov}")
         well_fov = well_fov.name
+        print(f"Processing patient: {patient}, well_fov: {well_fov}")
+
         for feature in features:
             if feature == "Neighbors":
                 output_dict["patient"].append(patient)
@@ -237,4 +237,3 @@ print(
 # write to a txt file with each row as a combination
 # each column is a feature of the combination
 df.to_csv(input_combinations_path, sep="\t", index=False)
-

@@ -40,7 +40,7 @@ if not in_notebook:
     args = parse_segmentation_args()
     patient = args["patient"]
 else:
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 
 # In[ ]:

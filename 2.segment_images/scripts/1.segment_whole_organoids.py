@@ -157,7 +157,7 @@ else:
     well_fov = "C2-1"
     window_size = 4
     clip_limit = 0.05
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 
 input_dir = pathlib.Path(

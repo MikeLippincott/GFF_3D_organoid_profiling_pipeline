@@ -70,7 +70,7 @@ else:
     print("Running in a notebook")
     well_fov = "C10-1"
     compartment = "nuclei"
-    patient = "NF0021"
+    patient = "NF0014_T1"
 
 input_dir = pathlib.Path(
     f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"

@@ -42,7 +42,7 @@ if not in_notebook:
     well_fov = args["well_fov"]
     patient = args["patient"]
 else:
-    patient = "NF0030"
+    patient = "NF0014_T1"
     well_fov = "D2-1"
 
 

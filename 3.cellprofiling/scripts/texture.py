@@ -49,7 +49,7 @@ from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 from texture_utils import measure_3D_texture
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -61,7 +61,7 @@ if not in_notebook:
     processor_type = arguments_dict["processor_type"]
 else:
     well_fov = "E10-3"
-    patient = "NF0030"
+    patient = "NF0014_T1"
     channel = "BF"
     compartment = "Organoid"
     processor_type = "CPU"
