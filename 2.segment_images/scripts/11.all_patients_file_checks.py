@@ -23,7 +23,6 @@ else:
             break
 sys.path.append(str(root_dir / "utils"))
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 

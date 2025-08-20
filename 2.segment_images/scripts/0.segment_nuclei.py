@@ -7,7 +7,7 @@
 
 # ## import libraries
 
-# In[2]:
+# In[ ]:
 
 
 import pathlib
@@ -35,8 +35,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import check_for_missing_args, parse_segmentation_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -59,6 +59,12 @@ if not in_notebook:
     clip_limit = args["clip_limit"]
     well_fov = args["well_fov"]
     patient = args["patient"]
+    check_for_missing_args(
+        well_fov=well_fov,
+        patient=patient,
+        window_size=window_size,
+        clip_limit=clip_limit,
+    )
 else:
     print("Running in a notebook")
     patient = "NF0014_T1"

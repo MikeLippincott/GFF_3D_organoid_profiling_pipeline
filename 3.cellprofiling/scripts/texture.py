@@ -1,47 +1,32 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
-import gc
 import os
 import pathlib
 import sys
 import time
-from itertools import product
 
 import pandas as pd
 import psutil
-from tqdm import tqdm
 
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-if in_notebook:
-    from tqdm.notebook import tqdm
-else:
-    from tqdm import tqdm
-
-    # Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import check_for_missing_args, parse_segmentation_args
+from notebook_init_utils import bandicoot_check, init_notebook
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
-
+root_dir, in_notebook = init_notebook()
 sys.path.append(f"{root_dir}/3.cellprofiling/featurization_utils/")
 
 from featurization_parsable_arguments import parse_featurization_args
