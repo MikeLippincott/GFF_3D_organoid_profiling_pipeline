@@ -36,6 +36,18 @@ import cp_parallel
 
 # ## Set paths and variables
 
+# In[ ]:
+
+
+bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+if bandicoot_path.exists():
+    # comment out depending on whose computer you are on
+    # mike's computer
+    image_base_dir = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+else:
+    image_base_dir = root_dir
+
+
 # In[6]:
 
 
@@ -52,7 +64,7 @@ output_dir = pathlib.Path(f"{root_dir}/1.image_quality_control/pipeline/qc_resul
 output_dir.mkdir(exist_ok=True)
 
 # directory where images are located within folders (parent folder is the plate and the child folders are wells containing images)
-images_dir = pathlib.Path(f"{root_dir}/data").resolve(strict=True)
+images_dir = pathlib.Path(f"{image_base_dir}/data").resolve(strict=True)
 
 # filter plate names to include only those starting with 'NF' or 'SARCO'
 plate_names = []

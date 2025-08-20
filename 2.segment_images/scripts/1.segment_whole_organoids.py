@@ -5,10 +5,9 @@
 # The end goals is to segment cell and extract morphology features from cellprofiler.
 # These masks must be imported into cellprofiler to extract features.
 
-# In[ ]:
+# In[3]:
 
 
-import argparse
 import pathlib
 import sys
 
@@ -25,35 +24,28 @@ from skimage import io
 
 use_GPU = torch.cuda.is_available()
 
-# set import path
-sys.path.append(str(pathlib.Path("../../utils/").resolve()))
-
-# check if in a jupyter notebook
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils/"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
+
+image_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
-# In[2]:
+# In[ ]:
 
 
 def segment_with_diameter(
@@ -62,7 +54,7 @@ def segment_with_diameter(
     diameter: int,
     z_axis: int = 0,
     channels: tuple = [1, 0],
-    min_diameter: int = 200,  # in pixels, default is 250
+    min_diameter: int = 200,  # in pixels, default is 200
     diameter_step: int = 200,
 ) -> tuple:
     """
@@ -155,34 +147,11 @@ test_segment_with_diameter()
 
 
 if not in_notebook:
-    # set up arg parser
-    parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
-
-    parser.add_argument(
-        "--patient",
-        type=str,
-        help="Patient ID to use for the segmentation",
-    )
-
-    parser.add_argument(
-        "--well_fov",
-        type=str,
-        help="Path to the input directory containing the tiff images",
-    )
-    parser.add_argument(
-        "--window_size", type=int, help="Size of the window to use for the segmentation"
-    )
-    parser.add_argument(
-        "--clip_limit",
-        type=float,
-        help="Clip limit for the adaptive histogram equalization",
-    )
-
-    args = parser.parse_args()
-    window_size = args.window_size
-    clip_limit = args.clip_limit
-    well_fov = args.well_fov
-    patient = args.patient
+    args = parse_segmentation_args()
+    window_size = args["window_size"]
+    clip_limit = args["clip_limit"]
+    well_fov = args["well_fov"]
+    patient = args["patient"]
 
 else:
     well_fov = "C2-1"
@@ -191,12 +160,12 @@ else:
     patient = "NF0014"
 
 
-input_dir = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}").resolve(
-    strict=True
-)
+input_dir = pathlib.Path(
+    f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}"
+).resolve(strict=True)
 
 mask_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/segmentation_masks/{input_dir.stem}"
+    f"{image_base_dir}/data/{patient}/segmentation_masks/{input_dir.stem}"
 ).resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
 

@@ -5,49 +5,41 @@
 
 # ## Import libraries
 
-# In[ ]:
+# In[8]:
 
 
 import pathlib
 import pprint
+import sys
 
 import numpy as np
+import pandas as pd
 import tifffile as tiff
 
-# check if in a jupyter notebook
-
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-    # Get the current working directory
+# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import init_notebook
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
-
+root_dir, in_notebook = init_notebook()
 if in_notebook:
     import tqdm.notebook as tqdm
 else:
     import tqdm
 
 
-# In[ ]:
+# In[9]:
 
-# Create max projections per well-fov-patient to evaluate the size of the files (small = corrupted)
+
 def max_z_projection(patient: str, well_fov: str) -> None:
     """
     Create a maximum intensity projection of the z-stack images for a given patient and well_fov.
@@ -116,16 +108,28 @@ def max_z_projection(patient: str, well_fov: str) -> None:
 # In[ ]:
 
 
-list_of_patients = [  # will be in a separate file in the future
-    "NF0014",
-    "NF0016",
-    "NF0018",
-    "NF0021",
-    "NF0030",
-    "NF0040",
-    "SARCO219",
-    "SARCO361",
-]
+bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+if bandicoot_path.exists():
+    # comment out depending on whose computer you are on
+    # mike's computer
+    bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+    # Jenna's computer
+    # bandicoot_path = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
+    raw_image_dir = pathlib.Path(f"{bandicoot_path}/NF1_organoid_data/").resolve()
+    output_base_dir = bandicoot_path
+else:
+    raw_image_dir = pathlib.Path(f"{root_dir}/NF1_organoid_data/").resolve()
+    output_base_dir = root_dir
+
+
+# In[10]:
+
+
+# patient_ids
+patient_id_file_path = pathlib.Path(f"{raw_image_dir}/data/patient_IDs.txt").resolve(
+    strict=True
+)
+list_of_patients = pd.read_csv(patient_id_file_path, header=None)[0].tolist()
 
 
 # In[ ]:
@@ -134,9 +138,11 @@ list_of_patients = [  # will be in a separate file in the future
 patient_input_dict = {}
 for patient in list_of_patients:
     patient_input_dict[patient] = {
-        "raw_images": pathlib.Path(f"{root_dir}/data/{patient}/raw_images").resolve(),
+        "raw_images": pathlib.Path(
+            f"{raw_image_dir}/data/{patient}/raw_images"
+        ).resolve(),
         "zstack_output": pathlib.Path(
-            f"{root_dir}/data/{patient}/zstack_images"
+            f"{output_base_dir}/data/{patient}/zstack_images"
         ).resolve(),
     }
 pprint.pprint(patient_input_dict)

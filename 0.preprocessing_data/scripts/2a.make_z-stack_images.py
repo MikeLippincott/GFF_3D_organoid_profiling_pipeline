@@ -5,21 +5,32 @@
 
 # ## Import libraries
 
-# In[1]:
+# In[4]:
 
 
 import pathlib
 import pprint
+import sys
 
 import numpy as np
+import pandas as pd
 import tifffile as tiff
 
-# check if in a jupyter notebook
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
+# Get the current working directory
+cwd = pathlib.Path.cwd()
+
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import init_notebook
+
+root_dir, in_notebook = init_notebook()
 
 if in_notebook:
     import tqdm.notebook as tqdm
@@ -32,26 +43,51 @@ else:
 # In[ ]:
 
 
-list_of_patients = [  # will be in a separate file in the future
-    "NF0014",
-    "NF0016",
-    "NF0018",
-    "NF0021",
-    "NF0030",
-    "NF0040",
-    "SARCO219",
-    "SARCO361",
-]
+bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+if bandicoot_path.exists():
+    bandicoot = True
+else:
+    bandicoot = False
 
 
-# In[3]:
+# In[ ]:
+
+
+if bandicoot:
+    # comment out depending on whose computer you are on
+    # mike's computer
+    bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+    # Jenna's computer
+    # bandicoot_path = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
+    raw_image_dir = pathlib.Path(f"{bandicoot_path}/NF1_organoid_data/").resolve()
+    output_base_dir = bandicoot_path
+else:
+    raw_image_dir = pathlib.Path(f"{root_dir}/NF1_organoid_data/").resolve(strict=True)
+    output_base_dir = root_dir
+
+
+# In[8]:
+
+
+# patient_ids
+patient_id_file_path = pathlib.Path(f"{root_dir}/data/patient_IDs.txt").resolve(
+    strict=True
+)
+list_of_patients = pd.read_csv(patient_id_file_path, header=None)[0].tolist()
+
+
+# In[ ]:
 
 
 patient_input_dict = {}
 for patient in list_of_patients:
     patient_input_dict[patient] = {
-        "raw_images": pathlib.Path(f"../../data/{patient}/raw_images").resolve(),
-        "zstack_output": pathlib.Path(f"../../data/{patient}/zstack_images").resolve(),
+        "raw_images": pathlib.Path(
+            f"{raw_image_dir}/data/{patient}/raw_images"
+        ).resolve(),
+        "zstack_output": pathlib.Path(
+            f"{raw_image_dir}/data/{patient}/zstack_images"
+        ).resolve(),
     }
 pprint.pprint(patient_input_dict)
 
@@ -63,10 +99,10 @@ pprint.pprint(patient_input_dict)
 image_extensions = {".tif", ".tiff"}
 
 
-# In[5]:
+# In[ ]:
 
 
-unlisted_images = {"patient": ["NF0014"], "image_set": ["F11-3"]}
+unlisted_images = {"patient": ["NF0014_T1"], "image_set": ["F11-3"]}
 
 
 # In[6]:

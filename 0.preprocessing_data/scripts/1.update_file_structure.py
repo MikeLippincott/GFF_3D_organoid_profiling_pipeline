@@ -9,7 +9,7 @@
 
 # ## Import libraries
 
-# In[1]:
+# In[3]:
 
 
 import argparse
@@ -22,16 +22,33 @@ from concurrent.futures import ProcessPoolExecutor
 
 import tqdm
 
+# Get the current working directory
+cwd = pathlib.Path.cwd()
+
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import init_notebook
+
+root_dir, in_notebook = init_notebook()
+
+
 # ## Set paths and variables
 
-# In[2]:
+# In[4]:
 
 
 argparse = argparse.ArgumentParser(
     description="Copy files from one directory to another"
 )
 argparse.add_argument("--HPC", action="store_true", help="Type of compute to run on")
-
 # Parse arguments
 args = argparse.parse_args(args=sys.argv[1:] if "ipykernel" not in sys.argv[0] else [])
 HPC = args.HPC
@@ -39,21 +56,44 @@ HPC = args.HPC
 print(f"HPC: {HPC}")
 
 
+# In[5]:
+
+
+# check if bandicoot is set
+bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+if not HPC and bandicoot_path.exists():
+    bandicoot = True
+else:
+    bandicoot = False
+
+
 # In[ ]:
 
 
 if HPC:
-    raw_image_dir_hpc = pathlib.Path("/pl/active/koala/GFF_Data/GFF-Raw/").resolve(
+    raw_image_dir = pathlib.Path("/pl/active/koala/GFF_Data/GFF-Raw/").resolve(
         strict=True
     )
+    output_base_dir = root_dir
+elif bandicoot:
+    # comment out depending on whose computer you are on
+    # mike's computer
+    bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(strict=True)
+    # Jenna's computer
+    # bandicoot_path = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
+    raw_image_dir = pathlib.Path(
+        f"{bandicoot_path}/NF1_organoid_data/Raw_patient_files"
+    ).resolve(strict=True)
+    output_base_dir = bandicoot_path
 else:
     # comment out depending on whose computer you are on
     # mike's computer
-    raw_image_dir_local = pathlib.Path(
-        "/home/lippincm/Desktop/20TB_A/NF1_Patient_organoids/"
+    raw_image_dir = pathlib.Path(
+        "/home/lippincm/Desktop/20TB_A/NF1_Patient_organoids"
     ).resolve(strict=True)
     # Jenna's computer
     # raw_image_dir_local = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
+    output_base_dir = root_dir
 
 
 # In[ ]:
@@ -61,79 +101,85 @@ else:
 
 # Define parent and destination directories in a single dictionary
 dir_mapping = {
-    "NF0014": {
+    "NF0014_T1": {
         "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0014-Thawed 3 (Raw image files)-Combined/NF0014-Thawed 3 (Raw image files)-Combined copy"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0014-Thawed 3 (Raw image files)-Combined/NF0014-Thawed 3 (Raw image files)-Combined copy"
+            f"{raw_image_dir}/NF0014-Thawed 3 (Raw image files)-Combined/NF0014-Thawed 3 (Raw image files)-Combined copy"
         ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0014/raw_images").resolve(),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/NF0014_T1/raw_images"
+        ).resolve(),
     },
-    "NF0016": {
+    "NF0014_T2": {
         "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0016 Cell Painting-Pilot Drug Screening-selected/NF0016-Cell Painting Images/NF0016-images copy"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0016 Cell Painting-Pilot Drug Screening-selected/NF0016-Cell Painting Images/NF0016-images copy"
+            f"{raw_image_dir}/NF0014-T2 Cell Painting/NF0014-T2 Combined/"
         ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0016/raw_images").resolve(),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/NF0014_T2/raw_images"
+        ).resolve(),
+    },
+    "NF0016_T1": {
+        "parent": pathlib.Path(
+            f"{raw_image_dir}/NF0016 Cell Painting-Pilot Drug Screening-selected/NF0016-Cell Painting Images/NF0016-images copy"
+        ).resolve(strict=True),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/NF0016_T1/raw_images"
+        ).resolve(),
     },
     "NF0017": {
         "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"  # TODO: Update this later if not correct
+            f"{raw_image_dir}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"
         ).resolve(strict=True),
         "destination": pathlib.Path(
-            "../../data/raw_images/NF0017/raw_images"
+            f"{output_base_dir}/data/NF0017/raw_images"
         ).resolve(),
     },
-    "NF0018": {
+    "NF0018_T6": {
         "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0018 (T6) Cell Painting-Pilot Drug Screeining/NF0018-Cell Painting Images/NF0018-All Acquisitions"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0018 (T6) Cell Painting-Pilot Drug Screeining/NF0018-Cell Painting Images/NF0018-All Acquisitions"
+            f"{raw_image_dir}/NF0018 (T6) Cell Painting-Pilot Drug Screeining/NF0018-Cell Painting Images/NF0018-All Acquisitions"
         ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0018/raw_images").resolve(),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/NF0018_T6/raw_images"
+        ).resolve(),
     },
-    "NF0021": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0021-T1/NF0021-T1 Combined"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0021-T1/NF0021-T1 Combined"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0021/raw_images").resolve(),
+    "NF0021_T1": {
+        "parent": pathlib.Path(f"{raw_image_dir}/NF0021-T1/NF0021-T1 Combined").resolve(
+            strict=True
+        ),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/NF0021_T1/raw_images"
+        ).resolve(),
     },
-    "NF0030": {
+    "NF0030_T1": {
         "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0030 Cell Painting/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined"
+            f"{raw_image_dir}/NF0030 Cell Painting/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined"
         ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0030/raw_images").resolve(),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/NF0030_T1/raw_images"
+        ).resolve(),
     },
-    "NF0040": {
+    "NF0040_T1": {
         "parent": pathlib.Path(
-            f"{raw_image_dir_local}/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined"
-            if not HPC
-            else f"{raw_image_dir_hpc}/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined"
+            f"{raw_image_dir}/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined"
         ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0040/raw_images").resolve(),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/NF0040_T1/raw_images"
+        ).resolve(),
     },
-    "SACRO219": {
+    "SACRO219_T1": {
         "parent": pathlib.Path(
-            f"{raw_image_dir_local}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
-            if not HPC
-            else f"{raw_image_dir_hpc}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
+            f"{raw_image_dir}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
         ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/SARCO219/raw_images").resolve(),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/SARCO219_T1/raw_images"
+        ).resolve(),
     },
-    "SARCO361": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/SARC0361/SARC0361 Combined/"
-            if not HPC
-            else f"{raw_image_dir_hpc}/SARC0361/SARC0361 Combined/"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/SARCO361/raw_images").resolve(),
+    "SARCO361_T1": {
+        "parent": pathlib.Path(f"{raw_image_dir}/SARC0361/SARC0361 Combined/").resolve(
+            strict=True
+        ),
+        "destination": pathlib.Path(
+            f"{output_base_dir}/data/SARCO361_T1/raw_images"
+        ).resolve(),
     },
 }
 
@@ -145,7 +191,7 @@ image_extensions = {".tif", ".tiff"}
 
 # ### Set QC functions that determine if a well/site is of good quality to process based on file structure
 
-# In[5]:
+# In[ ]:
 
 
 def has_consistent_naming(well_dir: pathlib.Path) -> bool:
@@ -302,7 +348,9 @@ for key, paths in dir_mapping.items():
 # In[ ]:
 
 
-parent_dir_NF0016 = pathlib.Path("../../data/NF0016/raw_images").resolve(strict=True)
+parent_dir_NF0016 = pathlib.Path(
+    f"{output_base_dir}/data/NF0016_T1/raw_images"
+).resolve(strict=True)
 # get all dirs in the parent dir
 parent_dir_NF0016 = list(parent_dir_NF0016.glob("*/"))
 parent_dir_NF0016 = [x for x in parent_dir_NF0016 if x.is_dir()]
@@ -336,7 +384,9 @@ for parent_dir in parent_dir_NF0016:
 # In[ ]:
 
 
-parent_dir_NF0018 = pathlib.Path("../../data/NF0018/raw_images").resolve(strict=True)
+parent_dir_NF0018 = pathlib.Path(
+    f"{output_base_dir}/data/NF0018_T6/raw_images"
+).resolve(strict=True)
 # get all dirs in the parent dir
 parent_dir_NF0018 = list(parent_dir_NF0018.glob("*/"))
 parent_dir_NF0018 = [x for x in parent_dir_NF0018 if x.is_dir()]

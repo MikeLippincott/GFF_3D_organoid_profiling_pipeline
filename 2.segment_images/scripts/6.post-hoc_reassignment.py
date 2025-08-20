@@ -7,8 +7,8 @@
 # In[ ]:
 
 
-import argparse
 import pathlib
+import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -16,67 +16,41 @@ import pandas as pd
 import skimage
 import tifffile
 
-# check if in a jupyter notebook
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
+
+image_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
 # In[ ]:
 
 
 if not in_notebook:
-    print("Running as script")
-    # set up arg parser
-    parser = argparse.ArgumentParser(description="Segment the nuclei of a tiff image")
-
-    parser.add_argument(
-        "--patient",
-        type=str,
-        help="The patient ID",
-    )
-
-    parser.add_argument(
-        "--well_fov",
-        type=str,
-        help="Path to the input directory containing the tiff images",
-    )
-    parser.add_argument(
-        "--radius_constraint",
-        type=int,
-        default=10,
-        help="The maximum radius of the x-y vector",
-    )
-
-    args = parser.parse_args()
-    well_fov = args.well_fov
-    patient = args.patient
+    args = parse_segmentation_args()
+    well_fov = args["well_fov"]
+    patient = args["patient"]
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
     patient = "NF0014"
 
 mask_dir = pathlib.Path(
-    f"{root_dir}/data/{patient}/segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
 ).resolve()
 
 

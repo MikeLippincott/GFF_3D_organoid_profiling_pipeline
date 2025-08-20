@@ -1,18 +1,19 @@
 #!/bin/bash
-
+git_root=$(git rev-parse --show-toplevel)
+if [ -z "$git_root" ]; then
+    echo "Error: Could not find the git root directory."
+    exit 1
+fi
 # initialize the correct shell for your machine to allow conda to work
 conda init bash
 # activate the CellProfiler environment
 conda activate gff_cp_env
 
-# navigate to the directory containing the Jupyter notebooks
-cd notebooks
-
 # convert Jupyter notebook to Python script
-jupyter nbconvert --to script --output-dir=../nbconverted/ *.ipynb
+jupyter nbconvert --to script --output-dir="$git_root/1.image_quality_control/nbconverted/" "$git_root/1.image_quality_control/notebooks/*.ipynb"
 
 # run script(s)
-python ../nbconverted/0.cp_image_qc.py
+python "$git_root/1.image_quality_control/nbconverted/0.cp_image_qc.py"
 
 echo "CellProfiler runs have finished!"
 
@@ -22,9 +23,9 @@ conda deactivate
 conda activate gff_preprocessing_env
 
 # run evaluation scripts
-python ../nbconverted/1.evaluate_blur_qc.py
-python ../nbconverted/2.evaluate_saturation_qc.py
-python ../nbconverted/4.evaluate_qc_optimizaion.py
+python "$git_root/1.image_quality_control/nbconverted/1.evaluate_blur_qc.py"
+python "$git_root/1.image_quality_control/nbconverted/2.evaluate_saturation_qc.py"
+python "$git_root/1.image_quality_control/nbconverted/4.evaluate_qc_optimization.py"
 
 # deactivate the CellProfiler environment
 conda deactivate
@@ -32,10 +33,7 @@ conda deactivate
 conda activate gff_r_env
 
 # run reporting scripts
-Rscript ../nbconverted/3.generate_qc_report.r
-Rscript ../nbconverted/5.generate_qc_optimization_report.r
-
-# navigate back to the image_quality_control directory
-cd ..
+Rscript "$git_root/1.image_quality_control/nbconverted/3.generate_qc_report.r"
+Rscript "$git_root/1.image_quality_control/nbconverted/5.generate_qc_optimization_report.r"
 
 echo "Image quality control complete."
