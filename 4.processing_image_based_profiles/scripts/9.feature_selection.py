@@ -3,74 +3,65 @@
 
 # This notebook performs profile feature selection.
 
-# In[1]:
+# In[ ]:
 
 
-import argparse
 import pathlib
+import sys
 
 import pandas as pd
 from pycytominer import feature_select
 
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    args = argparser.parse_args()
-    patient = args.patient
+    args = parse_segmentation_args()
+    patient = args["patient"]
 
 else:
     patient = "SARCO361"
 
 
-# In[3]:
+# In[ ]:
 
 
 # pathing
 sc_normalized_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/3.normalized_profiles/sc_norm.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/3.normalized_profiles/sc_norm.parquet"
 ).resolve(strict=True)
 organoid_normalized_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/3.normalized_profiles/organoid_norm.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/3.normalized_profiles/organoid_norm.parquet"
 ).resolve(strict=True)
 
 
 # output path
 sc_fs_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/4.feature_selected_profiles/sc_fs.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/4.feature_selected_profiles/sc_fs.parquet"
 ).resolve()
 organoid_fs_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/4.feature_selected_profiles/organoid_fs.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/4.feature_selected_profiles/organoid_fs.parquet"
 ).resolve()
 
 organoid_fs_output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -145,21 +136,18 @@ with open(sc_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[9]:
+# In[ ]:
 
 
-sc_metadata_columns = [
-    "patient",
-    "object_id",
-    "unit",
-    "dose",
-    "treatment",
-    "image_set",
-    "Target",
-    "Class",
-    "Therapeutic Categories",
-    "Well",
-    "parent_organoid",
+sc_metadata_columns = [x for x in sc_normalized.columns if "Metadata" in x]
+
+sc_metadata_columns += [
+    "Area.Size.Shape_Cell_CENTER.X",
+    "Area.Size.Shape_Cell_CENTER.Y",
+    "Area.Size.Shape_Cell_CENTER.Z",
+]
+sc_features_columns = [
+    col for col in sc_normalized.columns if col not in sc_metadata_columns
 ]
 all_trt_df = sc_normalized.copy()
 
@@ -246,21 +234,17 @@ with open(organoid_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[13]:
+# In[ ]:
 
 
-organoid_metadata_columns = [
-    "patient",
-    "object_id",
-    "unit",
-    "dose",
-    "treatment",
-    "image_set",
-    "Target",
-    "Class",
-    "Therapeutic Categories",
-    "Well",
-    "single_cell_count",
+organoid_metadata_columns = [x for x in organoid_normalized.columns if "Metadata" in x]
+organoid_metadata_columns += [
+    "Area.Size.Shape_Organoid_CENTER.X",
+    "Area.Size.Shape_Organoid_CENTER.Y",
+    "Area.Size.Shape_Organoid_CENTER.Z",
+]
+organoid_features_columns = [
+    col for col in organoid_normalized.columns if col not in organoid_metadata_columns
 ]
 all_trt_df = organoid_normalized.copy()
 organoid_normalized = organoid_normalized.loc[

@@ -1,49 +1,49 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import pathlib
+import sys
 
 import duckdb
 import pandas as pd
 from pycytominer import aggregate, feature_select
 
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
 
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-
-# In[2]:
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
-patient_ids_path = pathlib.Path(f"{root_dir}/data/patient_IDs.txt").resolve(strict=True)
+# In[ ]:
+
+
+patient_ids_path = pathlib.Path(f"{profile_base_dir}/data/patient_IDs.txt").resolve(
+    strict=True
+)
 patients = pd.read_csv(patient_ids_path, header=None, names=["patient_id"], dtype=str)[
     "patient_id"
 ].to_list()
 
 all_patients_output_path = pathlib.Path(
-    f"{root_dir}/data/all_patient_profiles"
+    f"{profile_base_dir}/data/all_patient_profiles"
 ).resolve()
 all_patients_output_path.mkdir(parents=True, exist_ok=True)
 
@@ -57,12 +57,12 @@ levels_to_merge_dict = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 for patient in patients:
     norm_path = pathlib.Path(
-        f"{root_dir}/data/{patient}/image_based_profiles/3.normalized_profiles"
+        f"{profile_base_dir}/data/{patient}/image_based_profiles/3.normalized_profiles"
     )
     for file in norm_path.glob("*.parquet"):
         if "sc" in file.name:
@@ -81,17 +81,18 @@ feature_select_ops = [
     # "correlation_threshold", # comment out to remove correlation thresholding
 ]
 metadata_cols = [
-    "patient",
-    "object_id",
-    "unit",
-    "dose",
-    "treatment",
-    "Target",
-    "Class",
-    "Therapeutic Categories",
-    "image_set",
-    "Well",
-    "parent_organoid",
+    "Metadata_patient_tumorMetadata_patient",
+    "Metadata_tumor",
+    "Metadata_object_id",
+    "Metadata_unit",
+    "Metadata_dose",
+    "Metadata_treatment",
+    "Metadata_Target",
+    "Metadata_Class",
+    "Metadata_Therapeutic Categories",
+    "Metadata_image_set",
+    "Metadata_Well",
+    "Metadata_parent_organoid",
 ]
 na_cutoff = 0.05
 corr_threshold = 0.9
@@ -108,7 +109,7 @@ for compartment, files in levels_to_merge_dict.items():
     for file in files:
         patient_id = str(file.parent).split("/")[-3]
         df = pd.read_parquet(file)
-        df["patient"] = patient_id
+        df["Metadata_patient_tumor"] = patient_id
         list_of_dfs.append(df)
     df = pd.concat(list_of_dfs, ignore_index=True)
 
@@ -122,24 +123,25 @@ for compartment, files in levels_to_merge_dict.items():
             f"{root_dir}/4.processing_image_based_profiles/data/blocklist/sc_blocklist.txt"
         )
         metadata_cols = [
-            "patient",
-            "object_id",
-            "unit",
-            "dose",
-            "treatment",
-            "Target",
-            "Class",
-            "Therapeutic Categories",
-            "image_set",
-            "Well",
-            "parent_organoid",
+            "Metadata_patient_tumorMetadata_patient",
+            "Metadata_tumor",
+            "Metadata_object_id",
+            "Metadata_unit",
+            "Metadata_dose",
+            "Metadata_treatment",
+            "Metadata_Target",
+            "Metadata_Class",
+            "Metadata_Therapeutic Categories",
+            "Metadata_image_set",
+            "Metadata_Well",
+            "Metadata_parent_organoid",
             "Area.Size.Shape_Cell_CENTER.X",
             "Area.Size.Shape_Cell_CENTER.Y",
             "Area.Size.Shape_Cell_CENTER.Z",
         ]
         # only perform feature selection on DMSO and staurosporine treatments and apply to rest of profiles
         all_trt_df = df.copy()
-        df = df.loc[df["treatment"].isin(["DMSO", "Staurosporine"])]
+        df = df.loc[df["Metadata_treatment"].isin(["DMSO", "Staurosporine"])]
         # feature selection
         feature_columns = [col for col in df.columns if col not in metadata_cols]
         features_df = df[feature_columns]
@@ -177,13 +179,15 @@ for compartment, files in levels_to_merge_dict.items():
         sc_agg_df = aggregate(
             population_df=fs_profiles,
             strata=[
-                "patient",
-                "Well",
-                "treatment",
-                "dose",
-                "unit",
-                "Target",
-                "Class",
+                "Metadata_patient_tumor",
+                "Metadata_patient",
+                "Metadata_tumor",
+                "Metadata_Well",
+                "Metadata_treatment",
+                "Metadata_dose",
+                "Metadata_unit",
+                "Metadata_Target",
+                "Metadata_Class",
                 "Therapeutic Categories",
             ],
             features=feature_columns,
@@ -197,12 +201,14 @@ for compartment, files in levels_to_merge_dict.items():
         sc_consensus_df = aggregate(
             population_df=fs_profiles,
             strata=[
-                "patient",
-                "treatment",
-                "dose",
-                "unit",
-                "Target",
-                "Class",
+                "Metadata_patient_tumor",
+                "Metadata_patient",
+                "Metadata_tumor",
+                "Metadata_treatment",
+                "Metadata_dose",
+                "Metadata_unit",
+                "Metadata_Target",
+                "Metadata_Class",
                 "Therapeutic Categories",
             ],
             features=feature_columns,
@@ -220,23 +226,24 @@ for compartment, files in levels_to_merge_dict.items():
             f"{root_dir}/4.processing_image_based_profiles/data/blocklist/organoid_blocklist.txt"
         )
         metadata_cols = [
-            "patient",
-            "object_id",
-            "unit",
-            "dose",
-            "treatment",
-            "Target",
-            "Class",
-            "Therapeutic Categories",
-            "image_set",
-            "Well",
-            "single_cell_count",
+            "Metadata_patient_tumorMetadata_patient",
+            "Metadata_tumor",
+            "Metadata_object_id",
+            "Metadata_unit",
+            "Metadata_dose",
+            "Metadata_treatment",
+            "Metadata_Target",
+            "Metadata_Class",
+            "Metadata_Therapeutic Categories",
+            "Metadata_image_set",
+            "Metadata_Well",
+            "Metadata_single_cell_count",
             "Area.Size.Shape_Organoid_CENTER.X",
             "Area.Size.Shape_Organoid_CENTER.Y",
             "Area.Size.Shape_Organoid_CENTER.Z",
         ]
         all_trt_df = df.copy()
-        df = df.loc[df["treatment"].isin(["DMSO", "Staurosporine"])]
+        df = df.loc[df["Metadata_treatment"].isin(["DMSO", "Staurosporine"])]
         feature_columns = [col for col in df.columns if col not in metadata_cols]
         features_df = df[feature_columns]
         fs_profiles = feature_select(
@@ -272,14 +279,16 @@ for compartment, files in levels_to_merge_dict.items():
         agg_df = aggregate(
             population_df=fs_profiles,
             strata=[
-                "patient",
-                "Well",
-                "treatment",
-                "dose",
-                "unit",
-                "Target",
-                "Class",
-                "Therapeutic Categories",
+                "Metadata_patient_tumor",
+                "Metadata_patient",
+                "Metadata_tumor",
+                "Metadata_Well",
+                "Metadata_treatment",
+                "Metadata_dose",
+                "Metadata_unit",
+                "Metadata_Target",
+                "Metadata_Class",
+                "Metadata_Therapeutic Categories",
             ],
             features=feature_columns,
             operation="median",
@@ -292,13 +301,16 @@ for compartment, files in levels_to_merge_dict.items():
         consensus_df = aggregate(
             population_df=fs_profiles,
             strata=[
-                "patient",
-                "treatment",
-                "dose",
-                "unit",
-                "Target",
-                "Class",
-                "Therapeutic Categories",
+                "Metadata_patient_tumor",
+                "Metadata_patient",
+                "Metadata_tumor",
+                "Metadata_Well",
+                "Metadata_treatment",
+                "Metadata_dose",
+                "Metadata_unit",
+                "Metadata_Target",
+                "Metadata_Class",
+                "Metadata_Therapeutic Categories",
             ],
             features=feature_columns,
             operation="median",

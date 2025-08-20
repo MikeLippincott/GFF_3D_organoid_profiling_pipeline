@@ -4,81 +4,72 @@
 # This notebook performs profile normalization.
 # All profiles are normalized to the DMSO control treated profiles.
 
-# In[2]:
+# In[ ]:
 
 
-import argparse
 import pathlib
+import sys
 
 import numpy as np
 import pandas as pd
 from pycytominer import normalize
 
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
-# In[3]:
+# In[ ]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    args = argparser.parse_args()
-    patient = args.patient
+    args = parse_segmentation_args()
+    patient = args["patient"]
 
 else:
     patient = "NF0014"
 
 
-# In[4]:
+# In[ ]:
 
 
 # pathing
 sc_annotated_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/2.annotated_profiles/sc_anno.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/2.annotated_profiles/sc_anno.parquet"
 ).resolve(strict=True)
 organoid_annotated_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/2.annotated_profiles/organoid_anno.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/2.annotated_profiles/organoid_anno.parquet"
 ).resolve(strict=True)
 
 
 # output path
 sc_normalized_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/3.normalized_profiles/sc_norm.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/3.normalized_profiles/sc_norm.parquet"
 ).resolve()
 organoid_normalized_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/3.normalized_profiles/organoid_norm.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/3.normalized_profiles/organoid_norm.parquet"
 ).resolve()
 
 organoid_normalized_output_path.parent.mkdir(parents=True, exist_ok=True)
 
 
-# In[5]:
+# In[ ]:
 
 
 # read in the data
@@ -88,21 +79,12 @@ organoid_annotated_profiles = pd.read_parquet(organoid_annotated_path)
 
 # ### Normalize the single-cell profiles
 
-# In[6]:
+# In[ ]:
 
 
-sc_metadata_columns = [
-    "patient",
-    "object_id",
-    "unit",
-    "dose",
-    "treatment",
-    "Target",
-    "Class",
-    "Therapeutic Categories",
-    "image_set",
-    "Well",
-    "parent_organoid",
+sc_metadata_columns = [x for x in sc_annotated_profiles.columns if "Metadata" in x]
+
+sc_metadata_columns += [
     "Area.Size.Shape_Cell_CENTER.X",
     "Area.Size.Shape_Cell_CENTER.Y",
     "Area.Size.Shape_Cell_CENTER.Z",
@@ -144,21 +126,13 @@ sc_normalized_profiles.head()
 organoid_annotated_profiles.head()
 
 
-# In[11]:
+# In[ ]:
 
 
 organoid_metadata_columns = [
-    "patient",
-    "object_id",
-    "unit",
-    "dose",
-    "treatment",
-    "Target",
-    "Class",
-    "Therapeutic Categories",
-    "image_set",
-    "Well",
-    "single_cell_count",
+    x for x in organoid_annotated_profiles.columns if "Metadata" in x
+]
+organoid_metadata_columns += [
     "Area.Size.Shape_Organoid_CENTER.X",
     "Area.Size.Shape_Organoid_CENTER.Y",
     "Area.Size.Shape_Organoid_CENTER.Z",

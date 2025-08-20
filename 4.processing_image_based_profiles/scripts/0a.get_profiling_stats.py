@@ -5,39 +5,37 @@
 
 
 import pathlib
+import sys
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-    # Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
-# In[2]:
+# In[ ]:
 
 
-patient_data_path = pathlib.Path(f"{root_dir}/data/patient_IDs.txt").resolve(
+patient_data_path = pathlib.Path(f"{profile_base_dir}/data/patient_IDs.txt").resolve(
     strict=True
 )
 patients = pd.read_csv(patient_data_path, header=None, names=["patient_ID"])[
@@ -48,15 +46,20 @@ patients = pd.read_csv(patient_data_path, header=None, names=["patient_ID"])[
 # In[ ]:
 
 
+stats_output_path = pathlib.Path(
+    f"{profile_base_dir}/data/all_patient_profiles/"
+).resolve()
+stats_output_path.mkdir(parents=True, exist_ok=True)
+
+
+# In[ ]:
+
+
 stats_files = []
 for patient in patients:
     stats_path = pathlib.Path(
-        f"{root_dir}/data/{patient}/extracted_features/run_stats/"
+        f"{profile_base_dir}/data/{patient}/extracted_features/run_stats/"
     ).resolve(strict=True)
-    output_path = pathlib.Path(
-        f"{root_dir}/data/{patient}/converted_profiles/"
-    ).resolve()
-    output_path.mkdir(parents=True, exist_ok=True)
 
     for file_path in stats_path.glob("*.parquet"):
         if file_path.is_file():
@@ -91,8 +94,6 @@ if dataframes:
     df = pd.concat(dataframes, ignore_index=True)
 else:
     df = pd.DataFrame()
-stats_output_path = pathlib.Path(f"{root_dir}/data/all_patient_profiles/").resolve()
-stats_output_path.mkdir(parents=True, exist_ok=True)
 
 
 # In[ ]:
@@ -151,4 +152,3 @@ if in_notebook:
     plt.legend(title="Feature Type", bbox_to_anchor=(1.05, 1), loc="upper left")
 
     plt.show()
-

@@ -4,70 +4,60 @@
 # This notebook combines all well fovs for each patient into a single file.
 #
 
-# In[1]:
+# In[ ]:
 
 
-import argparse
 import pathlib
+import sys
 
 import duckdb
 import pandas as pd
 
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
 
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    args = argparser.parse_args()
-    patient = args.patient
+    args = parse_segmentation_args()
+    patient = args["patient"]
 
 else:
     patient = "NF0018"
 
 
-# In[3]:
+# In[ ]:
 
 
 # set paths
 profiles_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles"
 ).resolve(strict=True)
 # output_paths
 sc_merged_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/1.combined_profiles/sc.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/1.combined_profiles/sc.parquet"
 ).resolve()
 organoid_merged_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/1.combined_profiles/organoid.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/1.combined_profiles/organoid.parquet"
 ).resolve()
 organoid_merged_output_path.parent.mkdir(parents=True, exist_ok=True)
 

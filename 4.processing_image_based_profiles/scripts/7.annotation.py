@@ -5,50 +5,41 @@
 # The platemap is mapped back to the profile to retain the sample metadata.
 #
 
-# In[1]:
+# In[ ]:
 
 
-import argparse
 import pathlib
+import sys
 
 import pandas as pd
 
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    args = argparser.parse_args()
-    patient = args.patient
+    args = parse_segmentation_args()
+    patient = args["patient"]
 
 else:
     patient = "NF0014"
@@ -102,28 +93,28 @@ def annotate_profiles(
     return profile_df
 
 
-# In[4]:
+# In[ ]:
 
 
 # pathing
 
 sc_merged_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/1.combined_profiles/sc.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/1.combined_profiles/sc.parquet"
 ).resolve(strict=True)
 organoid_merged_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/1.combined_profiles/organoid.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/1.combined_profiles/organoid.parquet"
 ).resolve(strict=True)
 
 platemap_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/platemap/platemap.csv"
+    f"{profile_base_dir}/data/{patient}/platemap/platemap.csv"
 ).resolve(strict=True)
 
 # output path
 sc_annotated_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/2.annotated_profiles/sc_anno.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/2.annotated_profiles/sc_anno.parquet"
 ).resolve()
 organoid_annotated_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/2.annotated_profiles/organoid_anno.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/2.annotated_profiles/organoid_anno.parquet"
 ).resolve()
 
 organoid_annotated_output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -145,6 +136,44 @@ platemap.head()
 
 sc_merged = annotate_profiles(sc_merged, platemap, patient)
 organoid_merged = annotate_profiles(organoid_merged, platemap, patient)
+
+
+# In[ ]:
+
+
+sc_merged.rename(columns={"patient": "patient_tumor"}, inplace=True)
+organoid_merged.rename(columns={"patient": "patient_tumor"}, inplace=True)
+sc_merged[["patient", "tumor"]] = sc_merged["patient_tumor"].str.split("_", expand=True)
+organoid_merged[["patient", "tumor"]] = organoid_merged["patient_tumor"].str.split(
+    "_", expand=True
+)
+
+
+# In[ ]:
+
+
+metadata_features_list = [
+    "patient_tumor",
+    "patient",
+    "tumor",
+    "object_id",
+    "unit",
+    "dose",
+    "treatment",
+    "image_set",
+    "parent_organoid",
+    "single_cell_count",
+    "Target",
+    "Class",
+    "Therapeutic Categories",
+]
+# prepend "Metadata_" to metadata features
+sc_merged = sc_merged.rename(
+    columns={col: f"Metadata_{col}" for col in metadata_features_list}
+)
+organoid_merged = organoid_merged.rename(
+    columns={col: f"Metadata_{col}" for col in metadata_features_list}
+)
 
 
 # In[7]:
