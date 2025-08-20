@@ -4,71 +4,51 @@
 # In[ ]:
 
 
-import argparse
-import os
 import pathlib
-import pprint
-import sqlite3
-from contextlib import closing
+import sys
 from functools import reduce
 
 import duckdb
 import pandas as pd
 
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-    # Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+)
 
 
 # In[ ]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--well_fov",
-        type=str,
-        required=True,
-        help="Well and field of view to process, e.g. 'A01_1'",
-    )
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    args = argparser.parse_args()
-    well_fov = args.well_fov
-    patient = args.patient
+    args = parse_segmentation_args()
+    well_fov = args["well_fov"]
+    patient = args["patient"]
 else:
     well_fov = "G7-5"
     patient = "SARCO361"
 
 
 result_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/extracted_features/{well_fov}"
+    f"{profile_base_dir}/data/{patient}/extracted_features/{well_fov}"
 ).resolve(strict=True)
 database_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}"
 ).resolve()
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database

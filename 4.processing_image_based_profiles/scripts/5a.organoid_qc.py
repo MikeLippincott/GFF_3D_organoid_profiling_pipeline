@@ -3,23 +3,45 @@
 
 # # Perform organoid-level quality control
 
-# In[1]:
+# In[ ]:
 
+
+import pathlib
+import sys
 
 import pandas as pd
-import pathlib
 from cosmicqc import find_outliers
+
+cwd = pathlib.Path.cwd()
+
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
+
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(),
+    # pathlib.Path("/home/jenna/mnt/bandicoot").resolve(), # for Jenna's machine
+    root_dir,
+)
 
 
 # ## Load in all the organoid profiles and concat together
 
-# In[2]:
+# In[ ]:
 
 
 # Path to patient folders
-path_to_patients = pathlib.Path(
-    "/home/jenna/mnt/bandicoot/NF1_organoid_processed_patients/"
-)
+path_to_patients = pathlib.Path(f"{profile_base_dir}/NF1_organoid_processed_patients/")
 
 # Get all organoid profiles per patient folder and concatenate them
 dfs = []
@@ -44,7 +66,7 @@ orig_organoid_profiles_df.head()
 
 
 # ## Perform a first round of QC by flagging any row with NaNs in metadata
-# 
+#
 # We check for NaNs in the `object_id` and/or the `single_cell_count` column and flag them because:
 #    - An organoid can not exist if there aren't any cells.
 #    - NaN in object_id would be incorrect as that means the object/organoid does not exist (will have all NaNs in the feature space).
@@ -147,4 +169,3 @@ for plate_name, plate_df in organoid_profiles_df.groupby("patient_id"):
 print(f"Example flagged organoid profiles: {plate_name}")
 print(plate_df.shape)
 plate_df.head()
-

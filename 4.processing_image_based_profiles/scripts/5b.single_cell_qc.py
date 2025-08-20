@@ -3,29 +3,51 @@
 
 # # Perform single-cell level quality control
 
-# In[1]:
+# In[ ]:
 
+
+import pathlib
+import sys
 
 import pandas as pd
-import pathlib
 from cosmicqc import find_outliers
+
+cwd = pathlib.Path.cwd()
+
+if (cwd / ".git").is_dir():
+    root_dir = cwd
+else:
+    root_dir = None
+    for parent in cwd.parents:
+        if (parent / ".git").is_dir():
+            root_dir = parent
+            break
+sys.path.append(str(root_dir / "utils"))
+from notebook_init_utils import bandicoot_check, init_notebook
+from segmentation_init_utils import parse_segmentation_args
+
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(),
+    # pathlib.Path("/home/jenna/mnt/bandicoot").resolve(), # for Jenna's machine
+    root_dir,
+)
 
 
 # ## Load in each single-cell level profile per patient and process
-# 
+#
 # 1. Load in the single-cell data (add `patient_id` column).
 # 2. Load in respective organoid qc data (only metadata and cqc columns) to already flag cells that come from a flagged organoid.
 #    - Also add a flag for if single-cells do not have an organoid segmentation (`parent_organoid` == -1).
 #    - Also add flag for if the `object_id` for a single-cell is NaN.
 # 3. Concat single-cell data together.
 
-# In[2]:
+# In[ ]:
 
 
 # Path to patient folders
-path_to_patients = pathlib.Path(
-    "/home/jenna/mnt/bandicoot/NF1_organoid_processed_patients/"
-)
+path_to_patients = pathlib.Path(f"{profile_base_dir}/NF1_organoid_processed_patients/")
 
 dfs = []
 for patient_folder in path_to_patients.iterdir():
@@ -80,9 +102,9 @@ orig_single_cell_profiles_df.head()
 
 
 # ## Detect outlier single-cells using the non-flagged data
-# 
+#
 # We will attempt to detect instances of poor quality segmentations using the nuclei compartment as the base. The conditions we are using are as follows:
-# 
+#
 # 1. Abnormally small or large nuclei using `Volume`
 # 2. Abnormally high `mass displacement` in the nuclei for instances of mis-segmentation of background/no longer in-focus
 
@@ -197,4 +219,3 @@ for plate_name, plate_df in orig_single_cell_profiles_df.groupby("patient_id"):
 print(f"Example flagged single-cell profiles: {plate_name}")
 print(plate_df.shape)
 plate_df.head()
-
