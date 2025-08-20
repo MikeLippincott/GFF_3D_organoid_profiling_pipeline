@@ -79,7 +79,7 @@ else:
     well_fov = "C2-1"
     compartment = "organoid"
     window_size = 4
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 input_dir = pathlib.Path(
     f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}"

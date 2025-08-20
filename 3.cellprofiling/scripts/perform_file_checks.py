@@ -41,10 +41,10 @@ from loading_classes import ImageSetLoader
 sys.path.append(str(pathlib.Path(f"{root_dir}/utils").resolve()))
 from file_checking import check_number_of_files
 
-# In[2]:
+# In[ ]:
 
 
-patient = "NF0014"
+patient = "NF0014_T1"
 well_fov = "C2-1"
 # set path to the processed data dir
 

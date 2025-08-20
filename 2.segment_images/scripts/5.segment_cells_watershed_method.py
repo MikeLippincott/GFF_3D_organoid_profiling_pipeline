@@ -47,7 +47,7 @@ if not in_notebook:
     patient = args["patient"]
 else:
     well_fov = "C4-2"
-    patient = "NF0014"
+    patient = "NF0014_T1"
     clip_limit = 0.03
 
 input_dir = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}").resolve(

@@ -47,7 +47,7 @@ if not in_notebook:
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 mask_dir = pathlib.Path(
     f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"

@@ -4,14 +4,11 @@
 # In[1]:
 
 
-import argparse
 import itertools
-import multiprocessing
 import os
 import pathlib
 import sys
 import time
-from functools import partial
 from itertools import product
 
 import pandas as pd
@@ -60,8 +57,7 @@ from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, TwoObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -74,7 +70,7 @@ if not in_notebook:
 
 else:
     well_fov = "E11-4"
-    patient = "NF0030"
+    patient = "NF0014_T1"
     channel = "Mito.BF"
     compartment = "Cell"
     processor_type = "CPU"
@@ -217,4 +213,3 @@ get_mem_and_time_profiling(
         f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_Colocalization_{channel1}.{channel2}_{compartment}_{processor_type}.parquet"
     ),
 )
-

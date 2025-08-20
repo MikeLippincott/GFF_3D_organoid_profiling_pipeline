@@ -46,7 +46,7 @@ image_base_dir = bandicoot_check(
 
 from segmentation_decoupling import euclidian_2D_distance
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -58,7 +58,7 @@ else:
     print("Running in a notebook")
     well_fov = "G9-2"
     compartment = "organoid"
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 mask_dir = pathlib.Path(
     f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
