@@ -61,7 +61,9 @@ def bandicoot_check(
     if bandicoot_mount_path.exists():
         # comment out depending on whose computer you are on
         # mike's computer
-        image_base_dir = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+        image_base_dir = pathlib.Path(
+            "/home/lippincm/mnt/bandicoot/NF1_organoid_data"
+        ).resolve()
     else:
         image_base_dir = root_dir
     return image_base_dir

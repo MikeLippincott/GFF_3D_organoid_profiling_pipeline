@@ -21,7 +21,7 @@ def check_for_missing_args(**kwargs):
         )
 
 
-def parse_segmentation_args():
+def parse_args():
     """
     Parse command line arguments for segmentation tasks.
 

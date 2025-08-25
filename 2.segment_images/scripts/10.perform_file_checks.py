@@ -21,7 +21,7 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
-from arg_parsing_utils import check_for_missing_args, parse_segmentation_args
+from arg_parsing_utils import check_for_missing_args, parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
@@ -37,7 +37,7 @@ from file_checking import check_number_of_files
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     patient = args["patient"]
     check_for_missing_args(
         patient=patient,

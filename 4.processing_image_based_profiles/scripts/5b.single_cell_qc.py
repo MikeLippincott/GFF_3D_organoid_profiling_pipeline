@@ -3,7 +3,7 @@
 
 # # Perform single-cell level quality control
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -23,8 +23,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -43,11 +43,11 @@ profile_base_dir = bandicoot_check(
 #    - Also add flag for if the `object_id` for a single-cell is NaN.
 # 3. Concat single-cell data together.
 
-# In[ ]:
+# In[2]:
 
 
 # Path to patient folders
-path_to_patients = pathlib.Path(f"{profile_base_dir}/NF1_organoid_processed_patients/")
+path_to_patients = pathlib.Path(f"{profile_base_dir}/data/")
 
 dfs = []
 for patient_folder in path_to_patients.iterdir():

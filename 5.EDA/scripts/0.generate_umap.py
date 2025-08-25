@@ -122,7 +122,7 @@ metadata_columns = [
     "Target",
     "Function",
     "Class",
-    "Therapeutic Categories",
+    "Therapeutic_Categories",
 ]
 
 

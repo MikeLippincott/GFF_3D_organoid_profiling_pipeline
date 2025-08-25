@@ -5,7 +5,7 @@
 # The platemap is mapped back to the profile to retain the sample metadata.
 #
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -24,8 +24,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -34,15 +34,15 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     patient = args["patient"]
 
 else:
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 
 # In[3]:
@@ -93,10 +93,11 @@ def annotate_profiles(
     return profile_df
 
 
-# In[ ]:
+# In[4]:
 
 
 # pathing
+
 
 sc_merged_path = pathlib.Path(
     f"{profile_base_dir}/data/{patient}/image_based_profiles/1.combined_profiles/sc.parquet"
@@ -138,7 +139,7 @@ sc_merged = annotate_profiles(sc_merged, platemap, patient)
 organoid_merged = annotate_profiles(organoid_merged, platemap, patient)
 
 
-# In[ ]:
+# In[7]:
 
 
 sc_merged.rename(columns={"patient": "patient_tumor"}, inplace=True)
@@ -159,13 +160,14 @@ metadata_features_list = [
     "object_id",
     "unit",
     "dose",
+    "Well",
     "treatment",
     "image_set",
     "parent_organoid",
     "single_cell_count",
     "Target",
     "Class",
-    "Therapeutic Categories",
+    "Therapeutic_Categories",
 ]
 # prepend "Metadata_" to metadata features
 sc_merged = sc_merged.rename(
@@ -176,19 +178,19 @@ organoid_merged = organoid_merged.rename(
 )
 
 
-# In[7]:
+# In[9]:
 
 
 sc_merged.head()
 
 
-# In[8]:
+# In[10]:
 
 
 organoid_merged.head()
 
 
-# In[9]:
+# In[11]:
 
 
 # save annotated profiles

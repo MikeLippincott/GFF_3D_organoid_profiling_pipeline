@@ -23,8 +23,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -37,11 +37,11 @@ profile_base_dir = bandicoot_check(
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     patient = args["patient"]
 
 else:
-    patient = "SARCO361"
+    patient = "NF0014_T1"
 
 
 # ### Merge the sc and organoid profiles after aggregation
@@ -120,7 +120,7 @@ sc_agg_well_parent_organoid_merge = sc_agg_well_parent_organoid.merge(
         "Metadata_treatment",
         "Metadata_Target",
         "Metadata_Class",
-        "Metadata_Therapeutic Categories",
+        "Metadata_Therapeutic_Categories",
     ],
     right_on=[
         "Metadata_Well",
@@ -128,7 +128,7 @@ sc_agg_well_parent_organoid_merge = sc_agg_well_parent_organoid.merge(
         "Metadata_treatment",
         "Metadata_Target",
         "Metadata_Class",
-        "Metadata_Therapeutic Categories",
+        "Metadata_Therapeutic_Categories",
     ],
 )
 
@@ -150,7 +150,7 @@ sc_agg_well_merge = sc_agg_well.merge(
         "Metadata_treatment",
         "Metadata_Target",
         "Metadata_Class",
-        "Metadata_Therapeutic Categories",
+        "Metadata_Therapeutic_Categories",
     ],
 )
 sc_agg_well_merge.to_parquet(organoid_agg_well_merge_path, index=False)
@@ -168,7 +168,7 @@ sc_consensus_merge = sc_consensus.merge(
         "Metadata_treatment",
         "Metadata_Target",
         "Metadata_Class",
-        "Metadata_Therapeutic Categories",
+        "Metadata_Therapeutic_Categories",
     ],
 )
 sc_consensus_merge.to_parquet(organoid_consensus_merge_path, index=False)

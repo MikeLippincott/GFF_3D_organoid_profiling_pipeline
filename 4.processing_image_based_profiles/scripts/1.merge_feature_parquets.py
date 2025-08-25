@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -22,8 +22,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -32,16 +32,16 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     well_fov = args["well_fov"]
     patient = args["patient"]
 else:
-    well_fov = "G7-5"
-    patient = "SARCO361"
+    well_fov = "C4-2"
+    patient = "NF0014_T1"
 
 
 result_path = pathlib.Path(
@@ -53,8 +53,8 @@ database_path = pathlib.Path(
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
 sqlite_path = database_path / f"{well_fov}.duckdb"
-DB_structue_path = pathlib.Path(
-    f"{root_dir}/4.processing_image_based_profiles/data/DB_structues/DB_structue_db.duckdb"
+DB_structure_path = pathlib.Path(
+    f"{root_dir}/4.processing_image_based_profiles/data/DB_structures/DB_structure_db.duckdb"
 ).resolve(strict=True)
 
 # get a list of all parquets in the directory recursively
@@ -147,7 +147,7 @@ for compartment in feature_types_dict.keys():
                         continue
 
 
-# In[ ]:
+# In[5]:
 
 
 final_df_dict = {
@@ -226,10 +226,10 @@ for compartment, df in compartment_merged_dict.items():
     print(compartment, df.shape)
 
 
-# In[ ]:
+# In[11]:
 
 
-with duckdb.connect(DB_structue_path) as cx:
+with duckdb.connect(DB_structure_path) as cx:
     organoid_table = cx.execute("SELECT * FROM Organoid").df()
     cell_table = cx.execute("SELECT * FROM Cell").df()
     nuclei_table = cx.execute("SELECT * FROM Nuclei").df()
@@ -243,7 +243,7 @@ dict_of_DB_structues = {
 }
 
 
-# In[ ]:
+# In[12]:
 
 
 # get the table from the DB_structue

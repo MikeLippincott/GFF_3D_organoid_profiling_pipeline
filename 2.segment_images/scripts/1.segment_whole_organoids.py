@@ -35,7 +35,7 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils/"))
-from arg_parsing_utils import check_for_missing_args, parse_segmentation_args
+from arg_parsing_utils import check_for_missing_args, parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
@@ -147,7 +147,7 @@ test_segment_with_diameter()
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     window_size = args["window_size"]
     clip_limit = args["clip_limit"]
     well_fov = args["well_fov"]

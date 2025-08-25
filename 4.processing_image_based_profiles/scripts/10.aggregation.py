@@ -3,7 +3,7 @@
 
 # This notebook performs profile aggregation.
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -23,8 +23,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -33,18 +33,18 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     patient = args["patient"]
 
 else:
-    patient = "SARCO361"
+    patient = "NF0014_T1"
 
 
-# In[ ]:
+# In[3]:
 
 
 # pathing
@@ -97,7 +97,7 @@ organoid_fs = pd.read_parquet(organoid_fs_path)
 sc_fs.head()
 
 
-# In[ ]:
+# In[6]:
 
 
 sc_metadata_columns = [x for x in sc_fs.columns if "Metadata" in x]
@@ -117,7 +117,13 @@ sc_features_df = sc_fs.drop(columns=sc_metadata_columns, errors="ignore")
 # stratification approach #1
 sc_well_agg = aggregate(
     population_df=sc_fs,
-    strata=["Well", "treatment", "Target", "Class", "Therapeutic Categories"],
+    strata=[
+        "Metadata_Well",
+        "Metadata_treatment",
+        "Metadata_Target",
+        "Metadata_Class",
+        "Metadata_Therapeutic_Categories",
+    ],
     features=sc_features_columns,
     operation="median",
 )
@@ -127,12 +133,12 @@ sc_well_agg.to_parquet(sc_agg_well_output_path, index=False)
 sc_well_parent_organoid_agg = aggregate(
     population_df=sc_fs,
     strata=[
-        "Well",
-        "parent_organoid",
-        "treatment",
-        "Target",
-        "Class",
-        "Therapeutic Categories",
+        "Metadata_Well",
+        "Metadata_parent_organoid",
+        "Metadata_treatment",
+        "Metadata_Target",
+        "Metadata_Class",
+        "Metadata_Therapeutic_Categories",
     ],
     features=sc_features_columns,
     operation="median",
@@ -143,7 +149,12 @@ sc_well_parent_organoid_agg.to_parquet(
 # stratification approach #3
 sc_consensus = aggregate(  # a.k.a. consensus
     population_df=sc_fs,
-    strata=["treatment", "Target", "Class", "Therapeutic Categories"],
+    strata=[
+        "Metadata_treatment",
+        "Metadata_Target",
+        "Metadata_Class",
+        "Metadata_Therapeutic_Categories",
+    ],
     features=sc_features_columns,
     operation="median",
 )
@@ -161,7 +172,7 @@ sc_consensus.to_parquet(sc_consensus_output_path, index=False)
 organoid_fs.head()
 
 
-# In[ ]:
+# In[9]:
 
 
 organoid_metadata_columns = [x for x in organoid_fs.columns if "Metadata" in x]
@@ -181,13 +192,19 @@ organoid_features_df = organoid_fs.drop(
 )
 
 
-# In[ ]:
+# In[10]:
 
 
 # stratification approach #1
 organoid_well_agg = aggregate(
     population_df=organoid_fs,
-    strata=["Well", "treatment", "Target", "Class", "Therapeutic Categories"],
+    strata=[
+        "Metadata_Well",
+        "Metadata_treatment",
+        "Metadata_Target",
+        "Metadata_Class",
+        "Metadata_Therapeutic_Categories",
+    ],
     features=organoid_features_columns,
     operation="median",
 )
@@ -196,7 +213,12 @@ organoid_well_agg.to_parquet(organoid_agg_well_output_path, index=False)
 # stratification approach #2
 organoid_consensus = aggregate(  # a.k.a. consensus
     population_df=organoid_fs,
-    strata=["treatment", "Target", "Class", "Therapeutic Categories"],
+    strata=[
+        "Metadata_treatment",
+        "Metadata_Target",
+        "Metadata_Class",
+        "Metadata_Therapeutic_Categories",
+    ],
     features=organoid_features_columns,
     operation="median",
 )

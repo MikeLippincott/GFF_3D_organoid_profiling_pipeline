@@ -4,7 +4,7 @@
 # This notebook performs profile normalization.
 # All profiles are normalized to the DMSO control treated profiles.
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -25,8 +25,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -35,18 +35,18 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     patient = args["patient"]
 
 else:
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 
-# In[ ]:
+# In[3]:
 
 
 # pathing
@@ -69,7 +69,7 @@ organoid_normalized_output_path = pathlib.Path(
 organoid_normalized_output_path.parent.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[4]:
 
 
 # read in the data
@@ -77,9 +77,15 @@ sc_annotated_profiles = pd.read_parquet(sc_annotated_path)
 organoid_annotated_profiles = pd.read_parquet(organoid_annotated_path)
 
 
+# In[5]:
+
+
+sc_annotated_profiles.head()
+
+
 # ### Normalize the single-cell profiles
 
-# In[ ]:
+# In[6]:
 
 
 sc_metadata_columns = [x for x in sc_annotated_profiles.columns if "Metadata" in x]
@@ -103,7 +109,7 @@ sc_annotated_profiles[sc_features_columns] = sc_annotated_profiles[
 ].replace([float("inf"), -float("inf")], np.nan)
 
 
-# In[ ]:
+# In[8]:
 
 
 # normalize the data
@@ -112,7 +118,7 @@ sc_normalized_profiles = normalize(
     features=sc_features_columns,
     meta_features=sc_metadata_columns,
     method="standardize",
-    samples="treatment == 'DMSO'",
+    samples="Metadata_treatment == 'DMSO'",
 )
 sc_normalized_profiles.to_parquet(sc_normalized_output_path, index=False)
 sc_normalized_profiles.head()
@@ -120,13 +126,13 @@ sc_normalized_profiles.head()
 
 # ### Normalize the organoid profiles
 
-# In[8]:
+# In[9]:
 
 
 organoid_annotated_profiles.head()
 
 
-# In[ ]:
+# In[10]:
 
 
 organoid_metadata_columns = [
@@ -148,7 +154,7 @@ organoid_normalized_profiles = normalize(
     features=organoid_features_columns,
     meta_features=organoid_metadata_columns,
     method="standardize",
-    samples="treatment == 'DMSO'",
+    samples="Metadata_treatment == 'DMSO'",
 )
 organoid_normalized_profiles.to_parquet(organoid_normalized_output_path, index=False)
 organoid_normalized_profiles.head()

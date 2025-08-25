@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -22,8 +22,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -32,7 +32,7 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 patient_data_path = pathlib.Path(f"{profile_base_dir}/data/patient_IDs.txt").resolve(
@@ -43,7 +43,7 @@ patients = pd.read_csv(patient_data_path, header=None, names=["patient_ID"])[
 ].tolist()
 
 
-# In[ ]:
+# In[3]:
 
 
 stats_output_path = pathlib.Path(
@@ -52,7 +52,7 @@ stats_output_path = pathlib.Path(
 stats_output_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[4]:
 
 
 stats_files = []
@@ -68,7 +68,7 @@ stats_files.sort()
 print(f"Found {len(stats_files)} stats files for {len(patients)} patients.")
 
 
-# In[ ]:
+# In[5]:
 
 
 def safe_read_parquet(stats_file):

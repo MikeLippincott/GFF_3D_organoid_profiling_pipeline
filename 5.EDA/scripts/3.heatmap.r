@@ -83,17 +83,17 @@ sc_consensus_df <- arrow::read_parquet(file.path(root_dir,"data/all_patient_prof
 sc_fs_df <- arrow::read_parquet(file.path(root_dir,"data/all_patient_profiles/sc_fs_profiles.parquet"))
 # drop the therapeutic category column
 sc_consensus_df <- sc_consensus_df %>%
-  select(-`Therapeutic Categories`)
+  select(-`Therapeutic_Categories`)
 sc_fs_df <- sc_fs_df %>%
-  select(-`Therapeutic Categories`)
+  select(-`Therapeutic_Categories`)
 
 organoid_consensus_df <- arrow::read_parquet(file.path(root_dir,"data/all_patient_profiles/organoid_consensus_profiles.parquet"))
 organoid_fs_df <- arrow::read_parquet(file.path(root_dir,"data/all_patient_profiles/organoid_fs_profiles.parquet"))
 # drop the therapeutic category column
 organoid_consensus_df <- organoid_consensus_df %>%
-  select(-`Therapeutic Categories`)
+  select(-`Therapeutic_Categories`)
 organoid_fs_df <- organoid_fs_df %>%
-  select(-`Therapeutic Categories`)
+  select(-`Therapeutic_Categories`)
 
 
 sc_consensus_heatmap_file_path <- file.path(

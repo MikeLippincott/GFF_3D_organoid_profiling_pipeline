@@ -23,7 +23,6 @@ else:
             break
 sys.path.append(str(root_dir / "utils"))
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -32,7 +31,7 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 patient_ids_path = pathlib.Path(f"{profile_base_dir}/data/patient_IDs.txt").resolve(
@@ -57,7 +56,7 @@ levels_to_merge_dict = {
 }
 
 
-# In[ ]:
+# In[4]:
 
 
 for patient in patients:
@@ -71,7 +70,7 @@ for patient in patients:
             levels_to_merge_dict["organoid"].append(file)
 
 
-# In[ ]:
+# In[5]:
 
 
 feature_select_ops = [
@@ -89,7 +88,7 @@ metadata_cols = [
     "Metadata_treatment",
     "Metadata_Target",
     "Metadata_Class",
-    "Metadata_Therapeutic Categories",
+    "Metadata_Therapeutic_Categories",
     "Metadata_image_set",
     "Metadata_Well",
     "Metadata_parent_organoid",
@@ -100,7 +99,7 @@ freq_cut = 0.01
 unique_cut = 0.01
 
 
-# In[ ]:
+# In[6]:
 
 
 for compartment, files in levels_to_merge_dict.items():
@@ -123,7 +122,8 @@ for compartment, files in levels_to_merge_dict.items():
             f"{root_dir}/4.processing_image_based_profiles/data/blocklist/sc_blocklist.txt"
         )
         metadata_cols = [
-            "Metadata_patient_tumorMetadata_patient",
+            "Metadata_patient_tumor",
+            "Metadata_patient",
             "Metadata_tumor",
             "Metadata_object_id",
             "Metadata_unit",
@@ -131,7 +131,7 @@ for compartment, files in levels_to_merge_dict.items():
             "Metadata_treatment",
             "Metadata_Target",
             "Metadata_Class",
-            "Metadata_Therapeutic Categories",
+            "Metadata_Therapeutic_Categories",
             "Metadata_image_set",
             "Metadata_Well",
             "Metadata_parent_organoid",
@@ -188,7 +188,7 @@ for compartment, files in levels_to_merge_dict.items():
                 "Metadata_unit",
                 "Metadata_Target",
                 "Metadata_Class",
-                "Therapeutic Categories",
+                "Metadata_Therapeutic_Categories",
             ],
             features=feature_columns,
             operation="median",
@@ -209,7 +209,7 @@ for compartment, files in levels_to_merge_dict.items():
                 "Metadata_unit",
                 "Metadata_Target",
                 "Metadata_Class",
-                "Therapeutic Categories",
+                "Metadata_Therapeutic_Categories",
             ],
             features=feature_columns,
             operation="median",
@@ -226,7 +226,8 @@ for compartment, files in levels_to_merge_dict.items():
             f"{root_dir}/4.processing_image_based_profiles/data/blocklist/organoid_blocklist.txt"
         )
         metadata_cols = [
-            "Metadata_patient_tumorMetadata_patient",
+            "Metadata_patient_tumor",
+            "Metadata_patient",
             "Metadata_tumor",
             "Metadata_object_id",
             "Metadata_unit",
@@ -234,7 +235,7 @@ for compartment, files in levels_to_merge_dict.items():
             "Metadata_treatment",
             "Metadata_Target",
             "Metadata_Class",
-            "Metadata_Therapeutic Categories",
+            "Metadata_Therapeutic_Categories",
             "Metadata_image_set",
             "Metadata_Well",
             "Metadata_single_cell_count",
@@ -288,7 +289,7 @@ for compartment, files in levels_to_merge_dict.items():
                 "Metadata_unit",
                 "Metadata_Target",
                 "Metadata_Class",
-                "Metadata_Therapeutic Categories",
+                "Metadata_Therapeutic_Categories",
             ],
             features=feature_columns,
             operation="median",
@@ -310,7 +311,7 @@ for compartment, files in levels_to_merge_dict.items():
                 "Metadata_unit",
                 "Metadata_Target",
                 "Metadata_Class",
-                "Metadata_Therapeutic Categories",
+                "Metadata_Therapeutic_Categories",
             ],
             features=feature_columns,
             operation="median",
