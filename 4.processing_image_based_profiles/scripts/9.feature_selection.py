@@ -3,7 +3,7 @@
 
 # This notebook performs profile feature selection.
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -23,8 +23,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -33,18 +33,18 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     patient = args["patient"]
 
 else:
-    patient = "SARCO361"
+    patient = "NF0014_T1"
 
 
-# In[ ]:
+# In[3]:
 
 
 # pathing
@@ -75,7 +75,7 @@ sc_normalized = pd.read_parquet(sc_normalized_path)
 organoid_normalized = pd.read_parquet(organoid_normalized_path)
 
 
-# In[ ]:
+# In[5]:
 
 
 feature_select_ops = [
@@ -136,7 +136,7 @@ with open(sc_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[ ]:
+# In[9]:
 
 
 sc_metadata_columns = [x for x in sc_normalized.columns if "Metadata" in x]
@@ -152,7 +152,7 @@ sc_features_columns = [
 all_trt_df = sc_normalized.copy()
 
 sc_normalized = sc_normalized.loc[
-    sc_normalized["treatment"].isin(["DMSO", "Staurosporine"])
+    sc_normalized["Metadata_treatment"].isin(["DMSO", "Staurosporine"])
 ]
 
 sc_features_columns = [
@@ -234,7 +234,7 @@ with open(organoid_blocklist_path, "w") as f:
         f.write(f"{item}\n")
 
 
-# In[ ]:
+# In[13]:
 
 
 organoid_metadata_columns = [x for x in organoid_normalized.columns if "Metadata" in x]
@@ -248,7 +248,7 @@ organoid_features_columns = [
 ]
 all_trt_df = organoid_normalized.copy()
 organoid_normalized = organoid_normalized.loc[
-    organoid_normalized["treatment"].isin(["DMSO", "Staurosporine"])
+    organoid_normalized["Metadata_treatment"].isin(["DMSO", "Staurosporine"])
 ]
 organoid_features_columns = [
     col for col in organoid_normalized.columns if col not in organoid_metadata_columns
@@ -259,12 +259,6 @@ organoid_features_df = organoid_normalized.drop(
 
 
 # In[14]:
-
-
-all_trt_df["treatment"].unique()
-
-
-# In[15]:
 
 
 # normalize the data

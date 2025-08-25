@@ -24,8 +24,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -38,7 +38,7 @@ profile_base_dir = bandicoot_check(
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     patient = args["patient"]
 
 else:

@@ -4,7 +4,7 @@
 # For the purposes of this notebook and those following the "DB_structure" is a blank dataframe that is used to store the results of the profiling pipeline.
 # This is used to insert blank dataframes into the final dataframe dictionary for each compartment and feature type if the record is empty so that a final df can be created and merged on the same columns.
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -25,8 +25,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -35,11 +35,11 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
-    args = parse_segmentation_args()
+    args = parse_args()
     well_fov = args["well_fov"]
     patient = args["patient"]
 else:
@@ -63,7 +63,7 @@ parquet_files.sort()
 print(len(parquet_files), "parquet files found")
 
 
-# In[ ]:
+# In[3]:
 
 
 # create the nested dictionary to hold the feature types and compartments
@@ -149,7 +149,7 @@ for compartment in feature_types_dict.keys():
                         continue
 
 
-# In[ ]:
+# In[5]:
 
 
 final_df_dict = {
@@ -157,7 +157,7 @@ final_df_dict = {
 }
 
 
-# In[ ]:
+# In[6]:
 
 
 # loop through the compartment, feature type, and the respective dataframes
@@ -199,7 +199,7 @@ compartment_merged_dict = {
 }
 
 
-# In[ ]:
+# In[9]:
 
 
 for compartment in final_df_dict.keys():
@@ -225,7 +225,7 @@ for compartment in final_df_dict.keys():
             )
 
 
-# In[ ]:
+# In[10]:
 
 
 with duckdb.connect(DB_structure_path) as cx:

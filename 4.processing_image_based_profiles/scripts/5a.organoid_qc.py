@@ -3,7 +3,7 @@
 
 # # Perform organoid-level quality control
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -23,8 +23,8 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
 from notebook_init_utils import bandicoot_check, init_notebook
-from segmentation_init_utils import parse_segmentation_args
 
 root_dir, in_notebook = init_notebook()
 
@@ -37,11 +37,11 @@ profile_base_dir = bandicoot_check(
 
 # ## Load in all the organoid profiles and concat together
 
-# In[ ]:
+# In[3]:
 
 
 # Path to patient folders
-path_to_patients = pathlib.Path(f"{profile_base_dir}/NF1_organoid_processed_patients/")
+path_to_patients = pathlib.Path(f"{profile_base_dir}/data/")
 
 # Get all organoid profiles per patient folder and concatenate them
 dfs = []
@@ -71,7 +71,7 @@ orig_organoid_profiles_df.head()
 #    - An organoid can not exist if there aren't any cells.
 #    - NaN in object_id would be incorrect as that means the object/organoid does not exist (will have all NaNs in the feature space).
 
-# In[3]:
+# In[4]:
 
 
 organoid_profiles_df = orig_organoid_profiles_df.copy()
@@ -88,7 +88,7 @@ organoid_profiles_df.head()
 
 # ## Process non-NaN rows to detect abnormally small and large organoids and flag them
 
-# In[4]:
+# In[5]:
 
 
 # Set the metadata columns to be used in the QC process
@@ -102,7 +102,7 @@ metadata_columns = [
 ]
 
 
-# In[5]:
+# In[6]:
 
 
 # Process each plate (patient_id) independently in the combined dataframe
@@ -162,7 +162,7 @@ for plate_name, plate_df in organoid_profiles_df.groupby("patient_id"):
     print(f"Saved organoid profiles with outlier flags to {output_file}\n")
 
 
-# In[6]:
+# In[7]:
 
 
 # Print example output of the flagged organoid profiles

@@ -4,6 +4,8 @@ module load anaconda
 conda init bash
 conda activate nf1_image_based_profiling_env
 
+start_time=$(date +%s)
+
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
     echo "Error: Could not find the git root directory."
@@ -20,11 +22,11 @@ else
     exit 1
 fi
 
-bandicoot_dir="/home/lippincm/mnt/bandicoot"
+bandicoot_dir="/home/lippincm/mnt/bandicoot/NF1_organoid_data"
 if [[ ! -d "$bandicoot_dir" ]]; then
     profile_base_dir="$git_root/"
 else
-    profile_base_dir="$bandicoot_dir/"
+    profile_base_dir="$bandicoot_dir"
 fi
 
 # setup the logs dir
@@ -34,9 +36,8 @@ fi
 mkdir -p "$git_root/4.processing_image_based_profiles/logs/patient_well_fovs/" # create the patients directory if it doesn't exist
 
 
-for patient in "${patient_array[@]}"; do
 
-    python "$git_root"/4.processing_image_based_profiles/scripts/0.get_profiling_stats.py --patient "$patient"
+for patient in "${patient_array[@]}"; do
     # get the list of all dirs in the parent_dir
     parent_dir="$profile_base_dir/data/$patient/extracted_features"
     # get the list of all dirs in the parent_dir
@@ -70,11 +71,23 @@ for patient in "${patient_array[@]}"; do
 
 done
 
+
+
+conda activate nf1_image_based_profiling_env
 python "$git_root"/4.processing_image_based_profiles/scripts/5a.organoid_qc.py
 python "$git_root"/4.processing_image_based_profiles/scripts/5b.single_cell_qc.py
-
 python "$git_root"/4.processing_image_based_profiles/scripts/12.combine_patients.py
 
+python "$git_root"/4.processing_image_based_profiles/scripts/0a.get_profiling_stats.py
+conda deactivate
+conda activate gff_figure_env
+Rscript "$git_root"/4.processing_image_based_profiles/scripts/0b.plot_profiling_stats.r
 conda deactivate
 
 echo "All features merged for patients" "${patient_array[@]}"
+
+end_time=$(date +%s)
+elapsed_time=$((end_time - start_time))
+echo "Total elapsed time: $elapsed_time seconds"
+echo "Total elapsed time: $((elapsed_time / 60)) minutes"
+echo "Total elapsed time: $((elapsed_time / 3600)) hours"
