@@ -1,0 +1,8 @@
+# Huygens Deconvolution template file
+# Format: nested Tcl-style list
+# Saved: Mon Aug 25 19:56:10 MDT 2025
+
+info {title {Deconvolution template} version 2.5 templateName decon_process_488 date {Mon Aug 25 19:56:10 MDT 2025}}
+taskList {hotPix cmle:0}
+hotPix {hotPath {}}
+cmle:0 {psfMode auto psfPath {} it 30 q 0.01 bgMode lowest bgRadius 0.7 brMode auto varPsf off varPsfCnt 1 blMode off pad auto mode fast timeOut 10000 psfChan {} acuityMode on reduceMode auto anisotropyMode off bg 0.0 acuity 0.00 anisotropy 0.00 snr 26.00}
