@@ -1,0 +1,9 @@
+# Huygens Microscopic parameter template file
+# Format: nested Tcl-style list
+# Saved: Mon Aug 25 19:27:28 MDT 2025
+
+info {title {Microscopic parameter template} version 2.0 templateName microscope_parameters_555 date {Mon Aug 25 19:27:28 MDT 2025}}
+taskList {setp setPDimProp setPDimCooProp}
+setp {s { 0.1 0.1 1.0 1.0000} iFacePrim 0.0 iFaceScnd 0.0 label {{Channel 0}} micr nipkow pr 250 ex 555 em 580 na 1.35 ri 1.338 ril 1.518 ps 2.53 exBeamFill 2.0 imagingDir upward objQuality perfect pcnt 1 ppu 1.0 baseline 0.0 lineAvgCnt 1 noiseGain 1 stedMode vortexPulsed stedLambda 676 stedSatFact 40 stedImmunity 10 stedInhibContr 0.01 sted3D 0 stedCoeff {{2.1 8.0}} spimNA 0.03 spimExc gauss spimFill 0.5 spimFocusOff 0 spimCenterOff 0 spimDir 0 spimGaussWidth 4.0 scatterModel exp scatterFreePath 100.0 scatterRelContrib 50 scatterBlurring 0.0}
+setPDimProp {detModel ZeissAiry spacing 0.0 phi 0.0 aspectRatio 1.0 postMirror none}
+setPDimCooProp {detPinhPos {{0.0 0.0}} detPinhRad 0.0}
