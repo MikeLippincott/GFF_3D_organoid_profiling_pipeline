@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -40,7 +40,7 @@ if not in_notebook:
     well_fov = args["well_fov"]
     patient = args["patient"]
 else:
-    well_fov = "C4-2"
+    well_fov = "G2-2"
     patient = "NF0014_T1"
 
 

@@ -46,7 +46,7 @@ if not in_notebook:
     patient = args["patient"]
 else:
     patient = "NF0014_T1"
-    well_fov = "C4-2"
+    well_fov = "G2-2"
 
 
 # In[3]:
@@ -119,6 +119,13 @@ organoid_table.head()
 
 
 # In[8]:
+
+
+# drop columns that end with _x or _y lowercase
+merged_df = merged_df.loc[:, ~merged_df.columns.str.endswith(("_x", "_y"))]
+
+
+# In[9]:
 
 
 print(f"Final merged single cell dataframe shape: {merged_df.shape}")
