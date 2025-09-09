@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import pathlib
@@ -28,7 +28,7 @@ from notebook_init_utils import bandicoot_check, init_notebook
 root_dir, in_notebook = init_notebook()
 
 profile_base_dir = bandicoot_check(
-    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+    pathlib.Path("/home/lippincm/mnt/bandicoot/NF1_organoid_data").resolve(), root_dir
 )
 
 
@@ -82,7 +82,7 @@ def safe_read_parquet(stats_file):
         return None
 
 
-# In[ ]:
+# In[6]:
 
 
 dataframes = []
@@ -96,7 +96,7 @@ else:
     df = pd.DataFrame()
 
 
-# In[ ]:
+# In[7]:
 
 
 # comment out for now as we only used CPU
@@ -116,7 +116,7 @@ df.head()
 
 # ## Preliminary plots - will finalize in R later
 
-# In[ ]:
+# In[8]:
 
 
 # plot the memory and time for each feature type

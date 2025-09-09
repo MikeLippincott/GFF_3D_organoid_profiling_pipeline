@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -36,7 +36,7 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -45,7 +45,7 @@ if not in_notebook:
     patient = args["patient"]
 else:
     well_fov = "C2-1"
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 
 # In[3]:
@@ -90,7 +90,7 @@ def centroid_within_bbox_detection(
 
 # ### Pathing
 
-# In[ ]:
+# In[4]:
 
 
 # input paths
@@ -230,7 +230,7 @@ if sc_profile_df.empty:
 # This will help with file-based checking and merging.
 #
 
-# In[11]:
+# In[13]:
 
 
 if organoid_profile_df.empty:
@@ -241,7 +241,7 @@ if organoid_profile_df.empty:
     organoid_profile_df["image_set"] = well_fov
 
 
-# In[13]:
+# In[14]:
 
 
 if sc_profile_df.empty:
@@ -252,14 +252,14 @@ if sc_profile_df.empty:
 
 # ### Save the profiles
 
-# In[13]:
+# In[15]:
 
 
 organoid_profile_df.to_parquet(organoid_profile_output_path, index=False)
 organoid_profile_df.head()
 
 
-# In[14]:
+# In[16]:
 
 
 sc_profile_df.to_parquet(sc_profile_output_path, index=False)
