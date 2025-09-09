@@ -4,7 +4,7 @@
 # This notebook combines all well fovs for each patient into a single file.
 #
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -30,11 +30,11 @@ from notebook_init_utils import bandicoot_check, init_notebook
 root_dir, in_notebook = init_notebook()
 
 profile_base_dir = bandicoot_check(
-    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
+    pathlib.Path("/home/lippincm/mnt/bandicoot/NF1_organoid_data").resolve(), root_dir
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -42,10 +42,10 @@ if not in_notebook:
     patient = args["patient"]
 
 else:
-    patient = "NF0018"
+    patient = "NF0014_T1"
 
 
-# In[ ]:
+# In[3]:
 
 
 # set paths
@@ -132,3 +132,12 @@ sc_profile.to_parquet(sc_merged_output_path, index=False)
 organoid_profile.to_parquet(organoid_merged_output_path, index=False)
 print(f"Single-cell profiles saved to {sc_merged_output_path}")
 print(f"Organoid profiles saved to {organoid_merged_output_path}")
+
+
+# In[10]:
+
+
+sc_profile
+
+
+# In[ ]:

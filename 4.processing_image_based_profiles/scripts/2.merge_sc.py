@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -37,7 +37,7 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -45,11 +45,11 @@ if not in_notebook:
     well_fov = args["well_fov"]
     patient = args["patient"]
 else:
-    patient = "SARCO361"
-    well_fov = "G7-5"
+    patient = "NF0014_T1"
+    well_fov = "C4-2"
 
 
-# In[ ]:
+# In[3]:
 
 
 input_sqlite_file = pathlib.Path(
@@ -92,7 +92,7 @@ cells_table = cells_table[cells_table["object_id"].isin(intersection_set)]
 cytoplasm_table = cytoplasm_table[cytoplasm_table["object_id"].isin(intersection_set)]
 
 
-# In[ ]:
+# In[6]:
 
 
 # connect to DuckDB and register the tables

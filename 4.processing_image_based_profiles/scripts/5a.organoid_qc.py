@@ -37,7 +37,7 @@ profile_base_dir = bandicoot_check(
 
 # ## Load in all the organoid profiles and concat together
 
-# In[3]:
+# In[2]:
 
 
 # Path to patient folders
@@ -71,7 +71,7 @@ orig_organoid_profiles_df.head()
 #    - An organoid can not exist if there aren't any cells.
 #    - NaN in object_id would be incorrect as that means the object/organoid does not exist (will have all NaNs in the feature space).
 
-# In[4]:
+# In[3]:
 
 
 organoid_profiles_df = orig_organoid_profiles_df.copy()
@@ -88,7 +88,7 @@ organoid_profiles_df.head()
 
 # ## Process non-NaN rows to detect abnormally small and large organoids and flag them
 
-# In[5]:
+# In[4]:
 
 
 # Set the metadata columns to be used in the QC process
@@ -102,7 +102,7 @@ metadata_columns = [
 ]
 
 
-# In[6]:
+# In[5]:
 
 
 # Process each plate (patient_id) independently in the combined dataframe
@@ -162,7 +162,7 @@ for plate_name, plate_df in organoid_profiles_df.groupby("patient_id"):
     print(f"Saved organoid profiles with outlier flags to {output_file}\n")
 
 
-# In[7]:
+# In[6]:
 
 
 # Print example output of the flagged organoid profiles
