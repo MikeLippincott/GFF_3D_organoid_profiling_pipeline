@@ -81,6 +81,23 @@ organoid_profiles = [str(x) for x in profiles if "organoid" in str(x.name)]
 # In[6]:
 
 
+# for p in sc_profiles:
+#     try:
+#         df = pd.read_parquet(p)['Intensity_Nuclei_DNA_MAX.Z_y']
+#         print(f"Read {p} with shape {df.shape}")
+#     except Exception as e:
+# pass
+
+for col in pd.read_parquet(
+    "/home/lippincm/mnt/bandicoot/NF1_organoid_data/data/NF0014_T1/image_based_profiles/0.converted_profiles/G2-2/sc_profiles_G2-2_related.parquet"
+).columns:
+    if "intensity" in col.lower():
+        print(col)
+
+
+# In[7]:
+
+
 # concat all sc profiles with duckdb
 with duckdb.connect() as conn:
     sc_profile = conn.execute(
@@ -102,13 +119,7 @@ if "image_set_2" in organoid_profile.columns:
     organoid_profile = organoid_profile.drop(columns=["image_set_2"])
 
 
-# In[7]:
-
-
-sc_profile.head()
-
-
-# ## Remvoe all BF channels
+# ## Remove all BF channels
 #
 
 # In[8]:
@@ -138,6 +149,3 @@ print(f"Organoid profiles saved to {organoid_merged_output_path}")
 
 
 sc_profile
-
-
-# In[ ]:

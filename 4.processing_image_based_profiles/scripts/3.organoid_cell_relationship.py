@@ -44,7 +44,7 @@ if not in_notebook:
     well_fov = args["well_fov"]
     patient = args["patient"]
 else:
-    well_fov = "C2-1"
+    well_fov = "G2-2"
     patient = "NF0014_T1"
 
 
@@ -220,28 +220,10 @@ if organoid_profile_df.empty:
 # In[12]:
 
 
-if sc_profile_df.empty:
-    # add a row with Na values
-    sc_profile_df.loc[len(sc_profile_df)] = [None] * len(sc_profile_df.columns)
-    sc_profile_df["image_set"] = well_fov
+print(f"Single-cell profile shape: {sc_profile_df.shape}")
 
-
-# Even if the file is empty we still want to add it to the final dataframe dictionary so that we can merge on the same columns later.
-# This will help with file-based checking and merging.
-#
 
 # In[13]:
-
-
-if organoid_profile_df.empty:
-    # add a row with Na values
-    organoid_profile_df.loc[len(organoid_profile_df)] = [None] * len(
-        organoid_profile_df.columns
-    )
-    organoid_profile_df["image_set"] = well_fov
-
-
-# In[14]:
 
 
 if sc_profile_df.empty:

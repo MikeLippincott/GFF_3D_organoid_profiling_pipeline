@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import itertools
@@ -27,6 +27,9 @@ from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
 
+profile_base_dir = bandicoot_check(
+    pathlib.Path("/home/lippincm/mnt/bandicoot/NF1_organoid_data").resolve(), root_dir
+)
 
 sys.path.append(f"{root_dir}/3.cellprofiling/featurization_utils/")
 from loading_classes import ImageSetLoader
@@ -34,7 +37,7 @@ from loading_classes import ImageSetLoader
 sys.path.append(str(pathlib.Path(f"{root_dir}/utils").resolve()))
 from file_checking import check_number_of_files
 
-# In[ ]:
+# In[2]:
 
 
 patient = "NF0014_T1"
@@ -42,17 +45,20 @@ well_fov = "C2-1"
 # set path to the processed data dir
 
 image_set_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"  # just to get channels structure
+    f"{profile_base_dir}/data/{patient}/profiling_input_images/{well_fov}/"  # just to get channels structure
 )
-patient_id_file_path = pathlib.Path(f"{root_dir}/data/patient_IDs.txt").resolve(
+patient_id_file_path = pathlib.Path(f"{profile_base_dir}/data/patient_IDs.txt").resolve(
     strict=True
 )
 rerun_combinations_path = pathlib.Path(
-    f"{root_dir}/3.cellprofiling/load_data/rerun_combinations.txt"
+    f"{profile_base_dir}/3.cellprofiling/load_data/rerun_combinations.txt"
 ).resolve()
+rerun_combinations_path.parent.mkdir(parents=True, exist_ok=True)
 patient_ids = pd.read_csv(
     patient_id_file_path, header=None, names=["patient_id"]
 ).patient_id.tolist()
+
+patient_ids = [patient]  # for testing
 
 
 # In[3]:
@@ -187,7 +193,9 @@ featurization_rerun_dict = {
 total_files = 0
 files_present = 0
 for patient in patient_ids:
-    well_fovs = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/").resolve()
+    well_fovs = pathlib.Path(
+        f"{profile_base_dir}/data/{patient}/zstack_images/"
+    ).resolve()
 
     # perform checks for each directory
     featurization_data_dirs = list(well_fovs.glob("*"))
@@ -195,7 +203,7 @@ for patient in patient_ids:
     for dir in featurization_data_dirs:
         if dir.name != "run_stats":
             dir = pathlib.Path(
-                f"{root_dir}/data/{patient}/extracted_features/{dir.name}"
+                f"{profile_base_dir}/data/{patient}/extracted_features/{dir.name}"
             ).resolve(strict=True)
             total_files += len(feature_list)
             if not check_number_of_files(dir, len(feature_list)):
@@ -210,6 +218,7 @@ for patient in patient_ids:
                 assert len(missing_files) <= len(feature_list), (
                     f"There should be at most {len(feature_list)} missing files"
                 )
+                print((len(missing_files) + len(existing_files)), len(feature_list))
                 assert len(missing_files) + len(existing_files) == len(feature_list), (
                     f"There should be exactly {len(feature_list)} files in the directory"
                 )
@@ -256,7 +265,12 @@ for patient in patient_ids:
 print(f"Total files expected: {total_files}")
 print(f"Total files present: {files_present}")
 print(f"Only {total_files - files_present} files are missing.")
-print("Percent of files present:", np.round(files_present / total_files * 100, 2), "%")
+if total_files == 0:
+    print("No files were expected, so percent present is undefined.")
+else:
+    print(
+        "Percent of files present:", np.round(files_present / total_files * 100, 2), "%"
+    )
 
 
 # In[10]:

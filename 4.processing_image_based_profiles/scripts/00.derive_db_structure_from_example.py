@@ -4,7 +4,7 @@
 # For the purposes of this notebook and those following the "DB_structure" is a blank dataframe that is used to store the results of the profiling pipeline.
 # This is used to insert blank dataframes into the final dataframe dictionary for each compartment and feature type if the record is empty so that a final df can be created and merged on the same columns.
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib

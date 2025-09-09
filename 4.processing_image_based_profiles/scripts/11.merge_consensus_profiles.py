@@ -3,7 +3,7 @@
 
 # This notebook performs profile aggregation.
 
-# In[ ]:
+# In[1]:
 
 
 import pathlib
@@ -33,7 +33,7 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -50,7 +50,7 @@ else:
 # 3. The consensus profiles are merged together
 #
 
-# In[ ]:
+# In[3]:
 
 
 # group the import paths by the type of aggregation
@@ -107,7 +107,7 @@ organoid_consensus_merge_path.parent.mkdir(parents=True, exist_ok=True)
 ###############################################################################
 
 
-# In[ ]:
+# In[4]:
 
 
 organoid_fs = pd.read_parquet(organoid_fs_path)
@@ -138,7 +138,7 @@ sc_agg_well_parent_organoid_merge.to_parquet(
 sc_agg_well_parent_organoid_merge.head()
 
 
-# In[ ]:
+# In[5]:
 
 
 sc_agg_well = pd.read_parquet(sc_agg_well_path)
@@ -157,7 +157,7 @@ sc_agg_well_merge.to_parquet(organoid_agg_well_merge_path, index=False)
 sc_agg_well_merge.head()
 
 
-# In[ ]:
+# In[6]:
 
 
 sc_consensus = pd.read_parquet(sc_consensus_path)
