@@ -5,7 +5,7 @@
 
 # ## Import libraries
 
-# In[4]:
+# In[ ]:
 
 
 import pathlib
@@ -28,7 +28,7 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
-from notebook_init_utils import init_notebook
+from notebook_init_utils import avoid_path_crash_bandicoot, init_notebook
 
 root_dir, in_notebook = init_notebook()
 
@@ -43,7 +43,7 @@ else:
 # In[ ]:
 
 
-bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+bandicoot_path = pathlib.Path("~/mnt/bandicoot").resolve()
 if bandicoot_path.exists():
     bandicoot = True
 else:
@@ -53,27 +53,19 @@ else:
 # In[ ]:
 
 
-if bandicoot:
-    # comment out depending on whose computer you are on
-    # mike's computer
-    bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
-    # Jenna's computer
-    # bandicoot_path = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
-    raw_image_dir = pathlib.Path(f"{bandicoot_path}/NF1_organoid_data/").resolve()
-    output_base_dir = bandicoot_path
-else:
-    raw_image_dir = pathlib.Path(f"{root_dir}/NF1_organoid_data/").resolve(strict=True)
-    output_base_dir = root_dir
+raw_image_dir, output_base_dir = avoid_path_crash_bandicoot(bandicoot_path)
 
 
-# In[8]:
+# In[ ]:
 
 
-# patient_ids
-patient_id_file_path = pathlib.Path(f"{root_dir}/data/patient_IDs.txt").resolve(
-    strict=True
-)
-list_of_patients = pd.read_csv(patient_id_file_path, header=None)[0].tolist()
+# # patient_ids
+# patient_id_file_path = pathlib.Path(f"{root_dir}/data/patient_IDs.txt").resolve(
+#     strict=True
+# )
+# list_of_patients = pd.read_csv(patient_id_file_path, header=None)[0].tolist()
+
+list_of_patients = ["NF0035_T1"]
 
 
 # In[ ]:
@@ -92,7 +84,7 @@ for patient in list_of_patients:
 pprint.pprint(patient_input_dict)
 
 
-# In[4]:
+# In[ ]:
 
 
 # Image extensions that we are looking to copy
@@ -105,7 +97,7 @@ image_extensions = {".tif", ".tiff"}
 unlisted_images = {"patient": ["NF0014_T1"], "image_set": ["F11-3"]}
 
 
-# In[6]:
+# In[ ]:
 
 
 image_extensions = {".tif", ".tiff"}
@@ -119,7 +111,7 @@ channel_images
 
 # ## Create list of the well-site folders
 
-# In[7]:
+# In[ ]:
 
 
 # loop through patients, well_fovs, and each channel

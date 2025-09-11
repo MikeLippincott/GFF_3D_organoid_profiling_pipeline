@@ -35,9 +35,7 @@ from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
 
-image_base_dir = bandicoot_check(
-    pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(), root_dir
-)
+image_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root_dir)
 
 sys.path.append(f"{root_dir}/utils")
 from segmentation_decoupling import euclidian_2D_distance

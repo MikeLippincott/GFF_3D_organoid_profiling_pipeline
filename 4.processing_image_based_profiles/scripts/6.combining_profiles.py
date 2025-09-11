@@ -30,7 +30,7 @@ from notebook_init_utils import bandicoot_check, init_notebook
 root_dir, in_notebook = init_notebook()
 
 profile_base_dir = bandicoot_check(
-    pathlib.Path("/home/lippincm/mnt/bandicoot/NF1_organoid_data").resolve(), root_dir
+    pathlib.Path("~/mnt/bandicoot/NF1_organoid_data").resolve(), root_dir
 )
 
 
@@ -89,7 +89,7 @@ organoid_profiles = [str(x) for x in profiles if "organoid" in str(x.name)]
 # pass
 
 for col in pd.read_parquet(
-    "/home/lippincm/mnt/bandicoot/NF1_organoid_data/data/NF0014_T1/image_based_profiles/0.converted_profiles/G2-2/sc_profiles_G2-2_related.parquet"
+    "~/mnt/bandicoot/NF1_organoid_data/data/NF0014_T1/image_based_profiles/0.converted_profiles/G2-2/sc_profiles_G2-2_related.parquet"
 ).columns:
     if "intensity" in col.lower():
         print(col)

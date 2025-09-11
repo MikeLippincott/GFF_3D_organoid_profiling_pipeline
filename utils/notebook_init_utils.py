@@ -1,5 +1,11 @@
+import os
 import pathlib
 from typing import Tuple
+
+"""
+This utils module contains functions to initialize the notebook environment
+and check for the existence of an external mount point for Bandicoot.
+"""
 
 
 def init_notebook() -> Tuple[pathlib.Path, bool]:
@@ -62,8 +68,38 @@ def bandicoot_check(
         # comment out depending on whose computer you are on
         # mike's computer
         image_base_dir = pathlib.Path(
-            "/home/lippincm/mnt/bandicoot/NF1_organoid_data"
-        ).resolve()
+            os.path.expanduser("~/mnt/bandicoot/NF1_organoid_data")
+        ).resolve(strict=True)
     else:
         image_base_dir = root_dir
     return image_base_dir
+
+
+def avoid_path_crash_bandicoot(
+    bandicoot_path: pathlib.Path,
+) -> Tuple[pathlib.Path, pathlib.Path]:
+    """
+    This function avoids path crashes by checking if the Bandicoot path exists
+    and setting the raw image directory and output base directory accordingly.
+
+    Parameters
+    ----------
+    bandicoot_path : pathlib.Path
+        The path to the Bandicoot directory.
+
+    Returns
+    -------
+    Tuple[pathlib.Path, pathlib.Path]
+        The raw image directory and output base directory.
+    """
+    root_dir, _ = init_notebook()
+    if bandicoot_path.exists():
+        # comment out depending on whose computer you are on
+        # mike's computer
+        bandicoot_path = pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve()
+        raw_image_dir = pathlib.Path(f"{bandicoot_path}/NF1_organoid_data/").resolve()
+        output_base_dir = bandicoot_path
+    else:
+        raw_image_dir = pathlib.Path(f"{root_dir}/NF1_organoid_data/").resolve()
+        output_base_dir = root_dir
+    return raw_image_dir, output_base_dir

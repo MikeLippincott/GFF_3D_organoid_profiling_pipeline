@@ -40,7 +40,7 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
-from notebook_init_utils import init_notebook
+from notebook_init_utils import avoid_path_crash_bandicoot, init_notebook
 
 root_dir, in_notebook = init_notebook()
 

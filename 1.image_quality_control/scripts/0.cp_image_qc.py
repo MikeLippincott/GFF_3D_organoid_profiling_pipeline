@@ -28,7 +28,7 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
-from notebook_init_utils import init_notebook
+from notebook_init_utils import avoid_path_crash_bandicoot, init_notebook
 
 root_dir, in_notebook = init_notebook()
 sys.path.append(f"{root_dir}/utils")
@@ -39,11 +39,11 @@ import cp_parallel
 # In[ ]:
 
 
-bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+bandicoot_path = pathlib.Path("~/mnt/bandicoot").resolve()
 if bandicoot_path.exists():
     # comment out depending on whose computer you are on
     # mike's computer
-    image_base_dir = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+    image_base_dir = pathlib.Path("~/mnt/bandicoot").resolve()
 else:
     image_base_dir = root_dir
 

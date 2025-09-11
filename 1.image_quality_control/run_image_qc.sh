@@ -1,5 +1,5 @@
 #!/bin/bash
-git_root=$(git rev-parse --show-toplevel)
+git_root="$(git rev-parse --show-toplevel)"
 if [ -z "$git_root" ]; then
     echo "Error: Could not find the git root directory."
     exit 1
