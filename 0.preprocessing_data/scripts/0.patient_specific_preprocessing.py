@@ -7,10 +7,11 @@
 import argparse
 import pathlib
 import sys
+import os
 
 # ## Set paths and variables
 
-# In[2]:
+# In[ ]:
 
 
 argparse = argparse.ArgumentParser(
@@ -36,13 +37,14 @@ else:
     # comment out depending on whose computer you are on
     # mike's computer
     raw_image_dir_local = pathlib.Path(
-        "/home/lippincm/Desktop/20TB_A/NF1_Patient_organoids/"
+        # expand the path using common path for lab use
+        os.path.expanduser("~/mnt/bandicoot/NF1_organoid_data/Raw_patient_files")
     ).resolve(strict=True)
     # Jenna's computer
     # raw_image_dir_local = pathlib.Path("/media/18tbdrive/GFF_organoid_data/Cell Painting-NF0014 Thawed3-Pilot Drug Screening")
 
 
-# ## NF0014 specific preprocessing
+# ## NF0014 T1 specific preprocessing
 
 # In[4]:
 

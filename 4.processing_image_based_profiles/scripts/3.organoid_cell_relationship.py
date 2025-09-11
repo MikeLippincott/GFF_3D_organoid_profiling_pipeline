@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
-import argparse
 import pathlib
+import sys
 
 import pandas as pd
 
@@ -15,47 +15,35 @@ try:
 except NameError:
     in_notebook = False
 
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
+from notebook_init_utils import bandicoot_check, init_notebook
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root_dir)
 
 
 # In[2]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--well_fov",
-        type=str,
-        required=True,
-        help="Well and field of view to process, e.g. 'A01_1'",
-    )
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    args = argparser.parse_args()
-    well_fov = args.well_fov
-    patient = args.patient
+    args = parse_args()
+    well_fov = args["well_fov"]
+    patient = args["patient"]
 else:
-    well_fov = "C2-1"
-    patient = "NF0014"
+    well_fov = "G2-2"
+    patient = "NF0014_T1"
 
 
 # In[3]:
@@ -100,26 +88,26 @@ def centroid_within_bbox_detection(
 
 # ### Pathing
 
-# In[ ]:
+# In[4]:
 
 
 # input paths
 sc_profile_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
 ).resolve(strict=True)
 organoid_profile_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
 ).resolve(strict=True)
 # output paths
 sc_profile_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}_related.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}_related.parquet"
 ).resolve()
 organoid_profile_output_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}_related.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}_related.parquet"
 ).resolve()
 
 
-# In[6]:
+# In[5]:
 
 
 sc_profile_df = pd.read_parquet(sc_profile_path)
@@ -128,14 +116,14 @@ print(f"Single-cell profile shape: {sc_profile_df.shape}")
 print(f"Organoid profile shape: {organoid_profile_df.shape}")
 
 
-# In[7]:
+# In[6]:
 
 
 # initialize the parent organoid column
 sc_profile_df.insert(2, "parent_organoid", -1)
 
 
-# In[ ]:
+# In[7]:
 
 
 x_y_z_sc_colnames = [
@@ -191,7 +179,7 @@ for organoid_index, organoid_row in organoid_profile_df.iterrows():
 
 # ### Add single-cell counts for each organoid
 
-# In[ ]:
+# In[10]:
 
 
 organoid_sc_counts = (
@@ -216,7 +204,7 @@ organoid_profile_df.insert(2, "single_cell_count", sc_count)
 # This will help with file-based checking and merging.
 #
 
-# In[ ]:
+# In[11]:
 
 
 if organoid_profile_df.empty:
@@ -230,26 +218,10 @@ if organoid_profile_df.empty:
 # In[12]:
 
 
-if sc_profile_df.empty:
-    # add a row with Na values
-    sc_profile_df.loc[len(sc_profile_df)] = [None] * len(sc_profile_df.columns)
-    sc_profile_df["image_set"] = well_fov
+print(f"Single-cell profile shape: {sc_profile_df.shape}")
 
-
-# ### Save the profiles
 
 # In[13]:
-
-
-if organoid_profile_df.empty:
-    # add a row with Na values
-    organoid_profile_df.loc[len(organoid_profile_df)] = [None] * len(
-        organoid_profile_df.columns
-    )
-    organoid_profile_df["image_set"] = well_fov
-
-
-# In[12]:
 
 
 if sc_profile_df.empty:
@@ -260,16 +232,15 @@ if sc_profile_df.empty:
 
 # ### Save the profiles
 
-# In[13]:
+# In[15]:
 
 
 organoid_profile_df.to_parquet(organoid_profile_output_path, index=False)
 organoid_profile_df.head()
 
 
-# In[14]:
+# In[16]:
 
 
 sc_profile_df.to_parquet(sc_profile_output_path, index=False)
 sc_profile_df.head()
-
