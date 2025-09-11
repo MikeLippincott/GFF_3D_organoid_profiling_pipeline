@@ -5,7 +5,7 @@
 
 # ## Import libraries
 
-# In[8]:
+# In[1]:
 
 
 import pathlib
@@ -28,7 +28,7 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
-from notebook_init_utils import init_notebook
+from notebook_init_utils import avoid_path_crash_bandicoot, init_notebook
 
 root_dir, in_notebook = init_notebook()
 if in_notebook:
@@ -37,7 +37,7 @@ else:
     import tqdm
 
 
-# In[9]:
+# In[2]:
 
 
 def max_z_projection(patient: str, well_fov: str) -> None:
@@ -108,31 +108,23 @@ def max_z_projection(patient: str, well_fov: str) -> None:
 # In[ ]:
 
 
-bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
-if bandicoot_path.exists():
-    # comment out depending on whose computer you are on
-    # mike's computer
-    bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
-    # Jenna's computer
-    # bandicoot_path = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
-    raw_image_dir = pathlib.Path(f"{bandicoot_path}/NF1_organoid_data/").resolve()
-    output_base_dir = bandicoot_path
-else:
-    raw_image_dir = pathlib.Path(f"{root_dir}/NF1_organoid_data/").resolve()
-    output_base_dir = root_dir
+bandicoot_path = pathlib.Path("~/mnt/bandicoot").resolve()
+raw_image_dir, output_base_dir = avoid_path_crash_bandicoot(bandicoot_path)
 
 
-# In[10]:
+# In[4]:
 
 
 # patient_ids
-patient_id_file_path = pathlib.Path(f"{raw_image_dir}/data/patient_IDs.txt").resolve(
-    strict=True
-)
-list_of_patients = pd.read_csv(patient_id_file_path, header=None)[0].tolist()
+# patient_id_file_path = pathlib.Path(f"{raw_image_dir}/data/patient_IDs.txt").resolve(
+#     strict=True
+# )
+# list_of_patients = pd.read_csv(patient_id_file_path, header=None)[0].tolist()
+
+list_of_patients = ["NF0035_T1"]
 
 
-# In[ ]:
+# In[5]:
 
 
 patient_input_dict = {}
@@ -155,7 +147,7 @@ pprint.pprint(patient_input_dict)
 # This is done by checking if the size of the channel images for a given well-fov is the same as the size of the channel images for the other well-fovs.
 # If the size is different, then the file is corrupted.
 
-# In[ ]:
+# In[6]:
 
 
 patient_well_fovs_to_fix = []
@@ -191,7 +183,7 @@ pprint.pprint(patient_well_fovs_to_fix)
 # ## With the list of corrupted files, recreate the z-stack images
 # This is the point where the z-stack images are created from the individual z-slice images for each FOV per well.
 
-# In[ ]:
+# In[7]:
 
 
 for patient_well_fov in patient_well_fovs_to_fix:

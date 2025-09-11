@@ -22,7 +22,7 @@ else
     exit 1
 fi
 
-bandicoot_dir="/home/lippincm/mnt/bandicoot/NF1_organoid_data"
+bandicoot_dir="$HOME/mnt/bandicoot/NF1_organoid_data"
 if [[ ! -d "$bandicoot_dir" ]]; then
     profile_base_dir="$git_root/"
 else

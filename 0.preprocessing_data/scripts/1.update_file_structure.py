@@ -9,7 +9,7 @@
 
 # ## Import libraries
 
-# In[3]:
+# In[ ]:
 
 
 import argparse
@@ -18,7 +18,7 @@ import os
 import pathlib
 import shutil
 import sys
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import tqdm
 
@@ -35,14 +35,19 @@ else:
             break
 
 sys.path.append(str(root_dir / "utils"))
-from notebook_init_utils import init_notebook
+from notebook_init_utils import avoid_path_crash_bandicoot, init_notebook
 
 root_dir, in_notebook = init_notebook()
+
+if in_notebook:
+    import tqdm.notebook as tqdm
+else:
+    import tqdm
 
 
 # ## Set paths and variables
 
-# In[4]:
+# In[ ]:
 
 
 argparse = argparse.ArgumentParser(
@@ -56,13 +61,12 @@ HPC = args.HPC
 print(f"HPC: {HPC}")
 
 
-# In[5]:
+# In[ ]:
 
 
-# Name of user
-user = "lippincm"
 # check if bandicoot is set
-bandicoot_path = pathlib.Path(f"/home/{user}/mnt/bandicoot").resolve()
+# check if bandicoot is set
+bandicoot_path = pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve()
 if not HPC and bandicoot_path.exists():
     bandicoot = True
 else:
@@ -80,22 +84,30 @@ if HPC:
 elif bandicoot:
     # comment out depending on whose computer you are on
     # mike's computer
-    bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve(strict=True)
+    bandicoot_path = pathlib.Path(
+        os.path.expanduser("~/mnt/bandicoot/NF1_organoid_data")
+    ).resolve(strict=True)
     # Jenna's computer
     # bandicoot_path = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
-    raw_image_dir = pathlib.Path(
-        f"{bandicoot_path}/NF1_organoid_data/Raw_patient_files"
-    ).resolve(strict=True)
+    raw_image_dir = pathlib.Path(f"{bandicoot_path}/Raw_patient_files").resolve(
+        strict=True
+    )
     output_base_dir = bandicoot_path
 else:
     # comment out depending on whose computer you are on
     # mike's computer
-    raw_image_dir = pathlib.Path(
-        "/home/lippincm/Desktop/20TB_A/NF1_Patient_organoids"
-    ).resolve(strict=True)
+    raw_image_dir = pathlib.Path("~/Desktop/20TB_A/NF1_Patient_organoids").resolve(
+        strict=True
+    )
     # Jenna's computer
     # raw_image_dir_local = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
     output_base_dir = root_dir
+
+
+# In[ ]:
+
+
+output_base_dir = root_dir
 
 
 # In[ ]:
@@ -339,7 +351,12 @@ for key, paths in dir_mapping.items():
             )
             for well_dir in well_dirs
         ]
-        for future in tqdm.tqdm(futures, desc=f"Processing {key}", leave=False):
+        for future in tqdm.tqdm(
+            as_completed(futures),
+            desc=f"Processing {key}",
+            leave=False,
+            total=len(well_dirs),
+        ):
             pass
 
     print(f"Completed processing {key}: {parent_dir} -> {dest_dir}")

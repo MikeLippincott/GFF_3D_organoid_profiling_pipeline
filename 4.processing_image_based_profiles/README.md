@@ -13,3 +13,7 @@ These are stored as related tables in a sqlite database.
 The database is then used to merge into a single-cell feature table using CytoTable.
 For a visual and simplified representation of the pipeline, see the figure below.
 ![Featurization pipeline](./diagram/featurization_strategy.png)
+
+## Feature selection blocklist
+Features that contain coordinates are removed during feature selection.
+These features would be leaked data if used in a machine learning model.

@@ -40,7 +40,7 @@ root_dir <- find_git_root()
 cat("Git root directory:", root_dir, "\n")
 
 bandicoot_path <- file.path(
-    "/home/lippincm/mnt/bandicoot"
+    "~/mnt/bandicoot"
 )
 if (!dir.exists(bandicoot_path)) {
     profile_base_dir <- file.path(
