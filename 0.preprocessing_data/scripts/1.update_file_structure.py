@@ -59,8 +59,10 @@ print(f"HPC: {HPC}")
 # In[5]:
 
 
+# Name of user
+user = "lippincm"
 # check if bandicoot is set
-bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+bandicoot_path = pathlib.Path(f"/home/{user}/mnt/bandicoot").resolve()
 if not HPC and bandicoot_path.exists():
     bandicoot = True
 else:
