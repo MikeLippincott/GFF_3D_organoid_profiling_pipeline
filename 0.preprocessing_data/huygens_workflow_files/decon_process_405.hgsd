@@ -1,0 +1,12 @@
+# Huygens Deconvolution template file
+# Format: nested Tcl-style list
+# Saved: Mon Aug 25 15:27:45 MDT 2025
+
+info {title {Deconvolution template} version 2.5 templateName decon_process_405 date {Mon Aug 25 15:27:45 MDT 2025}}
+taskList {autocrop stabilize adjbl crossTalk cmle:0 zdrift}
+autocrop {enabled 0 cropPath {}}
+stabilize {enabled 0 type auto objectiveAngle 45 stageMovement negX zSamplInterp axis}
+adjbl {enabled 0 ni 0}
+crossTalk {enabled 0 crossPath {}}
+cmle:0 {psfMode auto psfPath {} it 30 q 0.01 bgMode lowest bgRadius 0.7 brMode auto varPsf off varPsfCnt 1 blMode off pad auto mode fast timeOut 10000 psfChan {} acuityMode on reduceMode auto anisotropyMode off bg 0.0 acuity 0.00 anisotropy 0.00 snr 26.00}
+zdrift {enabled 0 survey single chan 0 filter median filterSize 3}
