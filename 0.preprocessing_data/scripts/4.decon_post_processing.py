@@ -4,6 +4,7 @@
 # In[ ]:
 
 
+import os
 import pathlib
 import shutil
 
@@ -30,12 +31,9 @@ else:
             root_dir = parent
             break
 
-bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
+bandicoot_path = pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve()
 if bandicoot_path.exists():
     # comment out depending on whose computer you are on
-    # mike's computer
-    bandicoot_path = pathlib.Path("/home/lippincm/mnt/bandicoot").resolve()
-    # Jenna's computer
     # bandicoot_path = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
     raw_image_dir = pathlib.Path(f"{bandicoot_path}/NF1_organoid_data/").resolve()
     output_base_dir = bandicoot_path

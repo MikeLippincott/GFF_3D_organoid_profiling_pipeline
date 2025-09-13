@@ -47,7 +47,7 @@ else:
 
 # In[ ]:
 
-# Create max projections per well-fov-patient to evaluate the size of the files (small = corrupted)
+
 def max_z_projection(patient: str, well_fov: str) -> None:
     """
     Create a maximum intensity projection of the z-stack images for a given patient and well_fov.

@@ -39,7 +39,7 @@ HPC = args.HPC
 print(f"HPC: {HPC}")
 
 
-# In[ ]:
+# In[3]:
 
 
 if HPC:
@@ -56,19 +56,19 @@ else:
     # raw_image_dir_local = pathlib.Path("/media/18tbdrive/GFF_organoid_data/")
 
 
-# In[ ]:
+# In[4]:
 
 
 # Define parent and destination directories in a single dictionary
 dir_mapping = {
-    "NF0014": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0014-Thawed 3 (Raw image files)-Combined/NF0014-Thawed 3 (Raw image files)-Combined copy"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0014-Thawed 3 (Raw image files)-Combined/NF0014-Thawed 3 (Raw image files)-Combined copy"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0014/raw_images").resolve(),
-    },
+    # "NF0014": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/NF0014-Thawed 3 (Raw image files)-Combined/NF0014-Thawed 3 (Raw image files)-Combined copy"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/NF0014-Thawed 3 (Raw image files)-Combined/NF0014-Thawed 3 (Raw image files)-Combined copy"
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path("../../data/NF0014/raw_images").resolve(),
+    # },
     "NF0016": {
         "parent": pathlib.Path(
             f"{raw_image_dir_local}/NF0016 Cell Painting-Pilot Drug Screening-selected/NF0016-Cell Painting Images/NF0016-images copy"
@@ -77,64 +77,64 @@ dir_mapping = {
         ).resolve(strict=True),
         "destination": pathlib.Path("../../data/NF0016/raw_images").resolve(),
     },
-    "NF0017": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"  # TODO: Update this later if not correct
-        ).resolve(strict=True),
-        "destination": pathlib.Path(
-            "../../data/raw_images/NF0017/raw_images"
-        ).resolve(),
-    },
-    "NF0018": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0018 (T6) Cell Painting-Pilot Drug Screeining/NF0018-Cell Painting Images/NF0018-All Acquisitions"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0018 (T6) Cell Painting-Pilot Drug Screeining/NF0018-Cell Painting Images/NF0018-All Acquisitions"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0018/raw_images").resolve(),
-    },
-    "NF0021": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0021-T1/NF0021-T1 Combined"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0021-T1/NF0021-T1 Combined"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0021/raw_images").resolve(),
-    },
-    "NF0030": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/NF0030 Cell Painting/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined"
-            if not HPC
-            else f"{raw_image_dir_hpc}/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0030/raw_images").resolve(),
-    },
-    "NF0040": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined"
-            if not HPC
-            else f"{raw_image_dir_hpc}/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/NF0040/raw_images").resolve(),
-    },
-    "SACRO219": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
-            if not HPC
-            else f"{raw_image_dir_hpc}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/SARCO219/raw_images").resolve(),
-    },
-    "SARCO361": {
-        "parent": pathlib.Path(
-            f"{raw_image_dir_local}/SARC0361/SARC0361 Combined/"
-            if not HPC
-            else f"{raw_image_dir_hpc}/SARC0361/SARC0361 Combined/"
-        ).resolve(strict=True),
-        "destination": pathlib.Path("../../data/SARCO361/raw_images").resolve(),
-    },
+    # "NF0017": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/NF0017-T3-P7 (AGP, Mito Parameter optimization)/Acquisition 03-07-2025"  # TODO: Update this later if not correct
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path(
+    #         "../../data/raw_images/NF0017/raw_images"
+    #     ).resolve(),
+    # },
+    # "NF0018": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/NF0018 (T6) Cell Painting-Pilot Drug Screeining/NF0018-Cell Painting Images/NF0018-All Acquisitions"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/NF0018 (T6) Cell Painting-Pilot Drug Screeining/NF0018-Cell Painting Images/NF0018-All Acquisitions"
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path("../../data/NF0018/raw_images").resolve(),
+    # },
+    # "NF0021": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/NF0021-T1/NF0021-T1 Combined"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/NF0021-T1/NF0021-T1 Combined"
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path("../../data/NF0021/raw_images").resolve(),
+    # },
+    # "NF0030": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/NF0030 Cell Painting/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/NF0030 Cell Painting/NF0030-Cell Painting Images/Combined"
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path("../../data/NF0030/raw_images").resolve(),
+    # },
+    # "NF0040": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040) Cell Painting/SARC0376 (NF0040)-Cell Painting Images/Combined"
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path("../../data/NF0040/raw_images").resolve(),
+    # },
+    # "SACRO219": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/SARC0219-T2 Cell Painting-selected/SARC0219-T2 Combined Cell Painting images/SARC0219-T2 Combined/"
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path("../../data/SARCO219/raw_images").resolve(),
+    # },
+    # "SARCO361": {
+    #     "parent": pathlib.Path(
+    #         f"{raw_image_dir_local}/SARC0361/SARC0361 Combined/"
+    #         if not HPC
+    #         else f"{raw_image_dir_hpc}/SARC0361/SARC0361 Combined/"
+    #     ).resolve(strict=True),
+    #     "destination": pathlib.Path("../../data/SARCO361/raw_images").resolve(),
+    # },
 }
 
 # Image extensions that we are looking to copy
@@ -222,7 +222,7 @@ def has_equal_images_per_channel(
 
 # Run this cell through the script
 
-# In[ ]:
+# In[6]:
 
 
 # Function to process a single nested directory

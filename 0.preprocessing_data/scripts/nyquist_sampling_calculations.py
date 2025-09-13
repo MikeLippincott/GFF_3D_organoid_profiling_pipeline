@@ -4,7 +4,9 @@
 # In[1]:
 
 
+import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 # In[2]:
 
@@ -17,6 +19,7 @@ def calculate_nyquist_sampling(
     -----------
     Calculate the Nyquist sampling rates (delta_x and delta_z) for a given wavelength,
     refractive index (n), and numerical aperture (NA).
+    See https://svi.nl/NyquistRate for more details.
 
     Parameters
     ----------
@@ -56,3 +59,23 @@ for wavelength in excitation_wavelengths:
     print(
         f"Wavelength: {wavelength} nm -> delta x,y: {delta_x} nm, delta z: {delta_z} nm"
     )
+
+
+# In[4]:
+
+
+excitation_wavelengths = np.linspace(300, 800, 10)
+nyquist_sampling_rates = [calculate_nyquist_sampling(w) for w in excitation_wavelengths]
+df = pd.DataFrame(nyquist_sampling_rates, columns=["delta_x (nm)", "delta_z (nm)"])
+df["wavelength (nm)"] = excitation_wavelengths
+df = df[["wavelength (nm)", "delta_x (nm)", "delta_z (nm)"]]
+
+plt.figure(figsize=(8, 5))
+plt.plot(df["wavelength (nm)"], df["delta_x (nm)"], label="delta_x (nm)")
+plt.plot(df["wavelength (nm)"], df["delta_z (nm)"], label="delta_z (nm)")
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Nyquist Sampling (nm)")
+plt.title("Nyquist Sampling Rates")
+plt.legend()
+plt.grid()
+plt.show()
