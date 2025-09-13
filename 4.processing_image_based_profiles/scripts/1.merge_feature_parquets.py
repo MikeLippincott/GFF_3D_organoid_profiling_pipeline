@@ -1,80 +1,60 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
-import argparse
-import os
 import pathlib
-import pprint
-import sqlite3
-from contextlib import closing
+import sys
 from functools import reduce
 
 import duckdb
 import pandas as pd
 
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-    # Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
+from notebook_init_utils import bandicoot_check, init_notebook
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(
+    pathlib.Path("~/mnt/bandicoot/NF1_organoid_data").resolve(), root_dir
+)
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--well_fov",
-        type=str,
-        required=True,
-        help="Well and field of view to process, e.g. 'A01_1'",
-    )
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    args = argparser.parse_args()
-    well_fov = args.well_fov
-    patient = args.patient
+    args = parse_args()
+    well_fov = args["well_fov"]
+    patient = args["patient"]
 else:
-    well_fov = "G7-5"
-    patient = "SARCO361"
+    well_fov = "G2-2"
+    patient = "NF0014_T1"
 
 
 result_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/extracted_features/{well_fov}"
+    f"{profile_base_dir}/data/{patient}/extracted_features/{well_fov}"
 ).resolve(strict=True)
 database_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}"
 ).resolve()
 database_path.mkdir(parents=True, exist_ok=True)
 # create the sqlite database
 sqlite_path = database_path / f"{well_fov}.duckdb"
-DB_structue_path = pathlib.Path(
-    f"{root_dir}/4.processing_image_based_profiles/data/DB_structues/DB_structue_db.duckdb"
+DB_structure_path = pathlib.Path(
+    f"{root_dir}/4.processing_image_based_profiles/data/DB_structures/DB_structure_db.duckdb"
 ).resolve(strict=True)
 
 # get a list of all parquets in the directory recursively
@@ -167,7 +147,7 @@ for compartment in feature_types_dict.keys():
                         continue
 
 
-# In[ ]:
+# In[5]:
 
 
 final_df_dict = {
@@ -246,10 +226,10 @@ for compartment, df in compartment_merged_dict.items():
     print(compartment, df.shape)
 
 
-# In[ ]:
+# In[11]:
 
 
-with duckdb.connect(DB_structue_path) as cx:
+with duckdb.connect(DB_structure_path) as cx:
     organoid_table = cx.execute("SELECT * FROM Organoid").df()
     cell_table = cx.execute("SELECT * FROM Cell").df()
     nuclei_table = cx.execute("SELECT * FROM Nuclei").df()
@@ -263,7 +243,7 @@ dict_of_DB_structues = {
 }
 
 
-# In[ ]:
+# In[12]:
 
 
 # get the table from the DB_structue
