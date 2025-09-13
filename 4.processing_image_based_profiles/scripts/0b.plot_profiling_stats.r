@@ -39,9 +39,22 @@ find_git_root <- function() {
 root_dir <- find_git_root()
 cat("Git root directory:", root_dir, "\n")
 
+bandicoot_path <- file.path(
+    "~/mnt/bandicoot"
+)
+if (!dir.exists(bandicoot_path)) {
+    profile_base_dir <- file.path(
+        root_dir
+    )
+} else {
+    profile_base_dir <- file.path(
+        bandicoot_path
+    )
+}
+
 # get the profiling stats and load into a dataframe
 profiling_path <- file.path(
-    root_dir,
+    profile_base_dir,
     "data/all_patient_profiles/all_patient_featurization_stats.parquet"
 )
 profiling_stats_df <- arrow::read_parquet(profiling_path)

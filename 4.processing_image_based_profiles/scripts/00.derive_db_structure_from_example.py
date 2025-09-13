@@ -7,64 +7,46 @@
 # In[1]:
 
 
-import argparse
 import pathlib
+import sys
 from functools import reduce
 
 import duckdb
 import pandas as pd
 
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-    # Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
+from notebook_init_utils import bandicoot_check, init_notebook
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root_dir)
 
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--well_fov",
-        type=str,
-        required=True,
-        help="Well and field of view to process, e.g. 'A01_1'",
-    )
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    args = argparser.parse_args()
-    well_fov = args.well_fov
-    patient = args.patient
+    args = parse_args()
+    well_fov = args["well_fov"]
+    patient = args["patient"]
 else:
     well_fov = "C4-2"
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 
 result_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/extracted_features/{well_fov}"
+    f"{profile_base_dir}/data/{patient}/extracted_features/{well_fov}"
 ).resolve(strict=True)
 # DB_structure save path
 DB_structure_path = pathlib.Path(
@@ -79,7 +61,7 @@ parquet_files.sort()
 print(len(parquet_files), "parquet files found")
 
 
-# In[ ]:
+# In[3]:
 
 
 # create the nested dictionary to hold the feature types and compartments
@@ -165,7 +147,7 @@ for compartment in feature_types_dict.keys():
                         continue
 
 
-# In[ ]:
+# In[5]:
 
 
 final_df_dict = {
@@ -173,7 +155,7 @@ final_df_dict = {
 }
 
 
-# In[ ]:
+# In[6]:
 
 
 # loop through the compartment, feature type, and the respective dataframes
@@ -215,7 +197,7 @@ compartment_merged_dict = {
 }
 
 
-# In[ ]:
+# In[9]:
 
 
 for compartment in final_df_dict.keys():
@@ -241,7 +223,7 @@ for compartment in final_df_dict.keys():
             )
 
 
-# In[ ]:
+# In[10]:
 
 
 with duckdb.connect(DB_structure_path) as cx:

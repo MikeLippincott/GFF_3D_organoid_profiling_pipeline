@@ -88,13 +88,13 @@ cat("Git root directory:", root_dir, "\n")
 sc_consensus_df <- arrow::read_parquet(file.path(root_dir,"data",patient_id,"image_based_profiles/5.aggregated_profiles/sc_consensus.parquet"))
 # drop the therapeutic category column
 sc_consensus_df <- sc_consensus_df %>%
-  select(-`Therapeutic Categories`)
+  select(-`Therapeutic_Categories`)
 
 
 organoid_consensus_df <- arrow::read_parquet(file.path(root_dir,"data",patient_id,"image_based_profiles/5.aggregated_profiles/organoid_consensus.parquet"))
 # drop the therapeutic category column
 organoid_consensus_df <- organoid_consensus_df %>%
-  select(-`Therapeutic Categories`)
+  select(-`Therapeutic_Categories`)
 
 
 sc_consensus_heatmap_file_path <- file.path(

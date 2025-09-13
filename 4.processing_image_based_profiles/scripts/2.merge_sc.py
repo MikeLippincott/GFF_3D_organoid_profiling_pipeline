@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
-import argparse
 import pathlib
 import sys
 
@@ -12,72 +11,53 @@ import pandas as pd
 from cytotable import convert, presets
 
 sys.path.append("../../../utils")
-import uuid
 
 import duckdb
 from parsl.config import Config
 from parsl.executors import HighThroughputExecutor
 
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
-# Get the current working directory
 cwd = pathlib.Path.cwd()
 
 if (cwd / ".git").is_dir():
     root_dir = cwd
-
 else:
     root_dir = None
     for parent in cwd.parents:
         if (parent / ".git").is_dir():
             root_dir = parent
             break
+sys.path.append(str(root_dir / "utils"))
+from arg_parsing_utils import parse_args
+from notebook_init_utils import bandicoot_check, init_notebook
 
-# Check if a Git root directory was found
-if root_dir is None:
-    raise FileNotFoundError("No Git root directory found.")
+root_dir, in_notebook = init_notebook()
+
+profile_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root_dir)
 
 
 # In[2]:
 
 
 if not in_notebook:
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument(
-        "--patient",
-        type=str,
-        required=True,
-        help="Patient ID to process, e.g. 'P01'",
-    )
-    argparser.add_argument(
-        "--well_fov",
-        type=str,
-        required=True,
-        help="Well and field of view to process, e.g. 'A01_1'",
-    )
-    args = argparser.parse_args()
-    patient = args.patient
-    well_fov = args.well_fov
+    args = parse_args()
+    well_fov = args["well_fov"]
+    patient = args["patient"]
 else:
-    patient = "SARCO361"
-    well_fov = "G7-5"
+    patient = "NF0014_T1"
+    well_fov = "G2-2"
 
 
-# In[ ]:
+# In[3]:
 
 
 input_sqlite_file = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/{well_fov}.duckdb"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/{well_fov}.duckdb"
 ).resolve(strict=True)
 destination_sc_parquet_file = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/sc_profiles_{well_fov}.parquet"
 ).resolve()
 destination_organoid_parquet_file = pathlib.Path(
-    f"{root_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
+    f"{profile_base_dir}/data/{patient}/image_based_profiles/0.converted_profiles/{well_fov}/organoid_profiles_{well_fov}.parquet"
 ).resolve()
 destination_sc_parquet_file.parent.mkdir(parents=True, exist_ok=True)
 dest_datatype = "parquet"
@@ -110,7 +90,7 @@ cells_table = cells_table[cells_table["object_id"].isin(intersection_set)]
 cytoplasm_table = cytoplasm_table[cytoplasm_table["object_id"].isin(intersection_set)]
 
 
-# In[ ]:
+# In[6]:
 
 
 # connect to DuckDB and register the tables
@@ -139,8 +119,14 @@ organoid_table.head()
 # In[8]:
 
 
+# drop columns that end with _x or _y lowercase
+merged_df = merged_df.loc[:, ~merged_df.columns.str.endswith(("_x", "_y"))]
+
+
+# In[9]:
+
+
 print(f"Final merged single cell dataframe shape: {merged_df.shape}")
 # save the sc data as parquet
 merged_df.to_parquet(destination_sc_parquet_file, index=False)
 merged_df.head()
-

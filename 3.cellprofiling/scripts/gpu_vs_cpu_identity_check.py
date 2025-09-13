@@ -46,7 +46,7 @@ if root_dir is None:
 sys.path.append(str(root_dir / "3.cellprofiling" / "featurization_utils"))
 from featurization_parsable_arguments import parse_featurization_args
 
-# In[12]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -57,7 +57,7 @@ if not in_notebook:
 
 else:
     well_fov = "C4-2"
-    patient = "NF0014"
+    patient = "NF0014_T1"
 
 
 output_parent_path = pathlib.Path(
