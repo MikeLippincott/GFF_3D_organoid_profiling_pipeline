@@ -7,9 +7,10 @@
 
 # ## import libraries
 
-# In[ ]:
+# In[1]:
 
 
+import os
 import pathlib
 import sys
 
@@ -36,11 +37,14 @@ else:
             break
 sys.path.append(str(root_dir / "utils"))
 from arg_parsing_utils import check_for_missing_args, parse_args
+from file_reading import read_zstack_image
 from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
 
-image_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root_dir)
+image_base_dir = bandicoot_check(
+    pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve(), root_dir
+)
 
 
 # ## parse args and set paths
@@ -48,7 +52,7 @@ image_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root
 # If if a notebook run the hardcoded paths.
 # However, if this is run as a script, the paths are set by the parsed arguments.
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -66,16 +70,18 @@ if not in_notebook:
 else:
     print("Running in a notebook")
     patient = "NF0014_T1"
-    well_fov = "E10-2"
+    well_fov = "C4-2"
     window_size = 3
     clip_limit = 0.05
 
 
 input_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}"
+    f"{image_base_dir}/data/{patient}/deconvolved_images/{well_fov}"
+    # f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}"
 ).resolve(strict=True)
 mask_path = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}"
+    # f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
 ).resolve()
 mask_path.mkdir(exist_ok=True, parents=True)
 
@@ -96,7 +102,7 @@ files = [str(x) for x in files if x.suffix in image_extensions]
 # get the nuclei image
 for f in files:
     if "405" in f:
-        nuclei = io.imread(f)
+        nuclei = read_zstack_image(f)  # uses tifffile on the backend
 nuclei = np.array(nuclei)
 imgs = skimage.exposure.equalize_adapthist(nuclei, clip_limit=clip_limit)
 original_imgs = imgs
@@ -127,13 +133,17 @@ print("2.5D image stack shape:", image_stack_2_5D.shape)
 
 # ## Cellpose
 
-# In[ ]:
+# In[6]:
 
 
 use_GPU = torch.cuda.is_available()
 # Load the model
 model_name = "nuclei"
-model = models.CellposeModel(gpu=use_GPU, model_type=model_name)
+
+model = models.CellposeModel(
+    gpu=use_GPU,
+    model_type=model_name,
+)
 
 output_dict = {
     "slice": [],
@@ -143,9 +153,7 @@ output_dict = {
 for slice in tqdm.tqdm(range(imgs.shape[0])):
     # Perform segmentation
     output_dict["slice"].append(slice)
-    labels, details, _ = model.eval(
-        imgs[slice, :, :], channels=[0, 0]
-    )  # no diamter needed for CP 4.0
+    labels, details, _ = model.eval(imgs[slice, :, :], channels=[0, 0], diameter=100)
     output_dict["labels"].append(labels)
     output_dict["details"].append(details)
 

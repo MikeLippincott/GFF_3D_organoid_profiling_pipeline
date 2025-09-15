@@ -21,9 +21,10 @@
 
 # ## Imports
 
-# In[ ]:
+# In[1]:
 
 
+import os
 import pathlib
 import sys
 
@@ -47,15 +48,18 @@ else:
             break
 sys.path.append(str(root_dir / "utils"))
 from arg_parsing_utils import check_for_missing_args, parse_args
+from file_reading import read_zstack_image
 from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
 
-image_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root_dir)
+image_base_dir = bandicoot_check(
+    pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve(), root_dir
+)
 
 from segmentation_decoupling import euclidian_2D_distance
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -71,15 +75,17 @@ if not in_notebook:
     )
 else:
     print("Running in a notebook")
-    well_fov = "C10-1"
+    well_fov = "C4-2"
     compartment = "nuclei"
     patient = "NF0014_T1"
 
 input_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/deconvolved_images/{well_fov}"
+    # f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}"
 ).resolve()
 mask_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}"
+    # f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
 ).resolve()
 if compartment == "nuclei":
     input_image_dir = pathlib.Path(mask_dir / "nuclei_masks_decoupled.tiff").resolve(
@@ -119,7 +125,7 @@ else:
 # In[3]:
 
 
-image = tifffile.imread(input_image_dir)
+image = read_zstack_image(input_image_dir)
 
 
 # In[4]:

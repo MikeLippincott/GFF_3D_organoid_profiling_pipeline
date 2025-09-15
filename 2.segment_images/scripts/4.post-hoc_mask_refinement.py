@@ -15,6 +15,7 @@
 # In[ ]:
 
 
+import os
 import pathlib
 import sys
 from typing import List, Tuple
@@ -36,11 +37,14 @@ else:
             break
 sys.path.append(str(root_dir / "utils"))
 from arg_parsing_utils import check_for_missing_args, parse_args
+from file_reading import read_zstack_image
 from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
 
-image_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root_dir)
+image_base_dir = bandicoot_check(
+    pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve(), root_dir
+)
 
 from segmentation_decoupling import euclidian_2D_distance
 
@@ -64,11 +68,12 @@ else:
     patient = "NF0014_T1"
 
 mask_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}"
+    # f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
 ).resolve()
 
 
-# In[3]:
+# In[ ]:
 
 
 if compartment == "nuclei":
@@ -84,7 +89,7 @@ elif compartment == "organoid":
 else:
     raise ValueError("Compartment must be either nuclei, cell or organoid")
 
-mask = tifffile.imread(mask_path)
+mask = read_zstack_image(mask_path)
 
 
 # ### Functions for refinement

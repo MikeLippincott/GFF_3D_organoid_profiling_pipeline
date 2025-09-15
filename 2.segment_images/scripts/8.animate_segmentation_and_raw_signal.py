@@ -6,6 +6,7 @@
 # In[ ]:
 
 
+import os
 import pathlib
 import sys
 
@@ -33,11 +34,14 @@ else:
             break
 sys.path.append(str(root_dir / "utils"))
 from arg_parsing_utils import check_for_missing_args, parse_args
+from file_reading import read_zstack_image
 from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
 
-image_base_dir = bandicoot_check(pathlib.Path("~/mnt/bandicoot").resolve(), root_dir)
+image_base_dir = bandicoot_check(
+    pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve(), root_dir
+)
 
 
 # In[ ]:
@@ -58,16 +62,20 @@ else:
     patient = "NF0014_T1"
 
 image_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/deconvolved_images/{well_fov}/"
+    # f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}/"
 ).resolve(strict=True)
 label_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/profiling_input_images/{well_fov}"
+    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}/"
+    # f"{image_base_dir}/data/{patient}/profiling_input_images/{well_fov}"
 ).resolve(strict=True)
 mp4_file_dir = pathlib.Path(
-    f"{image_base_dir}/2.segment_images/animations/mp4/{well_fov}/"
+    f"{image_base_dir}/2.segment_images/deconvolved_animations/mp4/{well_fov}/"
+    # f"{image_base_dir}/2.segment_images/animations/mp4/{well_fov}/"
 ).resolve()
 gif_file_dir = pathlib.Path(
-    f"{image_base_dir}/2.segment_images/animations/gif/{well_fov}/"
+    f"{image_base_dir}/2.segment_images/deconvolved_animations/gif/{well_fov}/"
+    # f"{image_base_dir}/2.segment_images/animations/gif/{well_fov}/"
 ).resolve()
 
 mp4_file_dir.mkdir(parents=True, exist_ok=True)
