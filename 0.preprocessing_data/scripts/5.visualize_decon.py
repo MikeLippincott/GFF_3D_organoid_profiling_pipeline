@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# Thi document runs visualizations outputting `.mp4` and `.gif` files of 3D organoid data.
+# This notebok runs nviz to create the visualizations and napari.
+
 # ## Imports
 
 # In[1]:
@@ -136,7 +139,7 @@ channel_map = {
 scaling_values = [1, 0.1, 0.1]
 
 
-# In[5]:
+# In[ ]:
 
 
 # write a temp dir containing all images
@@ -154,7 +157,7 @@ for image in image_dir.glob("*.tif"):
     shutil.copyfile(image, temp_image_path)
 
 
-# In[6]:
+# In[ ]:
 
 
 label_dir = image_dir
@@ -211,7 +214,6 @@ ome_metadata = {
     "Channel": [{"Name": name} for name in combined_channel_names],
 }
 ome_xml = generate_ome_xml(ome_metadata)
-import tifffile as tiff
 
 # Write the combined data to a single OME-TIFF
 with tiff.TiffWriter(output_path, bigtiff=True) as tif:
