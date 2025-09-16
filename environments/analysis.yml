@@ -24,4 +24,5 @@ dependencies:
   - conda-forge::tabulate
   - pip:
     - copairs
+    - synapseclient
 
