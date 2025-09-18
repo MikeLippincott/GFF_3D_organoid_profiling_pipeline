@@ -32,3 +32,8 @@ Both the organoid and single cell profiles are further divided into different ty
 The profile processing order will probably change in the future to have a more robust feature selection and normalization strategy.
 The reason for feature selection being performed on all patients is so that the same features are selected across all patients, allowing for easier comparison.
 Of course depending on the down stream task this might not actually matter.
+
+## File metadata in the name
+`profile_type/{Patient}_{Tumor_number}_{Treatment}_{Concentration}_{Concentration_unit}.parquet`
+Where any replicates for the same patient, tumor number, treatment, and concentration are all stored in one file.
+
