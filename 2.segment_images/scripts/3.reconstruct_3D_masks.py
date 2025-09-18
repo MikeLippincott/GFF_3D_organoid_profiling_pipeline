@@ -59,33 +59,36 @@ image_base_dir = bandicoot_check(
 
 from segmentation_decoupling import euclidian_2D_distance
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
     args = parse_args()
-
     well_fov = args["well_fov"]
     patient = args["patient"]
     compartment = args["compartment"]
+    input_subparent_name = args["input_subparent_name"]
+    mask_subparent_name = args["mask_subparent_name"]
     check_for_missing_args(
         well_fov=well_fov,
         patient=patient,
         compartment=compartment,
+        input_subparent_name=input_subparent_name,
+        mask_subparent_name=mask_subparent_name,
     )
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
     compartment = "nuclei"
     patient = "NF0014_T1"
+    input_subparent_name = "deconvolved_images"
+    mask_subparent_name = "deconvolved_segmentation_masks"
 
 input_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_images/{well_fov}"
-    # f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}"
+    f"{image_base_dir}/data/{patient}/{input_subparent_name}/{well_fov}"
 ).resolve()
 mask_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}"
-    # f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}"
 ).resolve()
 if compartment == "nuclei":
     input_image_dir = pathlib.Path(mask_dir / "nuclei_masks_decoupled.tiff").resolve(

@@ -31,7 +31,4 @@ def read_zstack_image(file_path: str) -> np.ndarray:
     elif len(img.shape) < 3:
         raise ValueError(f"Image at {file_path} has less than 3 dimensions")
 
-    if img.dtype != np.uint16:
-        img = img.astype(np.uint16)
-
     return img
