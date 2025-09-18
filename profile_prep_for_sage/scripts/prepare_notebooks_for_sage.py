@@ -39,6 +39,26 @@ profile_base_dir = bandicoot_check(
 # In[2]:
 
 
+def recursive_remove_empty_dirs(path: pathlib.Path):
+    """
+    Recursively remove empty directories.
+
+    Parameters
+    ----------
+    path : pathlib.Path
+        The root directory to start removing empty directories from.
+    """
+    if not path.is_dir():
+        return
+    for child in path.iterdir():
+        recursive_remove_empty_dirs(child)
+    if not any(path.iterdir()):
+        path.rmdir()
+
+
+# In[3]:
+
+
 profiles_dir = pathlib.Path(f"{profile_base_dir}/data/all_patient_profiles").resolve()
 # get all patient profile dirs
 profile_dirs = [
@@ -48,7 +68,7 @@ profile_dirs = [
 ]
 
 
-# In[ ]:
+# In[4]:
 
 
 sage_profiles_dir = pathlib.Path(
@@ -68,7 +88,7 @@ if sage_profiles_dir.exists():
 sage_profiles_dir.mkdir(parents=True, exist_ok=True)
 
 
-# In[ ]:
+# In[5]:
 
 
 # get each of the profiles and split them by:
@@ -91,35 +111,94 @@ for profile_file_path in tqdm.tqdm(profile_dirs):
     )
 
 
-# In[5]:
+# In[6]:
+
+
+output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+
+
+# In[7]:
 
 
 # get a list of all output files and dirs
-output_files = list(sage_profiles_dir.glob("**/*"))
-output_dirs = [d for d in output_files if d.is_dir()]
+output_dirs = sorted(
+    [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()],
+    key=lambda x: len(x.parts),
+    reverse=True,
+)
+# get a list of all output files and dirs
+output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+
 # rename the most nested dirs first to avoid issues with parent dirs being renamed before child dirs
 _ = [
     d.rename(d.parent / d.name.replace("=", "_"))
     for d in sorted(output_dirs, key=lambda x: len(x.parts), reverse=True)
     if "=" in d.name
 ]
-output_files = list(sage_profiles_dir.glob("**/*"))
-output_dirs = [d for d in output_files if d.is_dir()]
+output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
 _ = [
-    d.rename(d.parent / d.name.replace("%", "percent_"))
+    d.rename(d.parent / d.name.replace("%", "percent"))
     for d in sorted(output_dirs, key=lambda x: len(x.parts), reverse=True)
     if "%" in d.name
 ]
-output_files = list(sage_profiles_dir.glob("**/*"))
-output_dirs = [d for d in output_files if d.is_dir()]
+output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
 _ = [
     shutil.rmtree(d)
     for d in output_dirs
     if "Metadata_treatment___HIVE_DEFAULT_PARTITION__" in d.name
 ]
+output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+
+# replace Metadata_patient_tumor_ with ""
+_ = [
+    d.rename(d.parent / d.name.replace("Metadata_patient_tumor_", ""))
+    for d in output_dirs
+    if "Metadata_patient_tumor_" in d.name
+]
+output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+
+# replace Metadata_treatment_ with ""
+_ = [
+    d.rename(d.parent / d.name.replace("Metadata_treatment_", ""))
+    for d in output_dirs
+    if "Metadata_treatment_" in d.name
+]
+output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+
+# replace Metadata_dose_plus_units_ with ""
+_ = [
+    d.rename(d.parent / d.name.replace("Metadata_dose_plus_units_", ""))
+    for d in output_dirs
+    if "Metadata_dose_plus_units_" in d.name
+]
 
 
-# In[6]:
+# In[8]:
+
+
+output_files = list(sage_profiles_dir.glob("**/*"))
+output_files = [f for f in output_files if f.is_file()]
+# loop through and rename files to contain the proper metadata
+for file in output_files:
+    parent_dir = str(file).split(".parquet/")[0]
+    new_file_name = (
+        str(file)
+        .split(".parquet/")[1]
+        .replace("/", "_")
+        .replace(f"{str(file.stem)}.", "")
+    )
+    new_file_path = pathlib.Path(parent_dir) / new_file_name
+    new_file_path.parent.mkdir(parents=True, exist_ok=True)
+    file.rename(new_file_path)
+
+
+# In[9]:
+
+
+recursive_remove_empty_dirs(sage_profiles_dir)
+
+
+# In[10]:
 
 
 README_path = pathlib.Path("../README.md").resolve()
@@ -131,7 +210,7 @@ shutil.copy(README_path, sage_readme_path)
 
 # Tutorial on how to use synapse client: https://python-docs.synapse.org/en/stable/tutorials/python/upload_data_in_bulk/
 
-# In[7]:
+# In[11]:
 
 
 # note, must run synapse config first in terminal to set up .synapseConfig file
@@ -139,7 +218,7 @@ shutil.copy(README_path, sage_readme_path)
 syn = synapseclient.login()
 
 
-# In[ ]:
+# In[12]:
 
 
 my_project_id = my_project_id = syn.findEntityId(
@@ -151,7 +230,7 @@ DIRECTORY_FOR_MY_PROJECT = os.path.join(
 PATH_TO_MANIFEST_FILE = os.path.join(".", "manifest-for-upload.tsv")
 
 
-# In[9]:
+# In[13]:
 
 
 # generate the manifest file to sync on
@@ -163,7 +242,7 @@ synapseutils.generate_sync_manifest(
 )
 
 
-# In[10]:
+# In[14]:
 
 
 # sync the files to synapse
