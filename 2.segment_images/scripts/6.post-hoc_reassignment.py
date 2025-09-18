@@ -46,18 +46,20 @@ if not in_notebook:
     args = parse_args()
     well_fov = args["well_fov"]
     patient = args["patient"]
+    mask_subparent_name = args["mask_subparent_name"]
     check_for_missing_args(
         well_fov=well_fov,
         patient=patient,
+        mask_subparent_name=mask_subparent_name,
     )
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
     patient = "NF0014_T1"
+    mask_subparent_name = "deconvolved_segmentation_masks"
 
 mask_dir = pathlib.Path(
-    # f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
-    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}"
 ).resolve()
 
 

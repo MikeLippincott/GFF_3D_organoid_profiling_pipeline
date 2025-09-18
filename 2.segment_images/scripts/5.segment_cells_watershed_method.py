@@ -39,7 +39,7 @@ image_base_dir = bandicoot_check(
 )
 
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -47,31 +47,34 @@ if not in_notebook:
     clip_limit = args["clip_limit"]
     well_fov = args["well_fov"]
     patient = args["patient"]
+    input_subparent_name = args["input_subparent_name"]
+    mask_subparent_name = args["mask_subparent_name"]
     check_for_missing_args(
         well_fov=well_fov,
         patient=patient,
         clip_limit=clip_limit,
+        input_subparent_name=input_subparent_name,
+        mask_subparent_name=mask_subparent_name,
     )
 else:
     well_fov = "C4-2"
     patient = "NF0014_T1"
     clip_limit = 0.03
+    input_subparent_name = "deconvolved_images"
+    mask_subparent_name = "deconvolved_segmentation_masks"
 
 input_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_images/{well_fov}"
-    # f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}"
+    f"{image_base_dir}/data/{patient}/{input_subparent_name}/{well_fov}"
 ).resolve(strict=True)
 
 mask_path = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}"
-    # f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}"
 ).resolve()
 mask_output = mask_path / "cell_masks_watershed.tiff"
 mask_path.mkdir(exist_ok=True, parents=True)
 nuclei_mask = read_zstack_image(
     pathlib.Path(
-        f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}/nuclei_masks_reconstructed_corrected.tiff"
-        # f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}/nuclei_masks_reconstructed_corrected.tiff"
+        f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/nuclei_masks_reconstructed_corrected.tiff"
     )
 )
 

@@ -51,31 +51,36 @@ if not in_notebook:
     args = parse_args()
     well_fov = args["well_fov"]
     patient = args["patient"]
+    input_subparent_name = args["input_subparent_name"]
+    mask_subparent_name = args["mask_subparent_name"]
+    amimation_subparent_name = args["amimation_subparent_name"]
     check_for_missing_args(
         well_fov=well_fov,
         patient=patient,
+        input_subparent_name=input_subparent_name,
+        mask_subparent_name=mask_subparent_name,
+        amimation_subparent_name=amimation_subparent_name,
     )
 
 else:
     print("Running in a notebook")
     well_fov = "C4-2"
     patient = "NF0014_T1"
+    input_subparent_name = "deconvolved_images"
+    mask_subparent_name = "deconvolved_segmentation_masks"
+    amimation_subparent_name = "deconvolved_animations"
 
 image_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_images/{well_fov}/"
-    # f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
 ).resolve(strict=True)
 label_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}/"
-    # f"{image_base_dir}/data/{patient}/profiling_input_images/{well_fov}"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
 ).resolve(strict=True)
 mp4_file_dir = pathlib.Path(
-    f"{image_base_dir}/2.segment_images/deconvolved_animations/mp4/{well_fov}/"
-    # f"{image_base_dir}/2.segment_images/animations/mp4/{well_fov}/"
+    f"{image_base_dir}/2.segment_images/{amimation_subparent_name}/mp4/{well_fov}/"
 ).resolve()
 gif_file_dir = pathlib.Path(
-    f"{image_base_dir}/2.segment_images/deconvolved_animations/gif/{well_fov}/"
-    # f"{image_base_dir}/2.segment_images/animations/gif/{well_fov}/"
+    f"{image_base_dir}/2.segment_images/{amimation_subparent_name}/gif/{well_fov}/"
 ).resolve()
 
 mp4_file_dir.mkdir(parents=True, exist_ok=True)

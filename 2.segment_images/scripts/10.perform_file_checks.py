@@ -41,11 +41,17 @@ from file_checking import check_number_of_files
 if not in_notebook:
     args = parse_args()
     patient = args["patient"]
+    input_subparent_name = args["input_subparent_name"]
+    mask_subparent_name = args["mask_subparent_name"]
     check_for_missing_args(
         patient=patient,
+        input_subparent_name=input_subparent_name,
+        mask_subparent_name=mask_subparent_name,
     )
 else:
     patient = "NF0014_T1"
+    input_subparent_name = "deconvolved_images"
+    mask_subparent_name = "deconvolved_segmentation_masks"
 
 
 # In[ ]:
@@ -53,12 +59,10 @@ else:
 
 # set path to the processed data dir
 segmentation_data_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/"
-    # f"{image_base_dir}/data/{patient}/segmentation_masks/"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/"
 ).resolve(strict=True)
 zstack_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_images/"
-    # f"{image_base_dir}/data/{patient}/zstack_images/"
+    f"{image_base_dir}/data/{patient}/{input_subparent_name}/"
 ).resolve(strict=True)
 
 

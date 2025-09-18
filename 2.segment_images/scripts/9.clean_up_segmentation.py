@@ -36,33 +36,37 @@ image_base_dir = bandicoot_check(
 sys.path.append(str(pathlib.Path(f"{root_dir}/utils").resolve()))
 from file_checking import check_number_of_files
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
     args = parse_args()
     well_fov = args["well_fov"]
     patient = args["patient"]
+    input_subparent_name = args["input_subparent_name"]
+    mask_subparent_name = args["mask_subparent_name"]
     check_for_missing_args(
         well_fov=well_fov,
         patient=patient,
+        input_subparent_name=input_subparent_name,
+        mask_subparent_name=mask_subparent_name,
     )
 else:
     patient = "NF0014_T1"
     well_fov = "C4-2"
+    input_subparent_name = "deconvolved_images"
+    mask_subparent_name = "deconvolved_segmentation_masks"
 
 
-# In[3]:
+# In[ ]:
 
 
 # set path to the processed data dir
 segmentation_data_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_segmentation_masks/{well_fov}"
-    # f"{image_base_dir}/data/{patient}/segmentation_masks/{well_fov}"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}"
 ).resolve(strict=True)
 zstack_dir = pathlib.Path(
-    f"{image_base_dir}/data/{patient}/deconvolved_images/{well_fov}"
-    # f"{image_base_dir}/data/{patient}/zstack_images/{well_fov}"
+    f"{image_base_dir}/data/{patient}/{input_subparent_name}/{well_fov}"
 ).resolve(strict=True)
 
 
