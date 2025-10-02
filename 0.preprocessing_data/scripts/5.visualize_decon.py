@@ -113,15 +113,15 @@ decon_dir = pathlib.Path(
     f"{image_base_dir}/data/{patient}/deconvolved_images/{well_fov}/"
 ).resolve(strict=True)
 
-mp4_file_dir = pathlib.Path(
-    f"{root_dir}/0.preprocessing_data/animations/mp4/{well_fov}/"
+mp4_raw_file_dir = pathlib.Path(
+    f"{root_dir}/0.preprocessing_data/animations/raw/mp4/{well_fov}/"
 ).resolve()
-gif_file_dir = pathlib.Path(
-    f"{root_dir}/0.preprocessing_data/animations/gif/{well_fov}/"
+gif_raw_file_dir = pathlib.Path(
+    f"{root_dir}/0.preprocessing_data/animations/raw/gif/{well_fov}/"
 ).resolve()
 
-mp4_file_dir.mkdir(parents=True, exist_ok=True)
-gif_file_dir.mkdir(parents=True, exist_ok=True)
+mp4_raw_file_dir.mkdir(parents=True, exist_ok=True)
+gif_raw_file_dir.mkdir(parents=True, exist_ok=True)
 
 
 # In[4]:
@@ -216,17 +216,17 @@ ome_metadata = {
 ome_xml = generate_ome_xml(ome_metadata)
 
 # Write the combined data to a single OME-TIFF
-with tiff.TiffWriter(output_path, bigtiff=True) as tif:
+with tifffile.TiffWriter(output_path, bigtiff=True) as tif:
     tif.write(combined_data, description=ome_xml, photometric="minisblack")
 
 
-# In[7]:
+# In[ ]:
 
 
 shutil.rmtree(temporary_dir)
 
 
-# In[8]:
+# In[ ]:
 
 
 viewer = view_ometiff_with_napari(
@@ -236,7 +236,7 @@ viewer = view_ometiff_with_napari(
 )
 
 
-# In[9]:
+# In[ ]:
 
 
 # make the viewer full screen
@@ -297,14 +297,14 @@ for mp4_file in mp4_file_path:
     mp4_to_gif(mp4_file, gif_file)
 
 
-# In[10]:
+# In[ ]:
 
 
 # screenshot the napari viewer
 nbscreenshot(viewer)
 
 
-# In[11]:
+# In[ ]:
 
 
 # close the viewer

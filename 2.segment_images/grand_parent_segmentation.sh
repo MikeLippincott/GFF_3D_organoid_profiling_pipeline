@@ -7,7 +7,7 @@
 #SBATCH --time=1:00:00
 #SBATCH --output=segmentation_grandparent-%j.out
 
-# activate  cellprofiler environment
+# activate cellprofiler environment
 module load anaconda
 conda init bash
 conda activate GFF_segmentation

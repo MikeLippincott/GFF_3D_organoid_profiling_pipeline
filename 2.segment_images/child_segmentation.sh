@@ -69,13 +69,15 @@ for compartment in "${compartments[@]}"; do
         --patient "$patient" \
         --well_fov "$well_fov" \
         --compartment "$compartment" \
-        --input_subparent_name "$input_subparent_name"
+        --mask_subparent_name "$mask_subparent_name"
 done
 
 python "$git_root"/2.segment_images/scripts/5.segment_cells_watershed_method.py \
     --patient "$patient" \
     --well_fov "$well_fov" \
-    --clip_limit 0.05
+    --clip_limit 0.05 \
+    --input_subparent_name "$input_subparent_name" \
+    --mask_subparent_name "$mask_subparent_name"
 
 python "$git_root"/2.segment_images/scripts/4.post-hoc_mask_refinement.py \
     --patient "$patient" \

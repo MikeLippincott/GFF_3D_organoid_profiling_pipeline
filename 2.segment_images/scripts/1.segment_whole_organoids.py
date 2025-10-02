@@ -145,7 +145,7 @@ def test_segment_with_diameter():
 test_segment_with_diameter()
 
 
-# In[ ]:
+# In[3]:
 
 
 if not in_notebook:
