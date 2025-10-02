@@ -7,7 +7,7 @@
 
 # ## import libraries
 
-# In[1]:
+# In[ ]:
 
 
 import os
@@ -36,6 +36,7 @@ else:
             root_dir = parent
             break
 sys.path.append(str(root_dir / "utils"))
+
 from arg_parsing_utils import check_for_missing_args, parse_args
 from file_reading import read_zstack_image
 from notebook_init_utils import bandicoot_check, init_notebook
@@ -52,7 +53,7 @@ image_base_dir = bandicoot_check(
 # If if a notebook run the hardcoded paths.
 # However, if this is run as a script, the paths are set by the parsed arguments.
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -120,7 +121,6 @@ print("number of z slices in the original image:", original_z_slice_count)
 
 
 # make a 2.5 D max projection image stack with a sliding window of 3 slices
-
 image_stack_2_5D = np.empty((0, imgs.shape[1], imgs.shape[2]), dtype=imgs.dtype)
 for image_index in range(imgs.shape[0]):
     image_stack_window = imgs[image_index : image_index + window_size]

@@ -36,7 +36,7 @@ image_base_dir = bandicoot_check(
 sys.path.append(str(pathlib.Path(f"{root_dir}/utils").resolve()))
 from file_checking import check_number_of_files
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -54,11 +54,11 @@ if not in_notebook:
 else:
     patient = "NF0014_T1"
     well_fov = "C4-2"
-    input_subparent_name = "deconvolved_images"
-    mask_subparent_name = "deconvolved_segmentation_masks"
+    input_subparent_name = "convolution_25"
+    mask_subparent_name = "convolution_25_segmentation_masks"
 
 
-# In[ ]:
+# In[3]:
 
 
 # set path to the processed data dir

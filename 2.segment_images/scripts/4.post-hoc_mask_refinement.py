@@ -12,7 +12,7 @@
 # While others might be correct or incorrect but there is not logical way to determine if they are correct or not.
 # These cases are not corrected.
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -48,7 +48,7 @@ image_base_dir = bandicoot_check(
 
 from segmentation_decoupling import euclidian_2D_distance
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -65,8 +65,8 @@ if not in_notebook:
     )
 else:
     print("Running in a notebook")
-    well_fov = "G9-2"
-    compartment = "organoid"
+    well_fov = "C4-2"
+    compartment = "nuclei"
     patient = "NF0014_T1"
     mask_subparent_name = "deconvolved_segmentation_masks"
 
@@ -75,7 +75,7 @@ mask_dir = pathlib.Path(
 ).resolve()
 
 
-# In[ ]:
+# In[3]:
 
 
 if compartment == "nuclei":
@@ -96,7 +96,7 @@ mask = read_zstack_image(mask_path)
 
 # ### Functions for refinement
 
-# In[ ]:
+# In[4]:
 
 
 def calculate_bbox_area(bbox: Tuple[int, int, int, int]) -> int:
@@ -505,7 +505,7 @@ for z in z_slices[: -(sliding_window_context - 1)]:
     print("writing the mask for z slice", z)
 
 
-# In[ ]:
+# In[8]:
 
 
 # reorder the organoid labels

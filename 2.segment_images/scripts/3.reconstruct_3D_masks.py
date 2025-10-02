@@ -59,7 +59,7 @@ image_base_dir = bandicoot_check(
 
 from segmentation_decoupling import euclidian_2D_distance
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
