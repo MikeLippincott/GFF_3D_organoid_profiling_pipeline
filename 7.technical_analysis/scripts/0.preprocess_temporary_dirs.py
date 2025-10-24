@@ -86,7 +86,7 @@ def extract_IOU(mask1: np.ndarray, mask2: np.ndarray) -> float:
     """
     intersection = np.logical_and(mask1, mask2)
     union = np.logical_or(mask1, mask2)
-    iou_score = np.sum(intersection) / np.sum(union)
+    iou_score = np.sum(intersection) / (np.sum(union) + 1e-12)
     return iou_score.item()
 
 
