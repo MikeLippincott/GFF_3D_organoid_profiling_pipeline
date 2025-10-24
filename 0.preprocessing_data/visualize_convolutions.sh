@@ -7,6 +7,9 @@ conda activate viz_env
 
 cd scripts || exit
 
+# run each instance of the visualization in nViz
+# one instance per script
+# per convolution
 for i in {1..25}; do
     python 7.visualize_image_convolutions_2d.py \
         --patient "$patient" \

@@ -148,7 +148,7 @@ channel_map = {
 scaling_values = [1, 0.1, 0.1]
 
 
-# In[5]:
+# In[ ]:
 
 
 # write a temp dir containing all images
@@ -161,11 +161,6 @@ for image in image_dir.glob("*"):
     image_name = image.stem
     temp_image_path = temporary_dir / f"{image_name}.tif"
     shutil.copyfile(image, temp_image_path)
-# for mask in masks_dir.glob("*"):
-#     print(mask)
-#     mask_name = mask.stem
-#     temp_mask_path = temporary_dir / f"{mask_name}_mask.tif"
-#     shutil.copyfile(mask, temp_mask_path)
 
 
 # In[6]:

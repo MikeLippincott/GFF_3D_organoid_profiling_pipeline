@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import os
@@ -84,14 +84,15 @@ list_of_decon_images.sort()
 list_of_raw_images.sort()
 
 
-# In[4]:
+# In[ ]:
 
 
 convolutions = 25
 convolution_step = 1
+save_step = 5
 
 
-# In[6]:
+# In[ ]:
 
 
 img_dict = {
@@ -116,7 +117,7 @@ for img_path in tqdm(list_of_decon_images, desc="Processing image set"):
                     pathlib.Path(convolution_output_path / f"{img_path.name}"),
                     img,
                 )
-            if convolution % 5 == 0:
+            if convolution % save_step == 0:
                 img_dict[f"convolved_{convolution}"].append(
                     convolution_output_path / f"{img_path.name}"
                 )
