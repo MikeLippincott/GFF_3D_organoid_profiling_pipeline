@@ -5,6 +5,7 @@ This README explains what the files in this directory are and provides a little 
 This directory contains the results of the image-based profiling of patient-derived organoids.
 The data were extracted using a custom computer vision pipeline designed to analyze images of organoids.
 The profiling includes various features extracted from the images, which are stored in different formats for further analysis.
+
 ### Image based profiles
 An image-based profile is a set of features extracted from objects (e.g., single nuclei, cells, cytoplasm, organoids) in images; where an image is a single channel representing a stained structure (e.g., nuclei, mitochondria, golgi, etc.).
 These features can include measurements such as AreaSizeShape, Colocalization, Granularity, Intensity, Texture, and others.
