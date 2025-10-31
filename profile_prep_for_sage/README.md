@@ -1,5 +1,5 @@
 # NF1 patient derived organoid image-based profiling data
-This README explains what the files in this directory are and provides a little background on how the data were extracted.
+This README explains what the files in this directory are and provides background on how the data were extracted.
 
 ## Background
 This directory contains the results of the image-based profiling of patient-derived organoids.
