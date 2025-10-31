@@ -114,7 +114,7 @@ for profile_file_path in tqdm.tqdm(profile_dirs):
 # In[6]:
 
 
-output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+output_dirs = [d for d in sage_profiles_dir.glob("**/*") if d.is_dir()]
 
 
 # In[7]:
