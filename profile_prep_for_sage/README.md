@@ -9,6 +9,7 @@ The profiling includes various features extracted from the images, which are sto
 ### Image based profiles
 An image-based profile is a set of features extracted from objects (e.g., single nuclei, cells, cytoplasm, organoids) in images; where an image is a single channel representing a stained structure (e.g., nuclei, mitochondria, golgi, etc.).
 These features can include measurements such as AreaSizeShape, Colocalization, Granularity, Intensity, Texture, and others.
+
 ## The data structure
 The data are organized into several files, each containing different types of profiles.
 The profiles are set up with features as the columns and the objects (e.g., organoids, single cells) as the rows.
