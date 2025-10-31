@@ -176,8 +176,7 @@ _ = [
 # In[8]:
 
 
-output_files = list(sage_profiles_dir.glob("**/*"))
-output_files = [f for f in output_files if f.is_file()]
+output_files = [f for f in sage_profiles_dir.glob("**/*") if f.is_file()]
 # loop through and rename files to contain the proper metadata
 for file in output_files:
     parent_dir = str(file).split(".parquet/")[0]
