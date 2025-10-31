@@ -63,8 +63,8 @@ profiles_dir = pathlib.Path(f"{profile_base_dir}/data/all_patient_profiles").res
 # get all patient profile dirs
 profile_dirs = [
     d
-    for d in profiles_dir.iterdir()
-    if ".parquet" in str(d) and "featurization" not in str(d)
+    for d in profiles_dir.rglob("*.parquet")
+    if "featurization" not in str(d)
 ]
 
 
