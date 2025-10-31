@@ -56,15 +56,13 @@ def recursive_remove_empty_dirs(path: pathlib.Path):
         path.rmdir()
 
 
-# In[3]:
+# In[ ]:
 
 
 profiles_dir = pathlib.Path(f"{profile_base_dir}/data/all_patient_profiles").resolve()
 # get all patient profile dirs
 profile_dirs = [
-    d
-    for d in profiles_dir.rglob("*.parquet")
-    if "featurization" not in str(d)
+    d for d in profiles_dir.rglob("*.parquet") if "featurization" not in str(d)
 ]
 
 
@@ -111,15 +109,10 @@ for profile_file_path in tqdm.tqdm(profile_dirs):
     )
 
 
-# In[6]:
+# In[ ]:
 
 
 output_dirs = [d for d in sage_profiles_dir.glob("**/*") if d.is_dir()]
-
-
-# In[7]:
-
-
 # get a list of all output files and dirs
 output_dirs = sorted(
     [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()],
@@ -127,43 +120,40 @@ output_dirs = sorted(
     reverse=True,
 )
 # get a list of all output files and dirs
-output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
-
+output_dirs = [d for d in sage_profiles_dir.glob("**/*") if d.is_dir()]
 # rename the most nested dirs first to avoid issues with parent dirs being renamed before child dirs
 _ = [
     d.rename(d.parent / d.name.replace("=", "_"))
     for d in sorted(output_dirs, key=lambda x: len(x.parts), reverse=True)
     if "=" in d.name
 ]
-output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+output_dirs = [d for d in sage_profiles_dir.glob("**/*") if d.is_dir()]
 _ = [
     d.rename(d.parent / d.name.replace("%", "percent"))
     for d in sorted(output_dirs, key=lambda x: len(x.parts), reverse=True)
     if "%" in d.name
 ]
-output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+output_dirs = [d for d in sage_profiles_dir.glob("**/*") if d.is_dir()]
 _ = [
     shutil.rmtree(d)
     for d in output_dirs
     if "Metadata_treatment___HIVE_DEFAULT_PARTITION__" in d.name
 ]
-output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
-
+output_dirs = [d for d in sage_profiles_dir.glob("**/*") if d.is_dir()]
 # replace Metadata_patient_tumor_ with ""
 _ = [
     d.rename(d.parent / d.name.replace("Metadata_patient_tumor_", ""))
     for d in output_dirs
     if "Metadata_patient_tumor_" in d.name
 ]
-output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
-
+output_dirs = [d for d in sage_profiles_dir.glob("**/*") if d.is_dir()]
 # replace Metadata_treatment_ with ""
 _ = [
     d.rename(d.parent / d.name.replace("Metadata_treatment_", ""))
     for d in output_dirs
     if "Metadata_treatment_" in d.name
 ]
-output_dirs = [d for d in list(sage_profiles_dir.glob("**/*")) if d.is_dir()]
+output_dirs = [d for d in sage_profiles_dir.glob("**/*") if d.is_dir()]
 
 # replace Metadata_dose_plus_units_ with ""
 _ = [
@@ -173,7 +163,7 @@ _ = [
 ]
 
 
-# In[8]:
+# In[ ]:
 
 
 output_files = [f for f in sage_profiles_dir.glob("**/*") if f.is_file()]
@@ -191,9 +181,10 @@ for file in output_files:
     file.rename(new_file_path)
 
 
-# In[9]:
+# In[ ]:
 
 
+# remove the empty dirs from where files used to persist
 recursive_remove_empty_dirs(sage_profiles_dir)
 
 
