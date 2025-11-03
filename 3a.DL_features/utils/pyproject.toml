@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "microscope_pointcloud"
+version = "0.1.0"
+authors = [{name = "Your Name"}]
+description = "A package for converting microscope volumes to point clouds"
+
+[project.scripts]
+pointbert_featurizer = "pointbert_featurizer:main"
+
+[tool.setuptools]
+py-modules = [
+"pointbert_featurizer",
+]
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pointbert_featurizer*"]

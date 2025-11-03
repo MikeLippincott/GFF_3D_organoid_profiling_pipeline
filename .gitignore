@@ -190,3 +190,7 @@ nextflow_pipeline/.nextflow.log*
 6.dynamic_viz_Rshiny/.Renviron
 *Rplots.pdf
 profile_prep_for_sage/data_for_sage/*
+3a.DL_features/models
+3a.DL_features/containers/cudnn-local-repo-ubuntu1804-8.5.0.96_1.0-1_amd64.deb
+3a.DL_features/utils/Point-BERT/*
+3a.DL_features/utils/Pointnet2_PyTorch/*

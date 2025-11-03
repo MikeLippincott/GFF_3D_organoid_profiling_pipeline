@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "point-bert"
+version = "0.1.0"
+authors = [{name = "Your Name"}]
+description = """Point-BERT: Pre-training 3D Point Cloud Transformers with Masked Point Modeling"""
+readme = "README.md"
+license = {text = "MIT"}
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["extensions/*"]
+

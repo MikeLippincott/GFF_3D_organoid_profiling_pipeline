@@ -1,0 +1,44 @@
+name: pb_env
+
+channels:
+  - conda-forge
+  - defaults
+  - pytorch
+
+dependencies:
+  - conda-forge::python=3.7
+  - conda-forge::ipykernel
+  - conda-forge::jupyter
+  - conda-forge::nbconvert
+  - conda-forge::nb_conda_kernels
+  - conda-forge::pip
+  - conda-forge::numpy<2.0
+  - conda-forge::matplotlib
+  - conda-forge::pandas
+  - conda-forge::scikit-learn
+  - conda-forge::pyarrow
+  - conda-forge::scikit-image
+  - cudatoolkit=10.2
+  # - pytorch::pytorch=1.8.1
+  # # gcc compiler for some packages 9.4.0
+  # - conda-forge::gcc_linux-64=5.4.0
+  - pip:
+      - setuptools
+      - tqdm
+      - torch
+      - torchvision
+      # - segment_anything
+      # - argparse
+      # - easydict
+      # - h5py
+      # - open3d==0.9
+      # - opencv-python
+      # - pyyaml
+      # - tensorboardX
+      # - timm
+      # - transforms3d
+      # - termcolor
+      # - Ninja
+  #     - git+https://github.com/erikwijmans/Pointnet2_PyTorch.git#egg=pointnet2_ops&subdirectory=pointnet2_ops_lib
+  #     - git+https://github.com/unlimblue/KNN_CUDA/releases/download/0.2/KNN_CUDA-0.2-py3-none-any.whl
+      # - git+https://github.com/fishbotics/pointnet2_ops.git
