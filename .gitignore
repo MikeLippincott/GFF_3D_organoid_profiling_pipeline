@@ -192,3 +192,4 @@ nextflow_pipeline/.nextflow.log*
 *Rplots.pdf
 profile_prep_for_sage/data_for_sage/*
 3.cellprofiling/models
+nextflow_pipeline/workflows/work/*
