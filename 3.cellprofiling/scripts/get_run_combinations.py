@@ -1,28 +1,35 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import itertools
+import os
 import pathlib
 from itertools import product
 
 import numpy as np
 import pandas as pd
-
-try:
-    cfg = get_ipython().config
-    in_notebook = True
-except NameError:
-    in_notebook = False
-
 from loading_classes import ImageSetLoader
+from notebook_init_utils import bandicoot_check, init_notebook
+
+root_dir, in_notebook = init_notebook()
+
 
 # In[2]:
 
 
-patient_id_file = pathlib.Path(f"{root_dir}/data/patient_IDs.txt").resolve(strict=True)
+bandicoot_mount_path = pathlib.Path(os.path.expanduser("~/mnt/bandicoot"))
+bandicoot_mount_path = bandicoot_check(bandicoot_mount_path, root_dir)
+
+
+# In[3]:
+
+
+patient_id_file = pathlib.Path(f"{bandicoot_mount_path}/data/patient_IDs.txt").resolve(
+    strict=True
+)
 patients = pd.read_csv(
     patient_id_file, header=None, names=["patient_id"]
 ).patient_id.tolist()
@@ -33,7 +40,7 @@ input_combinations_path = pathlib.Path(
 input_combinations_path.parent.mkdir(parents=True, exist_ok=True)
 
 
-# In[3]:
+# In[4]:
 
 
 features = [
@@ -46,7 +53,7 @@ features = [
 ]
 
 
-# In[4]:
+# In[5]:
 
 
 channel_mapping = {
@@ -62,11 +69,13 @@ channel_mapping = {
 }
 
 
-# In[5]:
+# In[6]:
 
 
 # example image set path to get the image set loader working
-image_set_path = pathlib.Path(f"{root_dir}/data/NF0014_T1/profiling_input_images/C2-1/")
+image_set_path = pathlib.Path(
+    f"{bandicoot_mount_path}/data/NF0014_T1/profiling_input_images/C2-1/"
+)
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
     anisotropy_spacing=(1, 0.1, 0.1),
@@ -74,7 +83,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[6]:
+# In[7]:
 
 
 output_dict = {
@@ -84,6 +93,8 @@ output_dict = {
     "compartment": [],
     "channel": [],
     "processor_type": [],
+    "subdir_input": [],
+    "subdir_output": [],
 }
 processor_types = [
     "CPU",
@@ -91,25 +102,23 @@ processor_types = [
 ]
 
 
-# In[7]:
+# In[8]:
 
 
 # get all channel combinations
 channel_combinations = list(itertools.combinations(image_set_loader.image_names, 2))
 
 
-# In[8]:
+# In[9]:
 
 
 for patient in patients:
     # get the well_fov for each patient
     patient_well_fovs = pathlib.Path(
-        f"{root_dir}/data/{patient}/profiling_input_images/"
+        f"{bandicoot_mount_path}/data/{patient}/zstack_images/"
     ).glob("*")
     for well_fov in patient_well_fovs:
         well_fov = well_fov.name
-        print(f"Processing patient: {patient}, well_fov: {well_fov}")
-
         for feature in features:
             if feature == "Neighbors":
                 output_dict["patient"].append(patient)
@@ -118,6 +127,8 @@ for patient in patients:
                 output_dict["compartment"].append("Nuclei")
                 output_dict["channel"].append("DNA")
                 output_dict["processor_type"].append("CPU")
+                output_dict["subdir_input"].append("zstack_images")
+                output_dict["subdir_output"].append("extracted_features")
             for compartment in image_set_loader.compartments:
                 if feature == "AreaSizeShape":
                     for processor_type in processor_types:
@@ -127,6 +138,8 @@ for patient in patients:
                         output_dict["compartment"].append(compartment)
                         output_dict["channel"].append("DNA")
                         output_dict["processor_type"].append(processor_type)
+                        output_dict["subdir_input"].append("zstack_images")
+                        output_dict["subdir_output"].append("extracted_features")
                 elif feature == "Colocalization":
                     for channel in channel_combinations:
                         for processor_type in processor_types:
@@ -136,6 +149,8 @@ for patient in patients:
                             output_dict["compartment"].append(compartment)
                             output_dict["channel"].append(channel[0] + "." + channel[1])
                             output_dict["processor_type"].append(processor_type)
+                            output_dict["subdir_input"].append("zstack_images")
+                            output_dict["subdir_output"].append("extracted_features")
                 for channel in image_set_loader.image_names:
                     if (
                         feature != "Neighbors"
@@ -149,6 +164,8 @@ for patient in patients:
                             output_dict["compartment"].append(compartment)
                             output_dict["channel"].append(channel)
                             output_dict["processor_type"].append("CPU")
+                            output_dict["subdir_input"].append("zstack_images")
+                            output_dict["subdir_output"].append("extracted_features")
                         elif feature == "Intensity":
                             for processor_type in processor_types:
                                 output_dict["patient"].append(patient)
@@ -157,6 +174,10 @@ for patient in patients:
                                 output_dict["compartment"].append(compartment)
                                 output_dict["channel"].append(channel)
                                 output_dict["processor_type"].append(processor_type)
+                                output_dict["subdir_input"].append("zstack_images")
+                                output_dict["subdir_output"].append(
+                                    "extracted_features"
+                                )
                         elif feature == "Texture":
                             output_dict["patient"].append(patient)
                             output_dict["well_fov"].append(well_fov)
@@ -164,11 +185,13 @@ for patient in patients:
                             output_dict["compartment"].append(compartment)
                             output_dict["channel"].append(channel)
                             output_dict["processor_type"].append("CPU")
+                            output_dict["subdir_input"].append("zstack_images")
+                            output_dict["subdir_output"].append("extracted_features")
                         else:
                             raise ValueError(f"Unknown feature: {feature}")
 
 
-# In[9]:
+# In[10]:
 
 
 df = pd.DataFrame(output_dict)
@@ -176,7 +199,7 @@ print(f"Total combinations: {df.shape[0]}")
 df.head()
 
 
-# In[10]:
+# In[11]:
 
 
 # number of combinations we should have
@@ -213,7 +236,7 @@ print(
 )
 
 
-# In[11]:
+# In[12]:
 
 
 # write to a txt file with each row as a combination

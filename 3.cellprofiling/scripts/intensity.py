@@ -30,7 +30,8 @@ if not in_notebook:
     channel = arguments_dict["channel"]
     compartment = arguments_dict["compartment"]
     processor_type = arguments_dict["processor_type"]
-
+    input_subparent_name = arguments_dict["input_subparent_name"]
+    output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
     well_fov = "G4-6"
@@ -38,12 +39,14 @@ else:
     channel = "AGP"
     compartment = "Nuclei"
     processor_type = "CPU"
+    input_subparent_name = "profiling_input_images"
+    output_features_subparent_name = "extracted_features"
 
 image_set_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/profiling_input_images/{well_fov}/"
+    f"{root_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
 )
 output_parent_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
+    f"{root_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
 )
 output_parent_path.mkdir(parents=True, exist_ok=True)
 

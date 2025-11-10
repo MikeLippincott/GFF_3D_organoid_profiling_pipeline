@@ -21,7 +21,7 @@ from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 from sammed3d_featurizer import call_SAMMed3D_pipeline
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -30,17 +30,23 @@ if not in_notebook:
     well_fov = arguments_dict["well_fov"]
     compartment = arguments_dict["compartment"]
     channel = arguments_dict["channel"]
+    input_subparent_name = arguments_dict["input_subparent_name"]
+    output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
     well_fov = "C4-2"
     patient = "NF0014_T1"
     compartment = "Organoid"
     channel = "DNA"
+    input_subparent_name = "zstack_images"
+    output_features_subparent_name = "extracted_features"
 
-image_set_path = pathlib.Path(f"{root_dir}/data/{patient}/zstack_images/{well_fov}/")
+image_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
+)
 
 output_parent_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/extracted_features/{well_fov}/"
+    f"{root_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
 )
 output_parent_path.mkdir(parents=True, exist_ok=True)
 

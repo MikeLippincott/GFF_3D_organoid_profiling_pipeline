@@ -4,6 +4,8 @@ well_fov=$2
 compartment=$3
 channel=$4
 processor_type=$5
+input_subparent_name=$6
+output_features_subparent_name=$7
 
 echo "Colocalization feature extraction for patient: $patient, WellFOV: $well_fov, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 module load miniforge
@@ -25,7 +27,9 @@ if [ "$processor_type" = "GPU" ]; then
         --well_fov "$well_fov" \
         --compartment "$compartment" \
         --channel "$channel" \
-        --processor_type "GPU"
+        --processor_type "GPU" \
+        --input_subparent_name "$input_subparent_name" \
+        --output_features_subparent_name "$output_features_subparent_name"
 else
     echo "Running CPU version"
     python "$git_root"/3.cellprofiling/scripts/colocalization.py \
@@ -33,7 +37,9 @@ else
         --well_fov "$well_fov" \
         --compartment "$compartment" \
         --channel "$channel" \
-        --processor_type "CPU"
+        --processor_type "CPU" \
+        --input_subparent_name "$input_subparent_name" \
+        --output_features_subparent_name "$output_features_subparent_name"
 fi
 
 end=$(date +%s)

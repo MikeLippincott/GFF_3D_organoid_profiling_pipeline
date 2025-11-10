@@ -6,6 +6,8 @@ compartment=$3
 channel=$4
 feature=$5
 processor_type=$6
+input_subparent_name=$7
+output_features_subparent_name=$8
 
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
@@ -30,7 +32,9 @@ if [ "$feature" == "Neighbors" ]; then
         "$patient" \
         "$well_fov" \
         "$compartment" \
-        "$channel"
+        "$channel" \
+        "$input_subparent_name" \
+        "$output_features_subparent_name"
 fi
 
 if [ "$feature" == "Granularity" ] ; then
@@ -48,7 +52,9 @@ if [ "$feature" == "Granularity" ] ; then
         "$well_fov" \
         "$compartment" \
         "$channel" \
-        "CPU"
+        "CPU" \
+        "$input_subparent_name" \
+        "$output_features_subparent_name"
 fi
 
 if [ "$feature" == "Texture" ] ; then
@@ -65,7 +71,9 @@ if [ "$feature" == "Texture" ] ; then
             "$patient" \
             "$well_fov" \
             "$compartment" \
-            "$channel"
+            "$channel" \
+            "$input_subparent_name" \
+            "$output_features_subparent_name"
 fi
 
 
@@ -86,7 +94,9 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             "$well_fov" \
             "$compartment" \
             "$channel" \
-            "$processor_type"
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$output_features_subparent_name"
     else
         echo "Running GPU version for AreaSizeShape"
         sbatch \
@@ -103,7 +113,9 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             "$well_fov" \
             "$compartment" \
             "$channel" \
-            "$processor_type"
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$output_features_subparent_name"
     fi
 fi
 if [ "$feature" == "Colocalization" ] ; then
@@ -122,7 +134,9 @@ if [ "$feature" == "Colocalization" ] ; then
             "$well_fov" \
             "$compartment" \
             "$channel" \
-            "$processor_type"
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$output_features_subparent_name"
     else
         echo "Running GPU version for Colocalization"
         sbatch \
@@ -139,7 +153,9 @@ if [ "$feature" == "Colocalization" ] ; then
             "$well_fov" \
             "$compartment" \
             "$channel" \
-            "$processor_type"
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$output_features_subparent_name"
     fi
 fi
 
@@ -159,7 +175,9 @@ if [ "$feature" == "Intensity" ] ; then
             "$well_fov" \
             "$compartment" \
             "$channel" \
-            "$processor_type"
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$output_features_subparent_name"
     else
         echo "Running GPU version for Intensity"
         sbatch \
@@ -176,7 +194,9 @@ if [ "$feature" == "Intensity" ] ; then
                 "$well_fov" \
                 "$compartment" \
                 "$channel" \
-                "$processor_type"
+                "$processor_type" \
+                "$input_subparent_name" \
+                "$output_features_subparent_name"
     fi
 fi
 
