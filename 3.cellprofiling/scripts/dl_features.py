@@ -21,7 +21,7 @@ from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 from sammed3d_featurizer import call_SAMMed3D_pipeline
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -36,7 +36,7 @@ if not in_notebook:
 else:
     well_fov = "C4-2"
     patient = "NF0014_T1"
-    compartment = "Organoid"
+    compartment = "Nuclei"
     channel = "DNA"
     input_subparent_name = "zstack_images"
     output_features_subparent_name = "extracted_features"
@@ -97,7 +97,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[7]:
+# In[ ]:
 
 
 # load the objects for the compartment and channel of interest
@@ -115,7 +115,7 @@ feature_dict = call_SAMMed3D_pipeline(
 )
 
 
-# In[8]:
+# In[ ]:
 
 
 final_df = pd.DataFrame(feature_dict)
@@ -128,7 +128,7 @@ final_df = final_df.drop(columns=["compartment", "channel"])
 final_df.head()
 
 
-# In[9]:
+# In[ ]:
 
 
 final_df = final_df.pivot(
@@ -139,7 +139,7 @@ final_df.columns.name = None
 final_df
 
 
-# In[10]:
+# In[ ]:
 
 
 # prepend compartment and channel to column names
@@ -148,7 +148,7 @@ for col in final_df.columns:
         final_df[col] = final_df[col].astype(np.float32)
 
 
-# In[11]:
+# In[ ]:
 
 
 # de-fragment
@@ -162,7 +162,7 @@ final_df.to_parquet(output_file, index=False)
 final_df.head()
 
 
-# In[12]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

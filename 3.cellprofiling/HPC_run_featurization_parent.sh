@@ -200,5 +200,16 @@ if [ "$feature" == "Intensity" ] ; then
     fi
 fi
 
+if [ "$feature" == "sammed3D" ] ; then
+    echo "Running sammed3D feature extraction"
+    bash "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$input_subparent_name" \
+            "$output_features_subparent_name"
+fi
+
 echo "Featurization done"
 

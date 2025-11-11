@@ -6,6 +6,8 @@ compartment=$3
 channel=$4
 feature=$5
 processor_type=$6
+input_subparent_name=$7
+output_features_subparent_name=$8
 
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
@@ -103,6 +105,17 @@ if [ "$feature" == "Intensity" ] ; then
                 "$channel" \
                 "$processor_type"
     fi
+fi
+
+if [ "$feature" == "sammed3D" ] ; then
+    echo "Running sammed3D feature extraction"
+    source "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$input_subparent_name" \
+            "$output_features_subparent_name"
 fi
 
 echo "Featurization done"

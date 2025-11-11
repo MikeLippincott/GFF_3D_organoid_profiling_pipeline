@@ -60,9 +60,9 @@ class SAMMed3DFeatureExtractor:
 
         # Load model
         model, self.encoder = self._load_model(model_path, use_medim)
-        del model # delete model, as we only need the encoder branch
-        self.encoder .to(device)
-        self.encoder .eval()
+        del model  # delete model, as we only need the encoder branch
+        self.encoder.to(device)
+        self.encoder.eval()
 
         # Get feature dimensions
         self.feature_dim = self._get_feature_dim()
@@ -78,14 +78,12 @@ class SAMMed3DFeatureExtractor:
                     # Use pretrained SAM-Med3D-turbo
                     model_path = "https://huggingface.co/blueyo0/SAM-Med3D/resolve/main/sam_med3d_turbo.pth"
 
-                print(f"✓ Loading SAM-Med3D via MedIM from {model_path}")
                 model = medim.create_model(
                     "SAM-Med3D", pretrained=True, checkpoint_path=model_path
                 )
 
                 # Extract encoder
                 encoder = model.image_encoder
-                print(f"✓ Successfully loaded pretrained SAM-Med3D-turbo")
 
                 return model, encoder
 
@@ -391,7 +389,11 @@ class MicroscopySAMMed3DPipeline:
         return features
 
     def extract_features_batch(
-        self, volumes: List[np.ndarray], preprocess: bool = True, batch_size: int = 4
+        self,
+        volumes: List[np.ndarray],
+        preprocess: bool = True,
+        batch_size: int = 4,
+        feature_type: str | None = None,
     ) -> np.ndarray:
         """Extract features from multiple volumes."""
         if preprocess:
