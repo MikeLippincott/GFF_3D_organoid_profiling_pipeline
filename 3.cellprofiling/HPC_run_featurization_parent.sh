@@ -7,7 +7,8 @@ channel=$4
 feature=$5
 processor_type=$6
 input_subparent_name=$7
-output_features_subparent_name=$8
+mask_subparent_name=$8
+output_features_subparent_name=$9
 
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
@@ -34,6 +35,7 @@ if [ "$feature" == "Neighbors" ]; then
         "$compartment" \
         "$channel" \
         "$input_subparent_name" \
+        "$mask_subparent_name" \
         "$output_features_subparent_name"
 fi
 
@@ -54,6 +56,7 @@ if [ "$feature" == "Granularity" ] ; then
         "$channel" \
         "CPU" \
         "$input_subparent_name" \
+        "$mask_subparent_name" \
         "$output_features_subparent_name"
 fi
 
@@ -73,6 +76,7 @@ if [ "$feature" == "Texture" ] ; then
             "$compartment" \
             "$channel" \
             "$input_subparent_name" \
+            "$mask_subparent_name" \
             "$output_features_subparent_name"
 fi
 
@@ -96,6 +100,7 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             "$channel" \
             "$processor_type" \
             "$input_subparent_name" \
+            "$mask_subparent_name" \
             "$output_features_subparent_name"
     else
         echo "Running GPU version for AreaSizeShape"
@@ -115,6 +120,7 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             "$channel" \
             "$processor_type" \
             "$input_subparent_name" \
+            "$mask_subparent_name" \
             "$output_features_subparent_name"
     fi
 fi
@@ -136,6 +142,7 @@ if [ "$feature" == "Colocalization" ] ; then
             "$channel" \
             "$processor_type" \
             "$input_subparent_name" \
+            "$mask_subparent_name" \
             "$output_features_subparent_name"
     else
         echo "Running GPU version for Colocalization"
@@ -155,6 +162,7 @@ if [ "$feature" == "Colocalization" ] ; then
             "$channel" \
             "$processor_type" \
             "$input_subparent_name" \
+            "$mask_subparent_name" \
             "$output_features_subparent_name"
     fi
 fi
@@ -177,6 +185,7 @@ if [ "$feature" == "Intensity" ] ; then
             "$channel" \
             "$processor_type" \
             "$input_subparent_name" \
+            "$mask_subparent_name" \
             "$output_features_subparent_name"
     else
         echo "Running GPU version for Intensity"
@@ -196,6 +205,7 @@ if [ "$feature" == "Intensity" ] ; then
                 "$channel" \
                 "$processor_type" \
                 "$input_subparent_name" \
+                "$mask_subparent_name" \
                 "$output_features_subparent_name"
     fi
 fi
@@ -208,6 +218,7 @@ if [ "$feature" == "sammed3D" ] ; then
             "$compartment" \
             "$channel" \
             "$input_subparent_name" \
+            "$mask_subparent_name" \
             "$output_features_subparent_name"
 fi
 

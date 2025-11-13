@@ -33,6 +33,7 @@ if not in_notebook:
     channel = arguments_dict["channel"]
     processor_type = arguments_dict["processor_type"]
     input_subparent_name = arguments_dict["input_subparent_name"]
+    mask_subparent_name = arguments_dict["mask_subparent_name"]
     output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
@@ -41,13 +42,16 @@ else:
     compartment = "Organoid"
     channel = "DNA"
     processor_type = "CPU"
-    input_subparent_name = arguments_dict["input_subparent_name"]
-    output_features_subparent_name = arguments_dict["output_features_subparent_name"]
+    input_subparent_name = "stack_images"
+    mask_subparent_name = "segmentation_masks"
+    output_features_subparent_name = "extracted_features"
 
 image_set_path = pathlib.Path(
     f"{root_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
 )
-
+mask_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
+)
 output_parent_path = pathlib.Path(
     f"{root_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
 )
@@ -78,11 +82,12 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[5]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
+    mask_set_path=mask_set_path,
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_n_compartment_mapping,
 )

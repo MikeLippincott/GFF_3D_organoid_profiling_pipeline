@@ -6,7 +6,8 @@ compartment=$3
 channel=$4
 processor_type=$5
 input_subparent_name=$6
-output_features_subparent_name=$7
+mask_subparent_name=$7
+output_features_subparent_name=$8
 
 echo "Intensity feature extraction for patient: $patient, WellFOV: $well_fov, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 module load miniforge
@@ -30,6 +31,7 @@ if [ "$processor_type" = "GPU" ]; then
         --channel "$channel" \
         --processor_type "GPU" \
         --input_subparent_name "$input_subparent_name" \
+        --mask_subparent_name "$mask_subparent_name" \
         --output_features_subparent_name "$output_features_subparent_name"
 else
     echo "Running CPU version"
@@ -40,6 +42,7 @@ else
         --channel "$channel" \
         --processor_type "CPU" \
         --input_subparent_name "$input_subparent_name" \
+        --mask_subparent_name "$mask_subparent_name" \
         --output_features_subparent_name "$output_features_subparent_name"
 fi
 

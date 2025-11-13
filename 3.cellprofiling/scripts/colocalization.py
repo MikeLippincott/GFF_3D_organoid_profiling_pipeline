@@ -43,6 +43,7 @@ if not in_notebook:
     compartment = arguments_dict["compartment"]
     processor_type = arguments_dict["processor_type"]
     input_subparent_name = arguments_dict["input_subparent_name"]
+    mask_subparent_name = arguments_dict["mask_subparent_name"]
     output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
@@ -51,13 +52,18 @@ else:
     channel = "Mito.BF"
     compartment = "Cell"
     processor_type = "CPU"
-    input_subparent_name = arguments_dict["input_subparent_name"]
-    output_features_subparent_name = arguments_dict["output_features_subparent_name"]
+    input_subparent_name = "stack_images"
+    mask_subparent_name = "segmentation_masks"
+    output_features_subparent_name = "extracted_features"
 
 channel1 = channel.split(".")[0] if "." in channel else channel
 channel2 = channel.split(".")[1] if "." in channel else None
 image_set_path = pathlib.Path(
     f"{root_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
+)
+
+mask_set_path = pathlib.Path(
+    f"{root_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
 )
 
 output_parent_path = pathlib.Path(
@@ -82,11 +88,12 @@ channel_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
+    mask_set_path=mask_set_path,
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_mapping,
 )

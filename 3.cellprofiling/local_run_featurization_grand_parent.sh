@@ -39,6 +39,9 @@ while IFS= read -r line; do
     compartment="${parts[3]}"
     channel="${parts[4]}"
     processor_type="${parts[5]}"
+    input_subparent_name="${parts[6]}"
+    mask_subparent_name="${parts[7]}"
+    output_features_subparent_name="${parts[8]}"
 
     echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 
@@ -49,7 +52,10 @@ while IFS= read -r line; do
         "$compartment" \
         "$channel" \
         "$feature" \
-        "$processor_type"
+        "$processor_type" \
+        "$input_subparent_name" \
+        "$mask_subparent_name" \
+        "$output_features_subparent_name"
 
 done < "$txt_file"
 

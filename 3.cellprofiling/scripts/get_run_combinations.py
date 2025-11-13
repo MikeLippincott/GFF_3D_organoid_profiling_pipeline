@@ -74,10 +74,14 @@ channel_mapping = {
 
 # example image set path to get the image set loader working
 image_set_path = pathlib.Path(
-    f"{bandicoot_mount_path}/data/NF0014_T1/profiling_input_images/C2-1/"
+    f"{bandicoot_mount_path}/data/NF0014_T1/zstack_images/C2-1/"
+)
+mask_set_path = pathlib.Path(
+    f"{bandicoot_mount_path}/data/NF0014_T1/segmentation_masks/C2-1/"
 )
 image_set_loader = ImageSetLoader(
     image_set_path=image_set_path,
+    mask_set_path=mask_set_path,
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_mapping,
 )
@@ -94,6 +98,7 @@ output_dict = {
     "channel": [],
     "processor_type": [],
     "subdir_input": [],
+    "subdir_mask": [],
     "subdir_output": [],
 }
 processor_types = [
@@ -128,6 +133,7 @@ for patient in patients:
                 output_dict["channel"].append("DNA")
                 output_dict["processor_type"].append("CPU")
                 output_dict["subdir_input"].append("zstack_images")
+                output_dict["subdir_mask"].append("segmentation_masks")
                 output_dict["subdir_output"].append("extracted_features")
             for compartment in image_set_loader.compartments:
                 if feature == "AreaSizeShape":
@@ -139,6 +145,8 @@ for patient in patients:
                         output_dict["channel"].append("DNA")
                         output_dict["processor_type"].append(processor_type)
                         output_dict["subdir_input"].append("zstack_images")
+                        output_dict["subdir_mask"].append("segmentation_masks")
+
                         output_dict["subdir_output"].append("extracted_features")
                 elif feature == "Colocalization":
                     for channel in channel_combinations:
@@ -150,6 +158,7 @@ for patient in patients:
                             output_dict["channel"].append(channel[0] + "." + channel[1])
                             output_dict["processor_type"].append(processor_type)
                             output_dict["subdir_input"].append("zstack_images")
+                            output_dict["subdir_mask"].append("segmentation_masks")
                             output_dict["subdir_output"].append("extracted_features")
                 for channel in image_set_loader.image_names:
                     if (
@@ -165,6 +174,7 @@ for patient in patients:
                             output_dict["channel"].append(channel)
                             output_dict["processor_type"].append("CPU")
                             output_dict["subdir_input"].append("zstack_images")
+                            output_dict["subdir_mask"].append("segmentation_masks")
                             output_dict["subdir_output"].append("extracted_features")
                         elif feature == "Intensity":
                             for processor_type in processor_types:
@@ -175,6 +185,7 @@ for patient in patients:
                                 output_dict["channel"].append(channel)
                                 output_dict["processor_type"].append(processor_type)
                                 output_dict["subdir_input"].append("zstack_images")
+                                output_dict["subdir_mask"].append("segmentation_masks")
                                 output_dict["subdir_output"].append(
                                     "extracted_features"
                                 )
@@ -186,6 +197,7 @@ for patient in patients:
                             output_dict["channel"].append(channel)
                             output_dict["processor_type"].append("CPU")
                             output_dict["subdir_input"].append("zstack_images")
+                            output_dict["subdir_mask"].append("segmentation_masks")
                             output_dict["subdir_output"].append("extracted_features")
                         else:
                             raise ValueError(f"Unknown feature: {feature}")
