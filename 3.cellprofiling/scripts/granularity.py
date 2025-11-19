@@ -25,7 +25,7 @@ from resource_profiling_util import get_mem_and_time_profiling
 
 
 if not in_notebook:
-    arguments_dict = parse_featurization_args()
+    arguments_dict = parse_args()
     patient = arguments_dict["patient"]
     well_fov = arguments_dict["well_fov"]
     channel = arguments_dict["channel"]

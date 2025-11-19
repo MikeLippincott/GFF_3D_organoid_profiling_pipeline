@@ -23,7 +23,7 @@ from texture_utils import measure_3D_texture
 
 
 if not in_notebook:
-    arguments_dict = parse_featurization_args()
+    arguments_dict = parse_args()
     patient = arguments_dict["patient"]
     well_fov = arguments_dict["well_fov"]
     channel = arguments_dict["channel"]
