@@ -18,7 +18,6 @@ root_dir, in_notebook = init_notebook()
 
 from area_size_shape_utils import measure_3D_area_size_shape
 from area_size_shape_utils_gpu import measure_3D_area_size_shape_gpu
-from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 

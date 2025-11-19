@@ -143,7 +143,7 @@ final_df = final_df.drop(columns=["compartment", "channel"])
 final_df.head()
 
 
-# In[10]:
+# In[ ]:
 
 
 final_df = final_df.pivot(
@@ -151,7 +151,7 @@ final_df = final_df.pivot(
 ).reset_index()
 # drop the multiindexing from pivot
 final_df.columns.name = None
-final_df
+final_df.head()
 
 
 # In[11]:
@@ -177,7 +177,7 @@ final_df.to_parquet(output_file, index=False)
 final_df.head()
 
 
-# In[13]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -187,13 +187,13 @@ get_mem_and_time_profiling(
     end_mem=end_mem,
     start_time=start_time,
     end_time=end_time,
-    feature_type="AreaSizeShape",
+    feature_type="SAMMed3D",
     well_fov=well_fov,
     patient_id=patient,
     channel="DNA",
     compartment=compartment,
     CPU_GPU="GPU",
     output_file_dir=pathlib.Path(
-        f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_AreaSizeShape_DNA_{compartment}_GPU.parquet"
+        f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_SAMMed3D_{channel}_{compartment}_GPU.parquet"
     ),
 )

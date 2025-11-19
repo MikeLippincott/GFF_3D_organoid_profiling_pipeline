@@ -28,7 +28,6 @@ from colocalization_utils_gpu import (
     measure_3D_colocalization_gpu,
     prepare_two_images_for_colocalization_gpu,
 )
-from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, TwoObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 

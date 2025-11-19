@@ -28,7 +28,8 @@ if [ "$feature" == "Neighbors" ]; then
     --qos=normal \
     --account=amc-general \
     --time=10:00 \
-    --output="logs/child/neighbors_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+    --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+    --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_neighbors_child-%j.out" \
     "$git_root"/3.cellprofiling/slurm_scripts/run_neighbors_child.sh \
         "$patient" \
         "$well_fov" \
@@ -48,7 +49,8 @@ if [ "$feature" == "Granularity" ] ; then
         --qos=normal \
         --account=amc-general \
         --time=12:00:00 \
-        --output="logs/granularity_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+        --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+        --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_granularity_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
         "$patient" \
         "$well_fov" \
@@ -69,7 +71,8 @@ if [ "$feature" == "Texture" ] ; then
         --qos=normal \
         --account=amc-general \
         --time=60:00 \
-        --output="logs/texture_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+        --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+        --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_texture_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
             "$patient" \
             "$well_fov" \
@@ -92,7 +95,8 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             --qos=normal \
             --account=amc-general \
             --time=30:00 \
-            --output="logs/area_shape_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_area_shape_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
             "$patient" \
             "$well_fov" \
@@ -112,7 +116,8 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             --gres=gpu:1 \
             --account=amc-general \
             --time=5:00 \
-            --output="logs/area_shape_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_area_shape_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
             "$patient" \
             "$well_fov" \
@@ -134,7 +139,8 @@ if [ "$feature" == "Colocalization" ] ; then
             --qos=normal \
             --account=amc-general \
             --time=1:30:00 \
-            --output="logs/colocalization_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_colocalization_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
             "$patient" \
             "$well_fov" \
@@ -154,7 +160,8 @@ if [ "$feature" == "Colocalization" ] ; then
             --gres=gpu:1 \
             --account=amc-general \
             --time=10:00 \
-            --output="logs/colocalization_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_colocalization_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
             "$patient" \
             "$well_fov" \
@@ -177,7 +184,8 @@ if [ "$feature" == "Intensity" ] ; then
             --qos=normal \
             --account=amc-general \
             --time=2:00:00 \
-            --output="logs/intensity_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
             "$patient" \
             "$well_fov" \
@@ -197,7 +205,8 @@ if [ "$feature" == "Intensity" ] ; then
             --gres=gpu:1 \
             --account=amc-general \
             --time=10:00 \
-            --output="logs/intensity_${patient}_${well_fov}_${compartment}_${channel}_${processor_type}_child-%j.out" \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
                 "$patient" \
                 "$well_fov" \
@@ -212,7 +221,17 @@ fi
 
 if [ "$feature" == "sammed3D" ] ; then
     echo "Running sammed3D feature extraction"
-    bash "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
+    sbatch \
+        --nodes=1 \
+        --ntasks=2 \
+        --partition=aa100 \
+        --qos=normal \
+        --gres=gpu:1 \
+        --account=amc-general \
+        --time=10:00 \
+        --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+        --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_SAMMed3D_child-%j.out" \
+        "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
             "$patient" \
             "$well_fov" \
             "$compartment" \

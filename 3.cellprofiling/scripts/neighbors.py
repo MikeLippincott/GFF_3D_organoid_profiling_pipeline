@@ -15,7 +15,6 @@ from notebook_init_utils import bandicoot_check, init_notebook
 
 root_dir, in_notebook = init_notebook()
 
-from featurization_parsable_arguments import parse_featurization_args
 from loading_classes import ImageSetLoader, ObjectLoader
 from neighbors_utils import measure_3D_number_of_neighbors
 from resource_profiling_util import get_mem_and_time_profiling

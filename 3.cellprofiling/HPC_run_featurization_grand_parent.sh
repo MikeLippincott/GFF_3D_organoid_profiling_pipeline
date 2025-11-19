@@ -1,4 +1,15 @@
 #!/bin/bash
+#SBATCH nodes=1
+#SBATCH --ntasks=1
+#SBATCH --partition=amilan
+#SBATCH --qos=long
+#SBATCH --account=amc-general
+#SBATCH --time=7-00:00:00 # D-HH:MM:SS
+#SBATCH --output="logs/grand_parent/grand_parent-%j.out"
+
+module load anaconda
+conda init bash
+conda activate GFF_featurization
 
 git_root=$(git rev-parse --show-toplevel)
 if [ -z "$git_root" ]; then
@@ -9,6 +20,9 @@ fi
 rerun=$1
 
 jupyter nbconvert --to=script --FilesWriter.build_directory="$git_root"/3.cellprofiling/scripts/ "$git_root"/3.cellprofiling/notebooks/*.ipynb
+
+python "$git_root"/3.cellprofiling/scripts/perform_file_checks.py
+
 
 if [ "$rerun" == "rerun" ]; then
     txt_file="${git_root}/3.cellprofiling/load_data/rerun_combinations.txt"
@@ -40,7 +54,7 @@ while IFS= read -r line; do
     mask_subparent_name="${parts[7]}"
     output_features_subparent_name="${parts[8]}"
 
-    echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
+    echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type, InputSubparent: $input_subparent_name, MaskSubparent: $mask_subparent_name, OutputFeaturesSubparent: $output_features_subparent_name"
 
 
     # check that the number of jobs is less than 990
@@ -57,7 +71,8 @@ while IFS= read -r line; do
         --qos=normal \
         --account=amc-general \
         --time=5:00 \
-        --output="logs/parents/featurize_parent_${patient}_${well_fov}_${feature}_${processor_type}_%j.out" \
+        --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+        --output="logs/parent/${patient}_${well_fov}_${compartment}_${channel}_child-%j.out" \
         "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
         "$patient" \
         "$well_fov" \

@@ -24,7 +24,6 @@ if in_notebook:
 else:
     from tqdm import tqdm
 
-from featurization_parsable_arguments import parse_featurization_args
 
 # In[ ]:
 
