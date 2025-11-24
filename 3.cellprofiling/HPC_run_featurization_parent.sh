@@ -219,8 +219,8 @@ if [ "$feature" == "Intensity" ] ; then
     fi
 fi
 
-if [ "$feature" == "sammed3D" ] ; then
-    echo "Running sammed3D feature extraction"
+if [ "$feature" == "SAMMed3D" ] ; then
+    echo "Running SAMMed3D feature extraction"
     # sbatch \
     #     --nodes=1 \
     #     --ntasks=2 \
