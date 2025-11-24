@@ -21,66 +21,66 @@ echo "InputSubparent: $input_subparent_name, MaskSubparent: $mask_subparent_name
 # regardless of the processor type, texture and neighbors features are run on CPU
 if [ "$feature" == "Neighbors" ]; then
     echo "Running Neighbors feature extraction"
-    # sbatch \
-    # --nodes=1 \
-    # --ntasks=1 \
-    # --partition=amilan \
-    # --qos=normal \
-    # --account=amc-general \
-    # --time=10:00 \
-    # --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-    # --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_neighbors_child-%j.out" \
-    # "$git_root"/3.cellprofiling/slurm_scripts/run_neighbors_child.sh \
-    #     "$patient" \
-    #     "$well_fov" \
-    #     "$compartment" \
-    #     "$channel" \
-    #     "$input_subparent_name" \
-    #     "$mask_subparent_name" \
-    #     "$output_features_subparent_name"
+    sbatch \
+    --nodes=1 \
+    --ntasks=1 \
+    --partition=amilan \
+    --qos=normal \
+    --account=amc-general \
+    --time=10:00 \
+    --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+    --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_neighbors_child-%j.out" \
+    "$git_root"/3.cellprofiling/slurm_scripts/run_neighbors_child.sh \
+        "$patient" \
+        "$well_fov" \
+        "$compartment" \
+        "$channel" \
+        "$input_subparent_name" \
+        "$mask_subparent_name" \
+        "$output_features_subparent_name"
 fi
 
 if [ "$feature" == "Granularity" ] ; then
     echo "Running CPU version for Granularity"
-    # sbatch \
-    #     --nodes=1 \
-    #     --ntasks=8 \
-    #     --partition=amilan \
-    #     --qos=normal \
-    #     --account=amc-general \
-    #     --time=12:00:00 \
-    #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-    #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_granularity_child-%j.out" \
-    #     "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
-    #     "$patient" \
-    #     "$well_fov" \
-    #     "$compartment" \
-    #     "$channel" \
-    #     "CPU" \
-    #     "$input_subparent_name" \
-    #     "$mask_subparent_name" \
-    #     "$output_features_subparent_name"
+    sbatch \
+        --nodes=1 \
+        --ntasks=8 \
+        --partition=amilan \
+        --qos=normal \
+        --account=amc-general \
+        --time=12:00:00 \
+        --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+        --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_granularity_child-%j.out" \
+        "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
+        "$patient" \
+        "$well_fov" \
+        "$compartment" \
+        "$channel" \
+        "CPU" \
+        "$input_subparent_name" \
+        "$mask_subparent_name" \
+        "$output_features_subparent_name"
 fi
 
 if [ "$feature" == "Texture" ] ; then
     echo "Running texture feature extraction"
-    # sbatch \
-    #     --nodes=1 \
-    #     --ntasks=4 \
-    #     --partition=amilan \
-    #     --qos=normal \
-    #     --account=amc-general \
-    #     --time=60:00 \
-    #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-    #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_texture_child-%j.out" \
-    #     "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
-    #         "$patient" \
-    #         "$well_fov" \
-    #         "$compartment" \
-    #         "$channel" \
-    #         "$input_subparent_name" \
-    #         "$mask_subparent_name" \
-    #         "$output_features_subparent_name"
+    sbatch \
+        --nodes=1 \
+        --ntasks=4 \
+        --partition=amilan \
+        --qos=normal \
+        --account=amc-general \
+        --time=60:00 \
+        --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+        --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_texture_child-%j.out" \
+        "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$input_subparent_name" \
+            "$mask_subparent_name" \
+            "$output_features_subparent_name"
 fi
 
 
@@ -88,157 +88,157 @@ fi
 if [ "$feature" == "AreaSizeShape" ] ; then
     if [ "$processor_type" == "CPU" ]; then
         echo "Running CPU version for AreaSizeShape"
-        # sbatch \
-        #     --nodes=1 \
-        #     --ntasks=2 \
-        #     --partition=amilan \
-        #     --qos=normal \
-        #     --account=amc-general \
-        #     --time=30:00 \
-        #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-        #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_area_shape_child-%j.out" \
-        #     "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
-        #     "$patient" \
-        #     "$well_fov" \
-        #     "$compartment" \
-        #     "$channel" \
-        #     "$processor_type" \
-        #     "$input_subparent_name" \
-        #     "$mask_subparent_name" \
-        #     "$output_features_subparent_name"
+        sbatch \
+            --nodes=1 \
+            --ntasks=2 \
+            --partition=amilan \
+            --qos=normal \
+            --account=amc-general \
+            --time=30:00 \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_area_shape_child-%j.out" \
+            "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$mask_subparent_name" \
+            "$output_features_subparent_name"
     else
         echo "Running GPU version for AreaSizeShape"
-        # sbatch \
-        #     --nodes=1 \
-        #     --ntasks=1 \
-        #     --partition=aa100 \
-        #     --qos=normal \
-        #     --gres=gpu:1 \
-        #     --account=amc-general \
-        #     --time=5:00 \
-        #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-        #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_area_shape_child-%j.out" \
-        #     "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
-        #     "$patient" \
-        #     "$well_fov" \
-        #     "$compartment" \
-        #     "$channel" \
-        #     "$processor_type" \
-        #     "$input_subparent_name" \
-        #     "$mask_subparent_name" \
-        #     "$output_features_subparent_name"
+        sbatch \
+            --nodes=1 \
+            --ntasks=1 \
+            --partition=aa100 \
+            --qos=normal \
+            --gres=gpu:1 \
+            --account=amc-general \
+            --time=5:00 \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_area_shape_child-%j.out" \
+            "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$mask_subparent_name" \
+            "$output_features_subparent_name"
     fi
 fi
 if [ "$feature" == "Colocalization" ] ; then
     if [ "$processor_type" == "CPU" ]; then
         echo "Running CPU version for Colocalization"
-        # sbatch \
-        #     --nodes=1 \
-        #     --ntasks=4 \
-        #     --partition=amilan \
-        #     --qos=normal \
-        #     --account=amc-general \
-        #     --time=1:30:00 \
-        #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-        #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_colocalization_child-%j.out" \
-        #     "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
-        #     "$patient" \
-        #     "$well_fov" \
-        #     "$compartment" \
-        #     "$channel" \
-        #     "$processor_type" \
-        #     "$input_subparent_name" \
-        #     "$mask_subparent_name" \
-        #     "$output_features_subparent_name"
+        sbatch \
+            --nodes=1 \
+            --ntasks=4 \
+            --partition=amilan \
+            --qos=normal \
+            --account=amc-general \
+            --time=1:30:00 \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_colocalization_child-%j.out" \
+            "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$mask_subparent_name" \
+            "$output_features_subparent_name"
     else
         echo "Running GPU version for Colocalization"
-        # sbatch \
-        #     --nodes=1 \
-        #     --ntasks=2 \
-        #     --partition=aa100 \
-        #     --qos=normal \
-        #     --gres=gpu:1 \
-        #     --account=amc-general \
-        #     --time=10:00 \
-        #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-        #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_colocalization_child-%j.out" \
-        #     "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
-        #     "$patient" \
-        #     "$well_fov" \
-        #     "$compartment" \
-        #     "$channel" \
-        #     "$processor_type" \
-        #     "$input_subparent_name" \
-        #     "$mask_subparent_name" \
-        #     "$output_features_subparent_name"
+        sbatch \
+            --nodes=1 \
+            --ntasks=2 \
+            --partition=aa100 \
+            --qos=normal \
+            --gres=gpu:1 \
+            --account=amc-general \
+            --time=10:00 \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_colocalization_child-%j.out" \
+            "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$mask_subparent_name" \
+            "$output_features_subparent_name"
     fi
 fi
 
 if [ "$feature" == "Intensity" ] ; then
     if [ "$processor_type" == "CPU" ]; then
         echo "Running CPU version for Intensity"
-        # sbatch \
-        #     --nodes=1 \
-        #     --ntasks=3 \
-        #     --partition=amilan \
-        #     --qos=normal \
-        #     --account=amc-general \
-        #     --time=2:00:00 \
-        #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-        #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
-        #     "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
-        #     "$patient" \
-        #     "$well_fov" \
-        #     "$compartment" \
-        #     "$channel" \
-        #     "$processor_type" \
-        #     "$input_subparent_name" \
-        #     "$mask_subparent_name" \
-        #     "$output_features_subparent_name"
+        sbatch \
+            --nodes=1 \
+            --ntasks=3 \
+            --partition=amilan \
+            --qos=normal \
+            --account=amc-general \
+            --time=2:00:00 \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
+            "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$processor_type" \
+            "$input_subparent_name" \
+            "$mask_subparent_name" \
+            "$output_features_subparent_name"
     else
         echo "Running GPU version for Intensity"
-        # sbatch \
-        #     --nodes=1 \
-        #     --ntasks=2 \
-        #     --partition=aa100 \
-        #     --qos=normal \
-        #     --gres=gpu:1 \
-        #     --account=amc-general \
-        #     --time=10:00 \
-        #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-        #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
-        #     "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
-        #         "$patient" \
-        #         "$well_fov" \
-        #         "$compartment" \
-        #         "$channel" \
-        #         "$processor_type" \
-        #         "$input_subparent_name" \
-        #         "$mask_subparent_name" \
-        #         "$output_features_subparent_name"
+        sbatch \
+            --nodes=1 \
+            --ntasks=2 \
+            --partition=aa100 \
+            --qos=normal \
+            --gres=gpu:1 \
+            --account=amc-general \
+            --time=10:00 \
+            --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+            --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
+            "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
+                "$patient" \
+                "$well_fov" \
+                "$compartment" \
+                "$channel" \
+                "$processor_type" \
+                "$input_subparent_name" \
+                "$mask_subparent_name" \
+                "$output_features_subparent_name"
     fi
 fi
 
 if [ "$feature" == "SAMMed3D" ] ; then
     echo "Running SAMMed3D feature extraction"
-    # sbatch \
-    #     --nodes=1 \
-    #     --ntasks=2 \
-    #     --partition=aa100 \
-    #     --qos=normal \
-    #     --gres=gpu:1 \
-    #     --account=amc-general \
-    #     --time=10:00 \
-    #     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-    #     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_SAMMed3D_child-%j.out" \
-    #     "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
-    #         "$patient" \
-    #         "$well_fov" \
-    #         "$compartment" \
-    #         "$channel" \
-    #         "$input_subparent_name" \
-    #         "$mask_subparent_name" \
-    #         "$output_features_subparent_name"
+    sbatch \
+        --nodes=1 \
+        --ntasks=2 \
+        --partition=aa100 \
+        --qos=normal \
+        --gres=gpu:1 \
+        --account=amc-general \
+        --time=10:00 \
+        --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
+        --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_SAMMed3D_child-%j.out" \
+        "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
+            "$patient" \
+            "$well_fov" \
+            "$compartment" \
+            "$channel" \
+            "$input_subparent_name" \
+            "$mask_subparent_name" \
+            "$output_features_subparent_name"
 fi
 
 echo "Featurization done"
