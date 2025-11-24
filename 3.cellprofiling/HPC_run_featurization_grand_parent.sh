@@ -67,7 +67,7 @@ while IFS= read -r line; do
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=5:00 \
+        --time=1:00 \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/parent/${patient}_${well_fov}_${compartment}_${channel}_child-%j.out" \
         "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
