@@ -43,9 +43,9 @@ while IFS= read -r line; do
     # assign the parts to variables
     patient="${parts[0]}"
     well_fov="${parts[1]}"
-    feature="${parts[2]}"
-    compartment="${parts[3]}"
-    channel="${parts[4]}"
+    compartment="${parts[2]}"
+    channel="${parts[3]}"
+    feature="${parts[4]}"
     processor_type="${parts[5]}"
     input_subparent_name="${parts[6]}"
     mask_subparent_name="${parts[7]}"
