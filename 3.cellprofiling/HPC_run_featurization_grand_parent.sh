@@ -21,9 +21,6 @@ rerun=$1
 
 jupyter nbconvert --to=script --FilesWriter.build_directory="$git_root"/3.cellprofiling/scripts/ "$git_root"/3.cellprofiling/notebooks/*.ipynb
 
-python "$git_root"/3.cellprofiling/scripts/perform_file_checks.py
-
-
 if [ "$rerun" == "rerun" ]; then
     txt_file="${git_root}/3.cellprofiling/load_data/rerun_combinations.txt"
 else
