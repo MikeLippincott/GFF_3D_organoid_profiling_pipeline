@@ -42,13 +42,14 @@ fi
 
 if [ "$feature" == "Granularity" ] ; then
     echo "Running CPU version for Granularity"
+    # might need to titrate time
     sbatch \
         --nodes=1 \
         --ntasks=8 \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=12:00:00 \
+        --time=1:00:00 \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_granularity_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
@@ -94,7 +95,7 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=30:00 \
+            --time=15:00 \
             --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
             --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_area_shape_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
@@ -138,7 +139,7 @@ if [ "$feature" == "Colocalization" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=1:30:00 \
+            --time=1:00:00 \
             --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
             --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_colocalization_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
@@ -183,7 +184,7 @@ if [ "$feature" == "Intensity" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=2:00:00 \
+            --time=1:00:00 \
             --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
             --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
