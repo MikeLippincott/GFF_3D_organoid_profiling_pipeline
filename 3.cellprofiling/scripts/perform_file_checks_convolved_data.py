@@ -54,7 +54,7 @@ patient_ids = pd.read_csv(
     patient_id_file_path, header=None, names=["patient_id"]
 ).patient_id.tolist()
 
-# patient_ids = [patient]  # for testing
+patient_ids = [patient]  # for testing
 
 
 # In[4]:
@@ -65,7 +65,6 @@ channel_mapping = {
     "AGP": "488",
     "ER": "555",
     "Mito": "640",
-    "BF": "TRANS",
     "Nuclei": "nuclei_",
     "Cell": "cell_",
     "Cytoplasm": "cytoplasm_",
@@ -85,17 +84,20 @@ channel_combinations = list(itertools.combinations(channels, 2))
 
 # For each well fov there should be the following number of files:
 # Of course this depends on if both CPU and GPU versions are run, but the CPU version is always run.
+#
+# No BF here!
+#
 # | Feature Type | No. Compartments | No. Channels | No. Processors | Total No. Files |
 # |--------------|------------------|---------------|----------------|-----------------|
 # | AreaSizeShape | 4 | 1 | 2 | 8 |
-# | Colocalization | 4 | 10 | 2 | 80 |
-# | Granularity | 4 | 5 | 1 | 20 |
-# | Intensity | 4 | 5 | 2 | 40 |
+# | Colocalization | 4 | 8 | 2 | 64 |
+# | Granularity | 4 | 4 | 1 | 16 |
+# | Intensity | 4 | 4 | 2 | 32 |
 # | Neighbors | 1 | 1 | 1 | 1 |
-# | SAMMed3D | 4 | 5 | 1 | 20 |
-# | Texture | 4 | 5 | 1 | 20 |
+# | SAMMed3D | 4 | 4 | 1 | 16 |
+# | Texture | 4 | 4 | 1 | 16 |
 #
-# Total no. files per well fov = 189
+# Total no. files per well fov = 153
 #
 # ### OR
 # For CPU only:
@@ -103,14 +105,13 @@ channel_combinations = list(itertools.combinations(channels, 2))
 # | Feature Type | No. Compartments | No. Channels | No. Processors | Total No. Files |
 # |--------------|------------------|---------------|----------------|-----------------|
 # | AreaSizeShape | 4 | 1 | 1 | 4 |
-# | Colocalization | 4 | 10 | 1 | 40 |
-# | Granularity | 4 | 5 | 1 | 20 |
-# | Intensity | 4 | 5 | 1 | 20 |
+# | Colocalization | 4 | 8 | 1 | 32 |
+# | Granularity | 4 | 4 | 1 | 16 |
+# | Intensity | 4 | 4 | 1 | 16 |
 # | Neighbors | 1 | 1 | 1 | 1 |
-# | SAMMed3D | 4 | 5 | 1 | 20 |
-# | Texture | 4 | 5 | 1 | 20 |
-#
-# Total no. files per well fov = 125
+# | SAMMed3D | 4 | 4 | 1 | 16 |
+# | Texture | 4 | 4 | 1 | 16 |
+# Total no. files per well fov = 101
 #
 #
 
@@ -197,21 +198,58 @@ featurization_rerun_dict = {
 # In[9]:
 
 
+dict_of_subdir_combinations = {
+    "input_subparent_name": [],
+    "mask_subparent_name": [],
+    "output_features_subparent_name": [],
+}
+convolution_range = [x for x in range(1, 26)]
+convolution_range = convolution_range + [50, 75, 100]
+for convolution_value in convolution_range:
+    dict_of_subdir_combinations["input_subparent_name"].append(
+        f"convolution_{convolution_value}"
+    )
+    dict_of_subdir_combinations["mask_subparent_name"].append("segmentation_masks")
+    dict_of_subdir_combinations["output_features_subparent_name"].append(
+        f"convolution_{convolution_value}_extracted_features"
+    )
+dict_of_subdir_combinations["input_subparent_name"].append("zstack_images")
+dict_of_subdir_combinations["mask_subparent_name"].append("segmentation_masks")
+dict_of_subdir_combinations["output_features_subparent_name"].append(
+    "extracted_features"
+)
+dict_of_subdir_combinations["input_subparent_name"].append("deconvolved_images")
+dict_of_subdir_combinations["mask_subparent_name"].append("segmentation_masks")
+dict_of_subdir_combinations["output_features_subparent_name"].append(
+    "deconvolved_images_extracted_features"
+)
+
+
+# In[10]:
+
+
 total_files = 0
 files_present = 0
 for patient in patient_ids:
     well_fovs = pathlib.Path(
         f"{profile_base_dir}/data/{patient}/zstack_images/"
     ).resolve()
-
     # perform checks for each directory
     featurization_data_dirs = list(well_fovs.glob("*"))
 
+    # set the data dirs to just one for testing
+    featurization_data_dirs = [
+        pathlib.Path(f"{profile_base_dir}/data/{patient}/zstack_images/C4-2")
+    ]  # for convolution testing only
+
     for dir in featurization_data_dirs:
-        if dir.name != "run_stats":
+        for subdir_idx in range(
+            len(dict_of_subdir_combinations["input_subparent_name"])
+        ):
             dir = pathlib.Path(
-                f"{profile_base_dir}/data/{patient}/extracted_features/{dir.name}"
+                f"{profile_base_dir}/data/{patient}/{dict_of_subdir_combinations['output_features_subparent_name'][subdir_idx]}/{dir.name}"
             ).resolve()
+
             total_files += len(feature_list)
             if not check_number_of_files(dir, len(feature_list)):
                 # find the missing files
@@ -262,19 +300,21 @@ for patient in patient_ids:
                             missing_file.split("_")[1]
                         )
                         featurization_rerun_dict["input_subparent_name"].append(
-                            "zstack_images"
+                            f"{dict_of_subdir_combinations['input_subparent_name'][subdir_idx]}"
                         )
                         featurization_rerun_dict["mask_subparent_name"].append(
-                            "segmentation_masks"
+                            f"{dict_of_subdir_combinations['mask_subparent_name'][subdir_idx]}"
                         )
                         featurization_rerun_dict[
                             "output_features_subparent_name"
-                        ].append("extracted_features")
+                        ].append(
+                            f"{dict_of_subdir_combinations['output_features_subparent_name'][subdir_idx]}"
+                        )
             else:
                 files_present += len([f.stem for f in dir.glob("*") if f.is_file()])
 
 
-# In[10]:
+# In[11]:
 
 
 print(f"Total files expected: {total_files}")
@@ -288,7 +328,7 @@ else:
     )
 
 
-# In[11]:
+# In[12]:
 
 
 df = pd.DataFrame(featurization_rerun_dict)
@@ -296,7 +336,7 @@ df.to_csv(rerun_combinations_path, sep="\t", index=False)
 df.head()
 
 
-# In[12]:
+# In[13]:
 
 
-df.groupby(["patient"]).count()
+df.groupby(["patient", "input_subparent_name", "well_fov", "feature"]).count()

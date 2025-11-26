@@ -29,7 +29,7 @@ root_dir, in_notebook = init_notebook()
 logging.basicConfig(level=logging.INFO)
 
 
-# In[ ]:
+# In[3]:
 
 
 if not in_notebook:
@@ -100,7 +100,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[7]:
 
 
 image_set_loader = ImageSetLoader(
@@ -143,7 +143,7 @@ final_df = final_df.drop(columns=["compartment", "channel"])
 final_df.head()
 
 
-# In[ ]:
+# In[10]:
 
 
 final_df = final_df.pivot(
@@ -171,13 +171,13 @@ final_df = final_df.copy()
 final_df.insert(1, "image_set", image_set_loader.image_set_name)
 
 output_file = pathlib.Path(
-    output_parent_path / f"SAMMed3D_{compartment}_{channel}_features.parquet"
+    output_parent_path / f"SAMMed3D_{compartment}_{channel}_GPU_features.parquet"
 )
 final_df.to_parquet(output_file, index=False)
 final_df.head()
 
 
-# In[ ]:
+# In[13]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

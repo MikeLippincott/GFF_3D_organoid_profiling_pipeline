@@ -31,7 +31,11 @@ patients = ["NF0014_T1"]
 input_combinations_path = pathlib.Path(
     f"{root_dir}/3.cellprofiling/load_data/input_combinations.txt"
 )
+rerun_combinations_path = pathlib.Path(
+    f"{root_dir}/3.cellprofiling/load_data/rerun_combinations.txt"
+)
 input_combinations_path.parent.mkdir(parents=True, exist_ok=True)
+rerun_combinations_path.parent.mkdir(parents=True, exist_ok=True)
 
 
 # In[4]:
@@ -43,6 +47,7 @@ features = [
     "Granularity",
     "Intensity",
     "Neighbors",
+    "SAMMed3D",
     "Texture",
 ]
 
@@ -81,7 +86,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[7]:
 
 
 output_dict = {
@@ -115,6 +120,7 @@ list_of_subdirs_to_scan = []
 iterations = list(range(1, 26)) + [50, 75, 100]
 for i in iterations:
     list_of_subdirs_to_scan.append(f"convolution_{i}")
+list_of_subdirs_to_scan.append("deconvolved_images")
 
 
 # In[10]:
@@ -126,8 +132,10 @@ for patient in patients:
         patient_well_fovs = pathlib.Path(
             f"{bandicoot_mount_path}/data/{patient}/{subdir}/"
         ).glob("*")
+        patient_well_fovs = [
+            pathlib.Path(f"{bandicoot_mount_path}/data/{patient}/zstack_images/C4-2")
+        ]  # for donvolution testing only
         for well_fov in patient_well_fovs:
-            print(well_fov)
             well_fov = well_fov.name
 
             for feature in features:
@@ -216,6 +224,21 @@ for patient in patients:
                                 output_dict["subdir_output"].append(
                                     f"{subdir}_extracted_features"
                                 )
+                            elif feature == "SAMMed3D":
+                                for processor_type in processor_types:
+                                    output_dict["patient"].append(patient)
+                                    output_dict["well_fov"].append(well_fov)
+                                    output_dict["feature"].append(feature)
+                                    output_dict["compartment"].append(compartment)
+                                    output_dict["channel"].append(channel)
+                                    output_dict["processor_type"].append(processor_type)
+                                    output_dict["subdir_input"].append(subdir)
+                                    output_dict["subdir_mask"].append(
+                                        "segmentation_masks"
+                                    )
+                                    output_dict["subdir_output"].append(
+                                        f"{subdir}_extracted_features"
+                                    )
                             else:
                                 raise ValueError(f"Unknown feature: {feature}")
 
@@ -248,6 +271,11 @@ intensity_combos = (
 granularity_combos = len(image_set_loader.image_names) * len(
     image_set_loader.compartments
 )
+SAMMed3D_combos = (
+    len(image_set_loader.image_names)
+    * len(image_set_loader.compartments)
+    * len(processor_types)
+)
 neighbors_combos = 1  # Neighbors is always DNA and Nuclei
 texture_combos = len(image_set_loader.image_names) * len(image_set_loader.compartments)
 total_well_fov_combos = (
@@ -257,6 +285,7 @@ total_well_fov_combos = (
     + granularity_combos
     + neighbors_combos
     + texture_combos
+    + SAMMed3D_combos
 )
 total_patient_well_fov_combos = len(np.unique(df["patient"] + "_" + df["well_fov"]))
 total_combos = total_well_fov_combos * total_patient_well_fov_combos

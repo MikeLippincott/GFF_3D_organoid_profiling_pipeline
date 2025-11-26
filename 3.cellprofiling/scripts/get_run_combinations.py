@@ -49,6 +49,7 @@ features = [
     "Granularity",
     "Intensity",
     "Neighbors",
+    "SAMMed3D",
     "Texture",
 ]
 
@@ -199,6 +200,19 @@ for patient in patients:
                             output_dict["subdir_input"].append("zstack_images")
                             output_dict["subdir_mask"].append("segmentation_masks")
                             output_dict["subdir_output"].append("extracted_features")
+                        elif feature == "SAMMed3D":
+                            for processor_type in processor_types:
+                                output_dict["patient"].append(patient)
+                                output_dict["well_fov"].append(well_fov)
+                                output_dict["feature"].append(feature)
+                                output_dict["compartment"].append(compartment)
+                                output_dict["channel"].append(channel)
+                                output_dict["processor_type"].append(processor_type)
+                                output_dict["subdir_input"].append("zstack_images")
+                                output_dict["subdir_mask"].append("segmentation_masks")
+                                output_dict["subdir_output"].append(
+                                    "extracted_features"
+                                )
                         else:
                             raise ValueError(f"Unknown feature: {feature}")
 
@@ -230,6 +244,11 @@ intensity_combos = (
 granularity_combos = len(image_set_loader.image_names) * len(
     image_set_loader.compartments
 )
+SAMMed3D_combos = (
+    len(image_set_loader.image_names)
+    * len(image_set_loader.compartments)
+    * len(processor_types)
+)
 neighbors_combos = 1  # Neighbors is always DNA and Nuclei
 texture_combos = len(image_set_loader.image_names) * len(image_set_loader.compartments)
 total_well_fov_combos = (
@@ -239,6 +258,7 @@ total_well_fov_combos = (
     + granularity_combos
     + neighbors_combos
     + texture_combos
+    + SAMMed3D_combos
 )
 total_patient_well_fov_combos = len(np.unique(df["patient"] + "_" + df["well_fov"]))
 total_combos = total_well_fov_combos * total_patient_well_fov_combos
@@ -251,6 +271,31 @@ print(
 # In[12]:
 
 
+# reorder columns
+df = df[
+    [
+        "patient",
+        "well_fov",
+        "compartment",
+        "channel",
+        "feature",
+        "processor_type",
+        "subdir_input",
+        "subdir_mask",
+        "subdir_output",
+    ]
+]
+
+
+# In[13]:
+
+
 # write to a txt file with each row as a combination
 # each column is a feature of the combination
 df.to_csv(input_combinations_path, sep="\t", index=False)
+
+
+# In[14]:
+
+
+df.groupby(["patient"]).count()

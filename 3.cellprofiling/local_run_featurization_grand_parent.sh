@@ -45,7 +45,7 @@ while IFS= read -r line; do
 
     echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 
-    source \
+    bash \
         "$git_root"/3.cellprofiling/local_run_featurization_parent.sh \
         "$patient" \
         "$well_fov" \
