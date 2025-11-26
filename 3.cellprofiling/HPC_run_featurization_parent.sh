@@ -16,6 +16,8 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
+ntasks_constant=2
+
 echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 echo "InputSubparent: $input_subparent_name, MaskSubparent: $mask_subparent_name, OutputFeaturesSubparent: $output_features_subparent_name"
 # regardless of the processor type, texture and neighbors features are run on CPU
@@ -23,7 +25,7 @@ if [ "$feature" == "Neighbors" ]; then
     echo "Running Neighbors feature extraction"
     sbatch \
     --nodes=1 \
-    --ntasks=1 \
+    --ntasks=$ntasks_constant \
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
@@ -67,7 +69,7 @@ if [ "$feature" == "Texture" ] ; then
     echo "Running texture feature extraction"
     sbatch \
         --nodes=1 \
-        --ntasks=1 \
+        --ntasks=$ntasks_constant \
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
@@ -91,7 +93,7 @@ if [ "$feature" == "AreaSizeShape" ] ; then
         echo "Running CPU version for AreaSizeShape"
         sbatch \
             --nodes=1 \
-            --ntasks=1 \
+            --ntasks=$ntasks_constant \
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
@@ -111,7 +113,7 @@ if [ "$feature" == "AreaSizeShape" ] ; then
         echo "Running GPU version for AreaSizeShape"
         sbatch \
             --nodes=1 \
-            --ntasks=1 \
+            --ntasks=$ntasks_constant \
             --partition=aa100 \
             --qos=normal \
             --gres=gpu:1 \
@@ -135,7 +137,7 @@ if [ "$feature" == "Colocalization" ] ; then
         echo "Running CPU version for Colocalization"
         sbatch \
             --nodes=1 \
-            --ntasks=1 \
+            --ntasks=$ntasks_constant \
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
@@ -155,7 +157,7 @@ if [ "$feature" == "Colocalization" ] ; then
         echo "Running GPU version for Colocalization"
         sbatch \
             --nodes=1 \
-            --ntasks=2 \
+            --ntasks=$ntasks_constant \
             --partition=aa100 \
             --qos=normal \
             --gres=gpu:1 \
@@ -180,7 +182,7 @@ if [ "$feature" == "Intensity" ] ; then
         echo "Running CPU version for Intensity"
         sbatch \
             --nodes=1 \
-            --ntasks=1 \
+            --ntasks=$ntasks_constant \
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
@@ -200,7 +202,7 @@ if [ "$feature" == "Intensity" ] ; then
         echo "Running GPU version for Intensity"
         sbatch \
             --nodes=1 \
-            --ntasks=2 \
+            --ntasks=$ntasks_constant \
             --partition=aa100 \
             --qos=normal \
             --gres=gpu:1 \
@@ -224,7 +226,7 @@ if [ "$feature" == "SAMMed3D" ] ; then
     echo "Running SAMMed3D feature extraction"
     sbatch \
         --nodes=1 \
-        --ntasks=2 \
+        --ntasks=$ntasks_constant \
         --partition=aa100 \
         --qos=normal \
         --gres=gpu:1 \
