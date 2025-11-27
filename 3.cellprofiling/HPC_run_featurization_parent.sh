@@ -16,7 +16,7 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-ntasks_constant=2
+ntasks_constant=12
 
 echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 echo "InputSubparent: $input_subparent_name, MaskSubparent: $mask_subparent_name, OutputFeaturesSubparent: $output_features_subparent_name"
