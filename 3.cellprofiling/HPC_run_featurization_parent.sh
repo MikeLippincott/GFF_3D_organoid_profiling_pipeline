@@ -16,7 +16,14 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-ntasks_constant=16
+# time_constant=15:00
+# granularity_time=3:00:00
+# ntasks_constant=2
+# granularity_ntasks=8
+
+time_constant=90:00
+granularity_time=24:00:00
+ntasks_constant=25
 granularity_ntasks=32
 
 echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
@@ -52,7 +59,7 @@ if [ "$feature" == "Granularity" ] ; then
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=24:00:00 \
+        --time=$granularity_time \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_granularity_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
@@ -74,7 +81,7 @@ if [ "$feature" == "Texture" ] ; then
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=4:30:00 \
+        --time=$time_constant \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_texture_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
@@ -98,7 +105,7 @@ if [ "$feature" == "AreaSizeShape" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=15:00 \
+            --time=10:00 \
             --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
             --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_area_shape_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_area_shape_child.sh \
@@ -142,7 +149,7 @@ if [ "$feature" == "Colocalization" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=30:00 \
+            --time=$time_constant \
             --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
             --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_colocalization_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_colocalization_child.sh \
@@ -187,7 +194,7 @@ if [ "$feature" == "Intensity" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=90:00 \
+            --time=$time_constant \
             --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
             --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
@@ -232,7 +239,7 @@ if [ "$feature" == "SAMMed3D" ] ; then
         --qos=normal \
         --gres=gpu:1 \
         --account=amc-general \
-        --time=90:00 \
+        --time=$time_constant \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_SAMMed3D_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
