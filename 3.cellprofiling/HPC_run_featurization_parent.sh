@@ -16,8 +16,8 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-ntasks_constant=20
-granularity_ntasks=20
+ntasks_constant=16
+granularity_ntasks=32
 
 echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 echo "InputSubparent: $input_subparent_name, MaskSubparent: $mask_subparent_name, OutputFeaturesSubparent: $output_features_subparent_name"
@@ -74,7 +74,7 @@ if [ "$feature" == "Texture" ] ; then
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=1:30:00 \
+        --time=4:30:00 \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_texture_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_texture_child.sh \
@@ -187,7 +187,7 @@ if [ "$feature" == "Intensity" ] ; then
             --partition=amilan \
             --qos=normal \
             --account=amc-general \
-            --time=15:00 \
+            --time=90:00 \
             --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
             --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_intensity_child-%j.out" \
             "$git_root"/3.cellprofiling/slurm_scripts/run_intensity_child.sh \
@@ -232,7 +232,7 @@ if [ "$feature" == "SAMMed3D" ] ; then
         --qos=normal \
         --gres=gpu:1 \
         --account=amc-general \
-        --time=10:00 \
+        --time=90:00 \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_SAMMed3D_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
