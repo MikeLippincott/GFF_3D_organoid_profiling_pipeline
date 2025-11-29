@@ -16,7 +16,7 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-ntasks_constant=12
+ntasks_constant=20
 granularity_ntasks=20
 
 echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
@@ -52,7 +52,7 @@ if [ "$feature" == "Granularity" ] ; then
         --partition=amilan \
         --qos=normal \
         --account=amc-general \
-        --time=6:00:00 \
+        --time=24:00:00 \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_granularity_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_granularity_child.sh \
