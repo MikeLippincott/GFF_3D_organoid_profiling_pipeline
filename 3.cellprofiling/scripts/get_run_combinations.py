@@ -39,6 +39,13 @@ input_combinations_path = pathlib.Path(
 )
 input_combinations_path.parent.mkdir(parents=True, exist_ok=True)
 
+patients = [
+    "NF0037_T1-Z-1",
+    "NF0037_T1-Z-0.5",
+    "NF0037_T1-Z-0.2",
+    "NF0037_T1-Z-0.1",
+]
+
 
 # In[4]:
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -21,7 +21,7 @@ from granularity_utils import measure_3D_granularity
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -36,10 +36,10 @@ if not in_notebook:
     output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
-    well_fov = "C4-2"
-    patient = "NF0014_T1"
+    well_fov = "F4-2"
+    patient = "NF0037_T1-Z-0.1"
     channel = "Mito"
-    compartment = "Cell"
+    compartment = "Nuclei"
     processor_type = "CPU"
     input_subparent_name = "zstack_images"
     mask_subparent_name = "segmentation_masks"

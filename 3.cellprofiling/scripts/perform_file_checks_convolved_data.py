@@ -90,14 +90,14 @@ channel_combinations = list(itertools.combinations(channels, 2))
 # | Feature Type | No. Compartments | No. Channels | No. Processors | Total No. Files |
 # |--------------|------------------|---------------|----------------|-----------------|
 # | AreaSizeShape | 4 | 1 | 2 | 8 |
-# | Colocalization | 4 | 8 | 2 | 64 |
+# | Colocalization | 4 | 6 | 2 | 48 |
 # | Granularity | 4 | 4 | 1 | 16 |
 # | Intensity | 4 | 4 | 2 | 32 |
 # | Neighbors | 1 | 1 | 1 | 1 |
 # | SAMMed3D | 4 | 4 | 1 | 16 |
 # | Texture | 4 | 4 | 1 | 16 |
 #
-# Total no. files per well fov = 153
+# Total no. files per well fov = 137
 #
 # ### OR
 # For CPU only:
@@ -105,13 +105,13 @@ channel_combinations = list(itertools.combinations(channels, 2))
 # | Feature Type | No. Compartments | No. Channels | No. Processors | Total No. Files |
 # |--------------|------------------|---------------|----------------|-----------------|
 # | AreaSizeShape | 4 | 1 | 1 | 4 |
-# | Colocalization | 4 | 8 | 1 | 32 |
+# | Colocalization | 4 | 6 | 1 | 24 |
 # | Granularity | 4 | 4 | 1 | 16 |
 # | Intensity | 4 | 4 | 1 | 16 |
 # | Neighbors | 1 | 1 | 1 | 1 |
 # | SAMMed3D | 4 | 4 | 1 | 16 |
 # | Texture | 4 | 4 | 1 | 16 |
-# Total no. files per well fov = 101
+# Total no. files per well fov = 93
 #
 #
 
@@ -124,6 +124,7 @@ feature_types = [
     "Granularity",
     "Intensity",
     "Neighbors",
+    "SAMMed3D",
     "Texture",
 ]
 
@@ -148,12 +149,15 @@ for compartment in compartments:
     for processor_type in processor_types:
         feature_list.append(f"AreaSizeShape_{compartment}_{processor_type}_features")
 # colocalization
+coloc_count = 0
 for channel in channel_combinations:
     for compartment in compartments:
         for processor_type in processor_types:
+            coloc_count += 1
             feature_list.append(
                 f"Colocalization_{compartment}_{channel[0]}.{channel[1]}_{processor_type}_features"
             )
+print(coloc_count)
 # granularity
 for channel in channels:
     for compartment in compartments:
@@ -168,8 +172,7 @@ for channel in channels:
 # SAMMed3d
 for channel in channels:
     for compartment in compartments:
-        for processor_type in processor_types:
-            feature_list.append(f"SAMMed3D_{compartment}_{channel}_GPU_features")
+        feature_list.append(f"SAMMed3D_{compartment}_{channel}_GPU_features")
 # neighbors
 feature_list.append("Neighbors_Nuclei_DNA_CPU_features")
 # texture
@@ -219,7 +222,9 @@ dict_of_subdir_combinations["output_features_subparent_name"].append(
     "extracted_features"
 )
 dict_of_subdir_combinations["input_subparent_name"].append("deconvolved_images")
-dict_of_subdir_combinations["mask_subparent_name"].append("segmentation_masks")
+dict_of_subdir_combinations["mask_subparent_name"].append(
+    "deconvolved_segmentation_masks"
+)
 dict_of_subdir_combinations["output_features_subparent_name"].append(
     "deconvolved_images_extracted_features"
 )

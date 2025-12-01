@@ -137,7 +137,7 @@ fi
 
 if [ "$feature" == "sammed3D" ] ; then
     echo "Running sammed3D feature extraction"
-    source "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
+    bash "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
             "$patient" \
             "$well_fov" \
             "$compartment" \

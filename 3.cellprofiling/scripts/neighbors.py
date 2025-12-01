@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -19,7 +19,7 @@ from loading_classes import ImageSetLoader, ObjectLoader
 from neighbors_utils import measure_3D_number_of_neighbors
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[ ]:
+# In[2]:
 
 
 if not in_notebook:
@@ -34,12 +34,12 @@ if not in_notebook:
     output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
-    well_fov = "C4-2"
-    patient = "NF0014_T1"
+    well_fov = "F4-2"
+    patient = "NF0037_T1-Z-1"
     channel = "DNA"
     compartment = "Nuclei"
     processor_type = "CPU"
-    input_subparent_name = "profiling_input_images"
+    input_subparent_name = "zstack_images"
     mask_subparent_name = "segmentation_masks"
     output_features_subparent_name = "extracted_features"
 
@@ -79,7 +79,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[5]:
 
 
 image_set_loader = ImageSetLoader(
@@ -90,7 +90,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 # loop through each compartment and channel
@@ -123,7 +123,7 @@ final_df.to_parquet(output_file)
 final_df.head()
 
 
-# In[ ]:
+# In[7]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

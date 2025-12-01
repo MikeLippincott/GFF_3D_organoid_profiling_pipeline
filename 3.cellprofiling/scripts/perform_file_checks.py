@@ -54,7 +54,12 @@ patient_ids = pd.read_csv(
     patient_id_file_path, header=None, names=["patient_id"]
 ).patient_id.tolist()
 
-# patient_ids = [patient]  # for testing
+patient_ids = [
+    "NF0037_T1-Z-1",
+    "NF0037_T1-Z-0.5",
+    "NF0037_T1-Z-0.2",
+    "NF0037_T1-Z-0.1",
+]
 
 
 # In[4]:
