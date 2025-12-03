@@ -15,6 +15,8 @@ from copairs import map
 from copairs.map.average_precision import p_values
 from copairs.matching import assign_reference_index
 from notebook_init_utils import bandicoot_check, init_notebook
+from numpy.random import rand
+from scipy.spatial.distance import cosine
 
 root_dir, in_notebook = init_notebook()
 if in_notebook:
@@ -30,14 +32,26 @@ image_base_dir = bandicoot_check(
 # In[2]:
 
 
-import numpy as np
-from numpy.random import rand
-from scipy.spatial.distance import cosine
-
-
-def paired_permutation_test(XA, XB, n_perm=10000):
+def paired_permutation_test(XA: np.array, XB: np.array, n_perm=10000):
     """
-    XA, XB: arrays of shape (N_samples, D_features)
+    Description
+    ----------
+    Perform a paired permutation test to assess the significance of the difference
+    in similarity (1 - correlation) between two sets of profiles XA and XB.
+    Parameters
+    ----------
+    XA : np.array
+        First set of profiles (samples x features).
+    XB : np.array
+        Second set of profiles (samples x features).
+    n_perm : int
+        Number of permutations to perform.
+    Returns
+    -------
+    D_obs : float
+        Observed mean distance (1 - correlation) between XA and XB.
+    pval : float
+        P-value from the permutation test.
     """
     # observed distance
     D_obs = np.mean([1 - np.corrcoef(a, b)[0, 1] for a, b in zip(XA, XB)])
@@ -69,6 +83,11 @@ sc_profile_path = pathlib.Path(
 
 sc_df = pd.read_parquet(sc_profile_path)
 organoid_df = pd.read_parquet(organoid_profile_path)  # replace with organoid path
+
+figure_dir = pathlib.Path(
+    f"{root_dir}/7.technical_analysis/figures/convolution_profile_analysis"
+).resolve()
+figure_dir.mkdir(parents=True, exist_ok=True)
 
 
 # In[4]:
@@ -135,6 +154,7 @@ plt.ylabel("Mean Average Precision (mAP)")
 plt.title("mAP Scores by Convolution Value \nfor Single-Cell Profiles")
 plt.xticks(rotation=45)
 plt.tight_layout()
+plt.savefig(figure_dir / "sc_convolution_map.png", dpi=600, bbox_inches="tight")
 plt.show()
 
 
@@ -197,6 +217,7 @@ sns.barplot(
 plt.title("Distances from Control (Single-Cell Profiles)")
 plt.xlabel("Convolution Level")
 plt.ylabel("Distance from Control (Convolution Level 0)")
+plt.savefig(figure_dir / "sc_convolution_distance.png", dpi=600, bbox_inches="tight")
 plt.show()
 
 
@@ -241,6 +262,9 @@ plt.title(
 )
 plt.xlabel("Feature Correlation")
 plt.ylabel("Count")
+plt.savefig(
+    figure_dir / "sc_feature_correlation_histogram.png", dpi=600, bbox_inches="tight"
+)
 plt.show()
 
 
@@ -251,11 +275,20 @@ plt.show()
 feature_corr_df["feature_type"] = feature_corr_df["feature"].apply(
     lambda x: x.split("_")[0]
 )
+feature_corr_df["feature_type"] = feature_corr_df["feature_type"].apply(
+    lambda x: x.split(".")[0] if "sam" in x.lower() else x
+)
 # sort by correlation
 feature_corr_df = feature_corr_df.sort_values(by="correlation", ascending=False)
 
 
 # In[12]:
+
+
+feature_corr_df["feature_type"].unique()
+
+
+# In[13]:
 
 
 plt.figure(figsize=(12, 6))
@@ -271,10 +304,13 @@ plt.xlabel("Feature Type")
 plt.ylabel("Feature Correlation")
 plt.xticks(rotation=90)
 plt.ylim(-1, 1)
-# make the backround from y 0.5 to 1 gray
-plt.axhspan(0.5, 1, color="gray", alpha=0.5)
-# make the backround from y -1 to -0.5 red
-plt.axhspan(-1, -0.5, color="red", alpha=0.2)
-plt.axhspan(-0.25, 0.25, color="green", alpha=0.2)
-
+# make the background from y 0.33 to 1 green
+plt.axhspan(0.33, 1, color="green", alpha=0.2)
+# make the background from y -0.33 to 0.33 gray
+plt.axhspan(-0.33, 0.33, color="gray", alpha=0.2)
+# make the background from y -1 to -0.33 red
+plt.axhspan(-1, -0.33, color="red", alpha=0.2)
+plt.savefig(
+    figure_dir / "sc_feature_correlation_by_type.png", dpi=600, bbox_inches="tight"
+)
 plt.show()

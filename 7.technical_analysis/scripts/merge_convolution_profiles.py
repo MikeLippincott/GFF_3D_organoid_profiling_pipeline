@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
 import pathlib
 
+import matplotlib as mpl
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -48,6 +50,11 @@ sc_convolution_paths = [
     )
     for subdir_name in subdir_names
 ]
+
+figure_dir = pathlib.Path(
+    f"{root_dir}/7.technical_analysis/figures/convolution_profile_analysis"
+).resolve()
+figure_dir.mkdir(parents=True, exist_ok=True)
 
 
 # In[4]:
@@ -149,7 +156,7 @@ sc_features_columns = [
 ]
 
 
-# In[7]:
+# In[6]:
 
 
 # normalize the data
@@ -179,7 +186,7 @@ sc_fs_df = feature_select(
 )
 
 
-# In[8]:
+# In[7]:
 
 
 organoid_metadata_columns = [x for x in organoid_fs_df.columns if "Metadata" in x]
@@ -211,7 +218,7 @@ sc_features_columns = [
 ]
 
 
-# In[9]:
+# In[8]:
 
 
 # save the normalized profiles
@@ -222,71 +229,141 @@ sc_normalized_output_path = pathlib.Path(
     f"{root_dir}/7.technical_analysis/processed_data/sc_fs_convolution_profiles.parquet"
 ).resolve()
 organoid_normalized_output_path.parent.mkdir(parents=True, exist_ok=True)
-organoid_fs_df = organoid_fs_df.dropna(subset=organoid_features_columns)
+# replace na with 0
+organoid_fs_df = organoid_fs_df.fillna(0)
 organoid_fs_df.to_parquet(organoid_normalized_output_path, index=False)
 sc_normalized_output_path.parent.mkdir(parents=True, exist_ok=True)
-sc_fs_df = sc_fs_df.dropna(subset=sc_features_columns)
+sc_fs_df = sc_fs_df.fillna(0)
 sc_fs_df.to_parquet(sc_normalized_output_path, index=False)
 
 
-# In[ ]:
+# In[9]:
 
 
-# plot on UMAP (use continuous colorbar from -1 to 25)
 organoid_fs_df["Metadata_convolution"] = organoid_fs_df["Metadata_convolution"].astype(
     int
 )
-# drop NaN values
 reducer = umap.UMAP(random_state=0)
 embedding = reducer.fit_transform(organoid_fs_df[organoid_features_columns].values)
 
-cvals = organoid_fs_df["Metadata_convolution"].astype(float).values
-plt.figure(figsize=(10, 8))
-sc = plt.scatter(
+conv = organoid_fs_df["Metadata_convolution"].astype(int).values
+
+cmap_cont = plt.cm.viridis
+norm_cont = mpl.colors.Normalize(vmin=1, vmax=25)
+
+special_colors = {
+    # light gray
+    -1: (0.85, 0.85, 0.85, 1.0),
+    # black
+    0: (0.0, 0.0, 0.0, 1.0),
+    50: (1.0, 0.0, 0.0, 1.0),
+    75: (1.0, 0.5, 0.0, 1.0),
+    100: (1.0, 0.4, 0.7, 1.0),
+}
+
+colors = [
+    special_colors[v]
+    if v in special_colors
+    else (cmap_cont(norm_cont(v)) if 1 <= v <= 25 else (0.85, 0.85, 0.85, 1.0))
+    for v in conv
+]
+
+fig, ax = plt.subplots(figsize=(10, 8))
+ax.scatter(
     embedding[:, 0],
     embedding[:, 1],
-    c=cvals,
-    cmap="viridis",
-    vmin=-1,
-    s=10,
-    alpha=0.7,
+    c=colors,
+    s=50,
+    alpha=1.0,
+    rasterized=True,
 )
-cbar = plt.colorbar(sc)
-cbar.set_label("Convolution")
-cbar.set_ticks([-1, 0, 5, 10, 15, 20, 25, 50, 75, 100])
 
-plt.title("UMAP of Normalized Organoid Profiles")
-plt.xlabel("UMAP 1")
-plt.ylabel("UMAP 2")
+# create continuous colorbar for 1..25 and attach it to the axes
+mappable = mpl.cm.ScalarMappable(norm=norm_cont, cmap=cmap_cont)
+mappable.set_array(np.linspace(1, 25, 25))
+cbar = fig.colorbar(mappable, ax=ax)
+cbar.set_label("Convolution (continuous 1–25)")
+cbar.set_ticks([1, 5, 10, 15, 20, 25])
+
+# legend for special discrete values
+legend_handles = [
+    mpatches.Patch(color=special_colors[k], label=str(k)) for k in [-1, 0, 50, 75, 100]
+]
+# move legend outside of plot
+ax.legend(
+    handles=legend_handles,
+    title="Special Convolutions",
+    loc="upper right",
+    framealpha=0.9,
+)
+
+ax.set_title("UMAP of Normalized Organoid Profiles")
+ax.set_xlabel("UMAP 1")
+ax.set_ylabel("UMAP 2")
+plt.savefig(figure_dir / "organoid_convolution_umap.png", dpi=600, bbox_inches="tight")
 plt.show()
 
 
-# In[11]:
+# In[10]:
 
 
-# plot on UMAP (use continuous colorbar from -1 to 25)
 sc_fs_df["Metadata_convolution"] = sc_fs_df["Metadata_convolution"].astype(int)
-# drop NaN values
-sc_fs_df = sc_fs_df.dropna(subset=sc_features_columns)
 reducer = umap.UMAP(random_state=0)
 embedding = reducer.fit_transform(sc_fs_df[sc_features_columns].values)
 
-cvals = sc_fs_df["Metadata_convolution"].astype(float).values
-plt.figure(figsize=(10, 8))
-sc = plt.scatter(
+conv = sc_fs_df["Metadata_convolution"].astype(int).values
+
+cmap_cont = plt.cm.viridis
+norm_cont = mpl.colors.Normalize(vmin=1, vmax=25)
+
+special_colors = {
+    # light gray
+    -1: (0.85, 0.85, 0.85, 1.0),
+    # black
+    0: (0.0, 0.0, 0.0, 1.0),
+    50: (1.0, 0.0, 0.0, 1.0),
+    75: (1.0, 0.5, 0.0, 1.0),
+    100: (1.0, 0.4, 0.7, 1.0),
+}
+
+colors = [
+    special_colors[v]
+    if v in special_colors
+    else (cmap_cont(norm_cont(v)) if 1 <= v <= 25 else (0.85, 0.85, 0.85, 1.0))
+    for v in conv
+]
+
+fig, ax = plt.subplots(figsize=(10, 8))
+ax.scatter(
     embedding[:, 0],
     embedding[:, 1],
-    c=cvals,
-    cmap="viridis",
-    vmin=-1,
-    s=10,
-    alpha=0.7,
+    c=colors,
+    s=50,
+    alpha=0.75,
+    rasterized=True,
 )
-cbar = plt.colorbar(sc)
-cbar.set_label("Convolution")
-cbar.set_ticks([-1, 0, 5, 10, 15, 20, 25, 50, 75, 100])
 
-plt.title("UMAP of Normalized Organoid Profiles")
-plt.xlabel("UMAP 1")
-plt.ylabel("UMAP 2")
+# create continuous colorbar for 1..25 and attach it to the axes
+mappable = mpl.cm.ScalarMappable(norm=norm_cont, cmap=cmap_cont)
+mappable.set_array(np.linspace(1, 25, 25))
+cbar = fig.colorbar(mappable, ax=ax)
+cbar.set_label("Convolution (continuous 1–25)")
+cbar.set_ticks([1, 5, 10, 15, 20, 25])
+
+# legend for special discrete values
+legend_handles = [
+    mpatches.Patch(color=special_colors[k], label=str(k)) for k in [-1, 0, 50, 75, 100]
+]
+# move legend outside of plot
+ax.legend(
+    handles=legend_handles,
+    title="Special Convolutions",
+    loc="upper right",
+    framealpha=0.9,
+)
+
+ax.set_title("UMAP of Normalized Single-Cell Profiles")
+ax.set_xlabel("UMAP 1")
+ax.set_ylabel("UMAP 2")
+plt.savefig(figure_dir / "sc_convolution_umap.png", dpi=600, bbox_inches="tight")
 plt.show()
