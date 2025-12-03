@@ -149,20 +149,6 @@ sc_features_columns = [
 ]
 
 
-# In[6]:
-
-
-# # find inf values and replace with NaN
-# organoid_combined_dfs[organoid_features_columns] = organoid_combined_dfs[
-#     organoid_features_columns
-# ].replace([float("inf"), -float("inf")], np.nan)
-
-# # sc
-# sc_combined_dfs[sc_features_columns] = sc_combined_dfs[
-#     sc_features_columns
-# ].replace([float("inf"), -float("inf")], np.nan)
-
-
 # In[7]:
 
 
