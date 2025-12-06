@@ -27,7 +27,7 @@ fi
 time_constant=3:00:00
 granularity_time=24:00:00
 ntasks_constant=25
-granularity_ntasks=50
+granularity_ntasks=64
 
 echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 echo "InputSubparent: $input_subparent_name, MaskSubparent: $mask_subparent_name, OutputFeaturesSubparent: $output_features_subparent_name"
