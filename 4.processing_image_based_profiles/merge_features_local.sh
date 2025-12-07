@@ -22,6 +22,8 @@ else
     exit 1
 fi
 
+patient_array=( "NF0037_T1-Z-1" "NF0037_T1-Z-0.5" "NF0037_T1-Z-0.2" "NF0037_T1-Z-0.1" )
+
 bandicoot_dir="$HOME/mnt/bandicoot/NF1_organoid_data"
 if [[ ! -d "$bandicoot_dir" ]]; then
     profile_base_dir="$git_root/"
