@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[10]:
 
 
 import os
@@ -22,7 +22,7 @@ profile_base_dir = bandicoot_check(
 )
 
 
-# In[2]:
+# In[11]:
 
 
 if not in_notebook:
@@ -32,12 +32,12 @@ if not in_notebook:
     image_based_profiles_subparent_name = args["image_based_profiles_subparent_name"]
 
 else:
-    patient = "NF0014_T1"
-    well_fov = "G2-2"
+    patient = "NF0037_T1-Z-1"
+    well_fov = "F4-2"
     image_based_profiles_subparent_name = "image_based_profiles"
 
 
-# In[3]:
+# In[12]:
 
 
 input_sqlite_file = pathlib.Path(
@@ -53,7 +53,7 @@ destination_sc_parquet_file.parent.mkdir(parents=True, exist_ok=True)
 dest_datatype = "parquet"
 
 
-# In[4]:
+# In[13]:
 
 
 # show the tables
@@ -66,7 +66,7 @@ with duckdb.connect(input_sqlite_file) as con:
     organoid_table = con.sql("SELECT * FROM Organoid").df()
 
 
-# In[5]:
+# In[14]:
 
 
 nuclei_id_set = set(nuclei_table["object_id"].to_list())
@@ -80,7 +80,7 @@ cells_table = cells_table[cells_table["object_id"].isin(intersection_set)]
 cytoplasm_table = cytoplasm_table[cytoplasm_table["object_id"].isin(intersection_set)]
 
 
-# In[6]:
+# In[15]:
 
 
 # connect to DuckDB and register the tables
@@ -97,7 +97,7 @@ with duckdb.connect() as con:
     """).df()
 
 
-# In[7]:
+# In[16]:
 
 
 # save the organoid data as parquet
@@ -106,14 +106,14 @@ organoid_table.to_parquet(destination_organoid_parquet_file, index=False)
 organoid_table.head()
 
 
-# In[8]:
+# In[17]:
 
 
 # drop columns that end with _x or _y lowercase
 merged_df = merged_df.loc[:, ~merged_df.columns.str.endswith(("_x", "_y"))]
 
 
-# In[9]:
+# In[18]:
 
 
 print(f"Final merged single cell dataframe shape: {merged_df.shape}")

@@ -24,6 +24,9 @@ fi
 
 patient_array=( "NF0037_T1-Z-1" "NF0037_T1-Z-0.5" "NF0037_T1-Z-0.2" "NF0037_T1-Z-0.1" )
 
+output_features_subparent_name="extracted_features"
+image_based_profiles_subparent_name="image_based_profiles"
+
 bandicoot_dir="$HOME/mnt/bandicoot/NF1_organoid_data"
 if [[ ! -d "$bandicoot_dir" ]]; then
     profile_base_dir="$git_root/"
@@ -54,21 +57,21 @@ for patient in "${patient_array[@]}"; do
         log_file="$git_root/4.processing_image_based_profiles/logs/${patient}_${well_fov}.log"
         touch "$log_file"  # create the log file if it doesn't exist
         {
-            python "$git_root"/4.processing_image_based_profiles/scripts/1.merge_feature_parquets.py --patient "$patient" --well_fov "$well_fov"
-            python "$git_root"/4.processing_image_based_profiles/scripts/2.merge_sc.py --patient "$patient" --well_fov "$well_fov"
-            python "$git_root"/4.processing_image_based_profiles/scripts/3.organoid_cell_relationship.py --patient "$patient" --well_fov "$well_fov"
+            python "$git_root"/4.processing_image_based_profiles/scripts/1.merge_feature_parquets.py --patient "$patient" --well_fov "$well_fov" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
+            python "$git_root"/4.processing_image_based_profiles/scripts/2.merge_sc.py --patient "$patient" --well_fov "$well_fov" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
+            python "$git_root"/4.processing_image_based_profiles/scripts/3.organoid_cell_relationship.py --patient "$patient" --well_fov "$well_fov" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
         } >> "$log_file" 2>&1
     done
     patient_log_file="$git_root/4.processing_image_based_profiles/logs/patients/${patient}.log"
     mkdir -p "$(dirname "$patient_log_file")"  # create the patients directory if it doesn't exist
     touch "$patient_log_file"  # create the patient log file if it doesn't exist
     {
-        python "$git_root"/4.processing_image_based_profiles/scripts/6.combining_profiles.py --patient "$patient"
-        python "$git_root"/4.processing_image_based_profiles/scripts/7.annotation.py --patient "$patient"
-        python "$git_root"/4.processing_image_based_profiles/scripts/8.normalization.py --patient "$patient"
-        python "$git_root"/4.processing_image_based_profiles/scripts/9.feature_selection.py --patient "$patient"
-        python "$git_root"/4.processing_image_based_profiles/scripts/10.aggregation.py --patient "$patient"
-        python "$git_root"/4.processing_image_based_profiles/scripts/11.merge_consensus_profiles.py --patient "$patient"
+        python "$git_root"/4.processing_image_based_profiles/scripts/6.combining_profiles.py --patient "$patient" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
+        python "$git_root"/4.processing_image_based_profiles/scripts/7.annotation.py --patient "$patient" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
+        python "$git_root"/4.processing_image_based_profiles/scripts/8.normalization.py --patient "$patient" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
+        python "$git_root"/4.processing_image_based_profiles/scripts/9.feature_selection.py --patient "$patient" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
+        python "$git_root"/4.processing_image_based_profiles/scripts/10.aggregation.py --patient "$patient" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
+        python "$git_root"/4.processing_image_based_profiles/scripts/11.merge_consensus_profiles.py --patient "$patient" --output_features_subparent_name "$output_features_subparent_name" --image_based_profiles_subparent_name "$image_based_profiles_subparent_name"
     } >> "$patient_log_file" 2>&1
 
 done

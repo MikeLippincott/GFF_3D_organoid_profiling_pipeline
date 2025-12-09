@@ -33,10 +33,10 @@ if not in_notebook:
 
 
 else:
-    well_fov = "C4-2"
-    patient = "NF0014_T1"
-    output_features_subparent_name = "convolution_22_extracted_features"
-    image_based_profiles_subparent_name = "convolution_22_image_based_profiles"
+    well_fov = "F4-2"
+    patient = "NF0037_T1-Z-1"
+    output_features_subparent_name = "extracted_features"
+    image_based_profiles_subparent_name = "image_based_profiles"
 
 
 result_path = pathlib.Path(
