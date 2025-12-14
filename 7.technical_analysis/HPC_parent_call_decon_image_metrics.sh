@@ -4,7 +4,7 @@
 #SBATCH --partition=amilan
 #SBATCH --qos=long
 #SBATCH --account=amc-general
-#SBATCH --time=2-00:00:00
+#SBATCH --time=7-00:00:00
 #SBATCH --output=decon_image_metrics_grandparent-%j.out
 
 load_file_path="./loadfiles/decon_image_metrics_load_file.txt"
@@ -23,13 +23,13 @@ while IFS= read -r line; do
 
     sbatch \
         --nodes=1 \
-        --ntasks=1 \
-        --partition=al40 \
+        --ntasks=3 \
+        --partition=aa100 \
         --gres=gpu:1 \
         --qos=normal \
         --account=amc-general \
         --time=1:30:00 \
-        --export=ALL,patient="$patient",well_fov="$well_fov" \
+        --export=patient="$patient",well_fov="$well_fov" \
         --output=logs/decon_image_metrics_"$patient"_"$well_fov"_%j.out \
         HPC_child_call_decon_image_metrics.sh "$patient" "$well_fov"
 

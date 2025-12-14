@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load anaconda
+module load miniforge
 conda init bash
 conda activate GFF_DL_featurization
 
@@ -15,5 +15,6 @@ python decon_image_metrics.py --patient "$patient" --well_fov "$well_fov"
 
 # deactivate cellprofiler environment
 conda deactivate
+cd .. || exit 1
 
 echo "All segmentation child jobs submitted"
