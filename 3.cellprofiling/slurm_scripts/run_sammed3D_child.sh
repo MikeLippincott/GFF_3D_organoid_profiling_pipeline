@@ -33,3 +33,4 @@ end=$(date +%s)
 echo "Time taken to run the featurization: (($end-$start_timestamp))"
 
 conda deactivate
+
