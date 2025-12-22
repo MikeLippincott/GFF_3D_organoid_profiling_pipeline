@@ -23,9 +23,9 @@ fi
 
 # ntasks max=64 (240GB memory partition)
 # time max=24:00:00 for normal qos
-time_constant=1:00:00
+time_constant=5:00:00
 granularity_time=24:00:00
-ntasks_constant=16
+ntasks_constant=24
 granularity_ntasks=64
 
 echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
