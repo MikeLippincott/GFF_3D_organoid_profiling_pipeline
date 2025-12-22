@@ -48,7 +48,7 @@ else:
 channels = ["405", "488", "555", "640"]
 
 
-# In[ ]:
+# In[3]:
 
 
 decon_patients = [
@@ -65,7 +65,7 @@ decon_patients = [
 channels = ["405", "488", "555", "640"]
 
 
-# In[6]:
+# In[4]:
 
 
 decon_image_metric_path = pathlib.Path(
@@ -73,7 +73,7 @@ decon_image_metric_path = pathlib.Path(
 ).resolve()
 
 
-# In[9]:
+# In[5]:
 
 
 list_of_files_expected = []
@@ -82,11 +82,11 @@ for patient in decon_patients:
     for well_fov in os.listdir(f"{image_base_dir}/data/{patient}/zstack_images/"):
         for channel in channels:
             expected_file_path = pathlib.Path(
-                f"{decon_image_metric_path}/{patient}_{well_fov}_{channel}_image_metrics.parquet"
+                f"{decon_image_metric_path}/{patient}_{well_fov}_{channel}_decon_image_metrics.parquet"
             ).resolve()
             list_of_files_expected.append(expected_file_path)
 
-paths_present = decon_image_metric_path.glob("*_image_metrics.parquet")
+paths_present = decon_image_metric_path.glob("*_decon_image_metrics.parquet")
 present_files = [path for path in paths_present]
 files_to_run_or_rerun = set(list_of_files_expected) - set(present_files)
 files_to_run_or_rerun = sorted(list(files_to_run_or_rerun))
@@ -99,10 +99,12 @@ files_to_run_or_rerun_df["patient"] = files_to_run_or_rerun_df[
 files_to_run_or_rerun_df["well_fov"] = files_to_run_or_rerun_df[
     "output_file_path"
 ].apply(lambda x: x.stem.split("_")[2].split("_")[0])
-files_to_run_or_rerun_df
+
+files_to_run_or_rerun_df.drop(columns=["output_file_path"], inplace=True)
+files_to_run_or_rerun_df = files_to_run_or_rerun_df.drop_duplicates()
 
 
-# In[11]:
+# In[6]:
 
 
 # write the patient and wellfov to a load file
@@ -110,6 +112,3 @@ pathlib.Path("../loadfiles/").mkdir(parents=True, exist_ok=True)
 with open("../loadfiles/decon_image_metrics_load_file.txt", "w") as f:
     for index, row in files_to_run_or_rerun_df.iterrows():
         f.write(f"{row['patient']}\t{row['well_fov']}\n")
-
-
-# In[ ]:

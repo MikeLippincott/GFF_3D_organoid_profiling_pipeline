@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import os
@@ -27,7 +27,7 @@ root_dir, in_notebook = init_notebook()
 image_base_dir = bandicoot_check(
     pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve(), root_dir
 )
-
+print(image_base_dir)
 if in_notebook:
     import tqdm.notebook as tqdm
 else:
@@ -86,8 +86,8 @@ if not in_notebook:
     channel = arguments_dict["channel"]
 
 else:
-    well_fov = "F3-1"
-    patient = "NF0014_T1"
+    well_fov = "D8-2"
+    patient = "NF0016_T1"
 
 channels = ["405", "488", "555", "640"]
 
@@ -157,6 +157,7 @@ for idx, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
     raw_image = tifffile.imread(row["image_path"])
     decon_image = tifffile.imread(row["decon_image_path"])
     if raw_image.shape != decon_image.shape:
+        print(raw_image.shape, decon_image.shape)
         print(f"Image shape mismatch for index {idx}, skipping...")
         continue
     for zslice in range(raw_image.shape[0]):
@@ -174,7 +175,7 @@ for idx, row in tqdm.tqdm(df.iterrows(), total=df.shape[0]):
     pd.DataFrame(results_dict).to_parquet(output_file_dir)
 
 
-# In[8]:
+# In[ ]:
 
 
 end_time = time.time()
