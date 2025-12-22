@@ -254,5 +254,5 @@ if [ "$feature" == "SAMMed3D" ] ; then
             "$output_features_subparent_name"
 fi
 
-echo "Featurization done"
+echo "All Parent Jobs submitted"
 
