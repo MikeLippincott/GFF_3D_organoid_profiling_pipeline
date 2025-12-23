@@ -16,17 +16,17 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-# time_constant=15:00
-# granularity_time=3:00:00
-# ntasks_constant=4
-# granularity_ntasks=8
+time_constant=15:00
+granularity_time=3:00:00
+ntasks_constant=3
+granularity_ntasks=8
 
 # ntasks max=64 (240GB memory partition)
 # time max=24:00:00 for normal qos
-time_constant=5:00:00
-granularity_time=24:00:00
-ntasks_constant=24
-granularity_ntasks=64
+# time_constant=5:00:00
+# granularity_time=24:00:00
+# ntasks_constant=24
+# granularity_ntasks=64
 
 echo "Patient: $patient, WellFOV: $well_fov, Feature: $feature, Compartment: $compartment, Channel: $channel, UseGPU: $processor_type"
 echo "InputSubparent: $input_subparent_name, MaskSubparent: $mask_subparent_name, OutputFeaturesSubparent: $output_features_subparent_name"
@@ -39,7 +39,7 @@ if [ "$feature" == "Neighbors" ]; then
     --partition=amilan \
     --qos=normal \
     --account=amc-general \
-    --time=10:00 \
+    --time=5:00 \
     --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
     --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_neighbors_child-%j.out" \
     "$git_root"/3.cellprofiling/slurm_scripts/run_neighbors_child.sh \

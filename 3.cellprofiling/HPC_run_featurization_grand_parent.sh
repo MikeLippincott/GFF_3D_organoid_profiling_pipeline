@@ -4,7 +4,7 @@
 #SBATCH --partition=amilan
 #SBATCH --qos=long
 #SBATCH --account=amc-general
-#SBATCH --time=0-01:00:00 # D-HH:MM:SS
+#SBATCH --time=7-00:00:00 # D-HH:MM:SS
 #SBATCH --output="logs/grand_parent/grand_parent-%j.out"
 
 module load anaconda
@@ -61,16 +61,7 @@ while IFS= read -r line; do
         sleep 1s
         number_of_jobs=$(squeue -u "$USER" | wc -l)
     done
-    sbatch \
-        --nodes=1 \
-        --ntasks=1 \
-        --partition=amilan \
-        --qos=normal \
-        --account=amc-general \
-        --time=1:00 \
-        --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
-        --output="logs/parent/${patient}_${well_fov}_${compartment}_${channel}_child-%j.out" \
-        "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
+    bash "$git_root"/3.cellprofiling/HPC_run_featurization_parent.sh \
         "$patient" \
         "$well_fov" \
         "$compartment" \
@@ -80,6 +71,7 @@ while IFS= read -r line; do
         "$input_subparent_name" \
         "$mask_subparent_name" \
         "$output_features_subparent_name"
+
 
 done < "$txt_file"
 
