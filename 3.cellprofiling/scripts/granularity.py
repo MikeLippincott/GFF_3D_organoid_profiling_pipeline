@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import os
@@ -21,7 +21,7 @@ from granularity_utils import measure_3D_granularity
 from loading_classes import ImageSetLoader, ObjectLoader
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[2]:
+# In[ ]:
 
 
 if not in_notebook:
@@ -57,7 +57,7 @@ output_parent_path = pathlib.Path(
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
 
-# In[3]:
+# In[ ]:
 
 
 channel_mapping = {
@@ -73,7 +73,7 @@ channel_mapping = {
 }
 
 
-# In[4]:
+# In[ ]:
 
 
 start_time = time.time()

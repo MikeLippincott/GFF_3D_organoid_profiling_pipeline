@@ -20,6 +20,11 @@ from resource_profiling_util import get_mem_and_time_profiling
 from sammed3d_featurizer import call_SAMMed3D_pipeline
 
 root_dir, in_notebook = init_notebook()
+from notebook_init_utils import bandicoot_check, init_notebook
+
+image_base_dir = bandicoot_check(
+    pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve(), root_dir
+)
 
 
 # In[2]:
@@ -43,23 +48,23 @@ if not in_notebook:
     output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
-    well_fov = "C4-2"
+    well_fov = "E10-1"
     patient = "NF0014_T1"
-    compartment = "Nuclei"
-    channel = "DNA"
+    compartment = "Organoid"
+    channel = "Mito"
     input_subparent_name = "zstack_images"
     mask_subparent_name = "segmentation_masks"
     output_features_subparent_name = "extracted_features"
 
 image_set_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
 )
 mask_set_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
 )
 
 output_parent_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
 )
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
@@ -134,12 +139,18 @@ feature_dict = call_SAMMed3D_pipeline(
 
 
 final_df = pd.DataFrame(feature_dict)
-
-final_df["feature_name"] = (
-    final_df["feature_name"] + "_" + final_df["compartment"] + "_" + final_df["channel"]
-)
-final_df["feature_name"] = final_df["feature_name"].str.replace("_feature_", ".")
-final_df = final_df.drop(columns=["compartment", "channel"])
+try:
+    final_df["feature_name"] = (
+        final_df["feature_name"]
+        + "_"
+        + final_df["compartment"]
+        + "_"
+        + final_df["channel"]
+    )
+    final_df["feature_name"] = final_df["feature_name"].str.replace("_feature_", ".")
+    final_df = final_df.drop(columns=["compartment", "channel"])
+except Exception as e:
+    logging.error(f"Probably a zero object error: {e}")
 final_df.head()
 
 

@@ -404,6 +404,14 @@ class MicroscopySAMMed3DPipeline:
         return features
 
 
+def check_for_zero_objects(label_image: np.ndarray) -> bool:
+    """Check if there are any objects in the label image."""
+    unique_labels = np.unique(label_image)
+    # Exclude background label (0)
+    object_labels = unique_labels[unique_labels != 0]
+    return len(object_labels) == 0
+
+
 def call_SAMMed3D_pipeline(
     object_loader: ObjectLoader,
     SAMMed3D_model_path: Optional[str] = None,
@@ -447,6 +455,8 @@ def call_SAMMed3D_pipeline(
         "value": [],
         "feature_type": [],
     }
+    if check_for_zero_objects(label_object):
+        return output_dict
 
     for index, label in enumerate(labels):
         selected_label_object = label_object.copy()

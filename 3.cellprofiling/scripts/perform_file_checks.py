@@ -54,13 +54,6 @@ patient_ids = pd.read_csv(
     patient_id_file_path, header=None, names=["patient_id"]
 ).patient_id.tolist()
 
-patient_ids = [
-    "NF0037_T1-Z-1",
-    "NF0037_T1-Z-0.5",
-    "NF0037_T1-Z-0.2",
-    "NF0037_T1-Z-0.1",
-]
-
 
 # In[4]:
 
@@ -297,11 +290,37 @@ else:
 
 
 df = pd.DataFrame(featurization_rerun_dict)
-df.to_csv(rerun_combinations_path, sep="\t", index=False)
-df.head()
+# sort the df by featyre type then patient then well fov
+df = df.sort_values(by=["feature", "patient", "well_fov"])
+# put SAMMed3d features at the bottom of the df
+# sammed3d_df = df[df["feature"] == "SAMMed3D"]
+granularity_df = df[df["feature"] == "Granularity"]
+other_features_df = df[df["feature"] != "SAMMed3D"]
+other_features_df = other_features_df[other_features_df["feature"] != "Granularity"]
+df = pd.concat(
+    [
+        other_features_df,
+        granularity_df,
+        # sammed3d_df
+    ],
+    ignore_index=True,
+)
 
 
 # In[12]:
 
 
+df.to_csv(rerun_combinations_path, sep="\t", index=False)
+df.head()
+
+
+# In[13]:
+
+
 df.groupby(["patient"]).count()
+
+
+# In[14]:
+
+
+df.groupby(["patient", "well_fov"]).count()
