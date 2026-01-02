@@ -17,7 +17,7 @@ if [ -z "$git_root" ]; then
 fi
 
 time_constant=60:00
-granularity_time=3:00:00
+granularity_time=12:00:00
 ntasks_constant=4
 granularity_ntasks=8
 
