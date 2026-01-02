@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -19,7 +19,13 @@ root_dir, in_notebook = init_notebook()
 from area_size_shape_utils import measure_3D_area_size_shape
 from area_size_shape_utils_gpu import measure_3D_area_size_shape_gpu
 from loading_classes import ImageSetLoader, ObjectLoader
+from notebook_init_utils import bandicoot_check, init_notebook
 from resource_profiling_util import get_mem_and_time_profiling
+
+image_base_dir = bandicoot_check(
+    pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve(), root_dir
+)
+
 
 # In[ ]:
 
@@ -36,23 +42,23 @@ if not in_notebook:
     output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
-    well_fov = "F3-1"
-    patient = "NF0014_T1"
-    compartment = "Organoid"
+    well_fov = "E8-5"
+    patient = "NF0018_T6"
+    compartment = "Organoidd"
     channel = "DNA"
     processor_type = "CPU"
-    input_subparent_name = "stack_images"
+    input_subparent_name = "zstack_images"
     mask_subparent_name = "segmentation_masks"
     output_features_subparent_name = "extracted_features"
 
 image_set_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
 )
 mask_set_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
 )
 output_parent_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
 )
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
@@ -81,7 +87,7 @@ start_time = time.time()
 start_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
 
 
-# In[ ]:
+# In[5]:
 
 
 image_set_loader = ImageSetLoader(
@@ -92,7 +98,7 @@ image_set_loader = ImageSetLoader(
 )
 
 
-# In[ ]:
+# In[6]:
 
 
 object_loader = ObjectLoader(
@@ -120,7 +126,7 @@ else:
     )
 
 
-# In[ ]:
+# In[7]:
 
 
 final_df = pd.DataFrame(size_shape_dict)
@@ -144,7 +150,7 @@ final_df.to_parquet(output_file, index=False)
 final_df.head()
 
 
-# In[ ]:
+# In[8]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2
@@ -161,6 +167,6 @@ get_mem_and_time_profiling(
     compartment=compartment,
     CPU_GPU=processor_type,
     output_file_dir=pathlib.Path(
-        f"{root_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_AreaSizeShape_DNA_{compartment}_{processor_type}.parquet"
+        f"{image_base_dir}/data/{patient}/extracted_features/run_stats/{well_fov}_AreaSizeShape_DNA_{compartment}_{processor_type}.parquet"
     ),
 )

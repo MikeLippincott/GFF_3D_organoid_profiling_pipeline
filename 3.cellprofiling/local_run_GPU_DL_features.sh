@@ -62,7 +62,9 @@ while IFS= read -r line; do
 
     if [ "$feature" == "SAMMed3D" ] ; then
         echo "Running SAMMed3D feature extraction"
-        bash "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
+        # ignore shellcheck SC1091
+        # shellcheck disable=SC1091
+        source "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
             "$patient" \
             "$well_fov" \
             "$compartment" \

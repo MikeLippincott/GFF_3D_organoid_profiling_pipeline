@@ -16,9 +16,9 @@ if [ -z "$git_root" ]; then
     exit 1
 fi
 
-time_constant=15:00
+time_constant=60:00
 granularity_time=3:00:00
-ntasks_constant=3
+ntasks_constant=4
 granularity_ntasks=8
 
 # ntasks max=64 (240GB memory partition)
