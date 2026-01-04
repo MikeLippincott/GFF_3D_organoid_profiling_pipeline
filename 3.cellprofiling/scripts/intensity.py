@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -11,15 +11,21 @@ import time
 import pandas as pd
 import psutil
 from arg_parsing_utils import check_for_missing_args, parse_args
-from notebook_init_utils import bandicoot_check, init_notebook
-
-root_dir, in_notebook = init_notebook()
-
 from intensity_utils import measure_3D_intensity_CPU, measure_3D_intensity_gpu
 from loading_classes import ImageSetLoader, ObjectLoader
+from notebook_init_utils import bandicoot_check, init_notebook
 from resource_profiling_util import get_mem_and_time_profiling
 
-# In[ ]:
+root_dir, in_notebook = init_notebook()
+from notebook_init_utils import bandicoot_check, init_notebook
+
+image_base_dir = bandicoot_check(
+    pathlib.Path(os.path.expanduser("~/mnt/bandicoot")).resolve(), root_dir
+)
+print(image_base_dir)
+
+
+# In[2]:
 
 
 if not in_notebook:
@@ -34,9 +40,9 @@ if not in_notebook:
     output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
-    well_fov = "C4-2"
-    patient = "NF0014_T1"
-    channel = "AGP"
+    well_fov = "E8-5"
+    patient = "NF0018_T6"
+    channel = "ER"
     compartment = "Nuclei"
     processor_type = "CPU"
     input_subparent_name = "zstack_images"
@@ -44,13 +50,13 @@ else:
     output_features_subparent_name = "extracted_features"
 
 image_set_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{input_subparent_name}/{well_fov}/"
 )
 mask_set_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{mask_subparent_name}/{well_fov}/"
 )
 output_parent_path = pathlib.Path(
-    f"{root_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
+    f"{image_base_dir}/data/{patient}/{output_features_subparent_name}/{well_fov}/"
 )
 output_parent_path.mkdir(parents=True, exist_ok=True)
 
@@ -88,6 +94,7 @@ image_set_loader = ImageSetLoader(
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_n_compartment_mapping,
 )
+image_set_loader.image_set_dict.keys()
 
 
 # In[6]:

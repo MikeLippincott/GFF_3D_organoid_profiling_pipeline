@@ -48,9 +48,9 @@ if not in_notebook:
     output_features_subparent_name = arguments_dict["output_features_subparent_name"]
 
 else:
-    well_fov = "E10-1"
-    patient = "NF0014_T1"
-    compartment = "Organoid"
+    well_fov = "D11-2"
+    patient = "NF0016_T1"
+    compartment = "Cell"
     channel = "Mito"
     input_subparent_name = "zstack_images"
     mask_subparent_name = "segmentation_masks"
@@ -114,9 +114,10 @@ image_set_loader = ImageSetLoader(
     anisotropy_spacing=(1, 0.1, 0.1),
     channel_mapping=channel_n_compartment_mapping,
 )
+image_set_loader.image_set_dict.keys()
 
 
-# In[8]:
+# In[ ]:
 
 
 # load the objects for the compartment and channel of interest
@@ -135,7 +136,7 @@ feature_dict = call_SAMMed3D_pipeline(
 )
 
 
-# In[9]:
+# In[ ]:
 
 
 final_df = pd.DataFrame(feature_dict)
@@ -154,7 +155,7 @@ except Exception as e:
 final_df.head()
 
 
-# In[10]:
+# In[ ]:
 
 
 final_df = final_df.pivot(
@@ -165,7 +166,7 @@ final_df.columns.name = None
 final_df.head()
 
 
-# In[11]:
+# In[ ]:
 
 
 # prepend compartment and channel to column names
@@ -174,7 +175,7 @@ for col in final_df.columns:
         final_df[col] = final_df[col].astype(np.float32)
 
 
-# In[12]:
+# In[ ]:
 
 
 # de-fragment
@@ -188,7 +189,7 @@ final_df.to_parquet(output_file, index=False)
 final_df.head()
 
 
-# In[13]:
+# In[ ]:
 
 
 end_mem = psutil.Process(os.getpid()).memory_info().rss / 1024**2

@@ -241,7 +241,7 @@ if [ "$feature" == "SAMMed3D" ] ; then
         --qos=normal \
         --gres=gpu:1 \
         --account=amc-general \
-        --time=$time_constant \
+        --time=5:00 \
         --export=patient="$patient",well_fov="$well_fov",compartment="$compartment",channel="$channel" \
         --output="logs/child/${patient}_${well_fov}/${compartment}_${channel}_SAMMed3D_child-%j.out" \
         "$git_root"/3.cellprofiling/slurm_scripts/run_sammed3D_child.sh \
